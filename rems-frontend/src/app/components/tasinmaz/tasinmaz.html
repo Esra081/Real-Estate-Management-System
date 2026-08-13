@@ -1,0 +1,78 @@
+<div class="container mt-4">
+
+  <h2 class="text-primary mb-4">
+    {{ duzenlemeModu ? 'Taşınmaz Güncelle' : 'Yeni Taşınmaz Ekle' }}
+  </h2>
+
+  <form [formGroup]="tasinmazForm" (ngSubmit)="kaydet()">
+
+    <div class="mb-3">
+      <label>Ada No</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="adaNo">
+    </div>
+
+    <div class="mb-3">
+      <label>Parsel No</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="parselNo">
+    </div>
+
+    <div class="mb-3">
+      <label>Adres</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="adres">
+    </div>
+
+    <div class="mb-3">
+      <label>Taşınmaz Tipi</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="tasinmazTipi">
+    </div>
+
+    <div class="mb-3">
+      <label>Alan</label>
+      <input
+        type="number"
+        class="form-control"
+        formControlName="alanM2">
+    </div>
+
+    <div class="mb-3">
+      <label>Mahalle ID</label>
+      <input
+        type="number"
+        class="form-control"
+        formControlName="mahalleId">
+    </div>
+
+    <div class="mb-3">
+      <label>Kullanıcı ID</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="kullaniciId">
+    </div>
+
+    <button type="submit" class="btn btn-success">
+      {{ duzenlemeModu ? 'Güncelle' : 'Kaydet' }}
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-secondary ms-2"
+      (click)="iptal()">
+      İptal
+    </button>
+
+  </form>
+
+</div>

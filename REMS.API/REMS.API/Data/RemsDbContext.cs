@@ -20,18 +20,13 @@ namespace REMS.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // PostGIS uzantısını veritabanında kullanacağımızı belirtiyoruz
             modelBuilder.HasPostgresExtension("postgis");
 
-            // --- DATA SEEDING (VERİ TOHUMLAMA) ---
-
-            // 1. İller
             modelBuilder.Entity<Il>().HasData(
                 new Il { Id = 1, Ad = "Ankara" },
                 new Il { Id = 2, Ad = "Düzce" }
             );
 
-            // 2. İlçeler
             modelBuilder.Entity<Ilce>().HasData(
                 new Ilce { Id = 1, Ad = "Çankaya", IlId = 1 },
                 new Ilce { Id = 2, Ad = "Yenimahalle", IlId = 1 },
@@ -39,7 +34,6 @@ namespace REMS.API.Data
                 new Ilce { Id = 4, Ad = "Akçakoca", IlId = 2 }
             );
 
-            // 3. Mahalleler
             modelBuilder.Entity<Mahalle>().HasData(
                 new Mahalle { Id = 1, Ad = "Bahçelievler Mahallesi", IlceId = 1 },
                 new Mahalle { Id = 2, Ad = "Beştepe Mahallesi", IlceId = 2 },
@@ -47,15 +41,13 @@ namespace REMS.API.Data
                 new Mahalle { Id = 4, Ad = "Osmaniye Mahallesi", IlceId = 4 }
             );
 
-            // 4. Varsayılan Admin Kullanıcısı
-            // Not: Seeding işleminde Guid değerleri sabit (hardcoded) verilmelidir ki her migration'da değişmesin.
             modelBuilder.Entity<Kullanici>().HasData(
                 new Kullanici
                 {
                     Id = Guid.Parse("d28888e9-2ba9-473a-a40f-e38cb54f9b35"),
                     AdSoyad = "Sistem Yöneticisi",
                     Email = "admin@rems.com",
-                    SifreHash = "ornek_hash", // Gerçek projede buralar hashlenmiş gerçek şifreler olur
+                    SifreHash = "ornek_hash",
                     SifreSalt = "ornek_salt",
                     Rol = "Admin",
                     OlusturmaTarihi = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc),

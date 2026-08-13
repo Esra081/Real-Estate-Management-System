@@ -7,13 +7,20 @@ namespace REMS.API.Entities
     {
         [Key]
         public Guid Id { get; set; }
+
+        [Required]
         public string AdSoyad { get; set; }
+
+        [Required]
         public string Email { get; set; }
+
         public string SifreHash { get; set; }
         public string SifreSalt { get; set; }
+
         public string Rol { get; set; }
-        public DateTime OlusturmaTarihi { get; set; } = DateTime.UtcNow;
-        public DateTime? GuncellemeTarihi { get; set; }
-        public bool AktifMi { get; set; } = true;
+
+        public DateTime OlusturmaTarihi { get; set; }
+
+        public bool AktifMi { get; set; }
     }
 }

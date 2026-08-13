@@ -1,8 +1,8 @@
 [
   {
-    "ContainingType": "REMS.API.Controllers.AuthController",
+    "ContainingType": "REMS.API.Controllers.GirisController",
     "Method": "Login",
-    "RelativePath": "api/Auth/login",
+    "RelativePath": "api/Giris/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -16,9 +16,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "REMS.API.Controllers.IlcelerController",
-    "Method": "GetIlceler",
-    "RelativePath": "api/Ilceler",
+    "ContainingType": "REMS.API.Controllers.IlController",
+    "Method": "GetAll",
+    "RelativePath": "api/Il",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -26,9 +26,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "REMS.API.Controllers.IlcelerController",
-    "Method": "GetIlcelerByIlId",
-    "RelativePath": "api/Ilceler/il/{ilId}",
+    "ContainingType": "REMS.API.Controllers.IlceController",
+    "Method": "GetByIlId",
+    "RelativePath": "api/Ilce/il/{ilId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -42,19 +42,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "REMS.API.Controllers.IllerController",
-    "Method": "GetIller",
-    "RelativePath": "api/Iller",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "REMS.API.Controllers.KullanicilarController",
+    "ContainingType": "REMS.API.Controllers.KullaniciController",
     "Method": "GetKullanicilar",
-    "RelativePath": "api/Kullanicilar",
+    "RelativePath": "api/Kullanici",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -62,40 +52,103 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "REMS.API.Controllers.PropertyController",
-    "Method": "AddProperty",
-    "RelativePath": "api/Property/ekle",
-    "HttpMethod": "POST",
+    "ContainingType": "REMS.API.Controllers.MahalleController",
+    "Method": "GetAll",
+    "RelativePath": "api/Mahalle",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "REMS.API.Controllers.MahalleController",
+    "Method": "GetByIlceId",
+    "RelativePath": "api/Mahalle/ilce/{ilceId}",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "model",
-        "Type": "REMS.API.DTOs.Property.PropertyCreateDto",
+        "Name": "ilceId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "REMS.API.Controllers.WeatherForecastController",
-    "Method": "Get",
-    "RelativePath": "WeatherForecast",
+    "ContainingType": "REMS.API.Controllers.TasinmazController",
+    "Method": "GetAll",
+    "RelativePath": "api/Tasinmaz",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": [
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "REMS.API.Controllers.TasinmazController",
+    "Method": "GetById",
+    "RelativePath": "api/Tasinmaz/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[REMS.API.WeatherForecast, REMS.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
       }
     ],
-    "EndpointName": "GetWeatherForecast"
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "REMS.API.Controllers.TasinmazController",
+    "Method": "DeleteProperty",
+    "RelativePath": "api/Tasinmaz/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "REMS.API.Controllers.TasinmazController",
+    "Method": "AddProperty",
+    "RelativePath": "api/Tasinmaz/ekle",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "REMS.API.DTOs.Property.TasinmazCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "REMS.API.Controllers.TasinmazController",
+    "Method": "UpdateProperty",
+    "RelativePath": "api/Tasinmaz/guncelle",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "TasinmazUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

@@ -5,10 +5,10 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/Auth/login": {
+    "/api/Giris/login": {
       "post": {
         "tags": [
-          "Auth"
+          "Giris"
         ],
         "requestBody": {
           "content": {
@@ -36,10 +36,10 @@
         }
       }
     },
-    "/api/Ilceler": {
+    "/api/Il": {
       "get": {
         "tags": [
-          "Ilceler"
+          "Il"
         ],
         "responses": {
           "200": {
@@ -48,10 +48,10 @@
         }
       }
     },
-    "/api/Ilceler/il/{ilId}": {
+    "/api/Ilce/il/{ilId}": {
       "get": {
         "tags": [
-          "Ilceler"
+          "Ilce"
         ],
         "parameters": [
           {
@@ -71,10 +71,10 @@
         }
       }
     },
-    "/api/Iller": {
+    "/api/Kullanici": {
       "get": {
         "tags": [
-          "Iller"
+          "Kullanici"
         ],
         "responses": {
           "200": {
@@ -83,10 +83,10 @@
         }
       }
     },
-    "/api/Kullanicilar": {
+    "/api/Mahalle": {
       "get": {
         "tags": [
-          "Kullanicilar"
+          "Mahalle"
         ],
         "responses": {
           "200": {
@@ -95,26 +95,105 @@
         }
       }
     },
-    "/api/Property/ekle": {
+    "/api/Mahalle/ilce/{ilceId}": {
+      "get": {
+        "tags": [
+          "Mahalle"
+        ],
+        "parameters": [
+          {
+            "name": "ilceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Tasinmaz": {
+      "get": {
+        "tags": [
+          "Tasinmaz"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Tasinmaz/{id}": {
+      "get": {
+        "tags": [
+          "Tasinmaz"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tasinmaz"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Tasinmaz/ekle": {
       "post": {
         "tags": [
-          "Property"
+          "Tasinmaz"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PropertyCreateDto"
+                "$ref": "#/components/schemas/TasinmazCreateDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PropertyCreateDto"
+                "$ref": "#/components/schemas/TasinmazCreateDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/PropertyCreateDto"
+                "$ref": "#/components/schemas/TasinmazCreateDto"
               }
             }
           }
@@ -126,41 +205,33 @@
         }
       }
     },
-    "/WeatherForecast": {
-      "get": {
+    "/api/Tasinmaz/guncelle": {
+      "put": {
         "tags": [
-          "WeatherForecast"
+          "Tasinmaz"
         ],
-        "operationId": "GetWeatherForecast",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TasinmazUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TasinmazUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TasinmazUpdateDto"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -182,20 +253,37 @@
         },
         "additionalProperties": false
       },
-      "PropertyCreateDto": {
+      "TasinmazCreateDto": {
         "type": "object",
         "properties": {
-          "ad": {
-            "type": "string",
-            "nullable": true
-          },
-          "aciklama": {
+          "kullaniciId": {
             "type": "string",
             "nullable": true
           },
           "mahalleId": {
             "type": "integer",
             "format": "int32"
+          },
+          "adaNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "parselNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "adres": {
+            "type": "string",
+            "nullable": true
+          },
+          "tasinmazTipi": {
+            "type": "string",
+            "nullable": true
+          },
+          "alanM2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           },
           "koordinatlar": {
             "type": "array",
@@ -211,24 +299,50 @@
         },
         "additionalProperties": false
       },
-      "WeatherForecast": {
+      "TasinmazUpdateDto": {
         "type": "object",
         "properties": {
-          "date": {
-            "type": "string",
-            "format": "date"
-          },
-          "temperatureC": {
+          "id": {
             "type": "integer",
             "format": "int32"
           },
-          "temperatureF": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
-          },
-          "summary": {
+          "adaNo": {
             "type": "string",
+            "nullable": true
+          },
+          "parselNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "adres": {
+            "type": "string",
+            "nullable": true
+          },
+          "tasinmazTipi": {
+            "type": "string",
+            "nullable": true
+          },
+          "alanM2": {
+            "type": "number",
+            "format": "double"
+          },
+          "mahalleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "kullaniciId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "koordinatlar": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              }
+            },
             "nullable": true
           }
         },

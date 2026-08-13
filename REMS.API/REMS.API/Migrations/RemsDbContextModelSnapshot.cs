@@ -125,7 +125,6 @@ namespace REMS.API.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Rol")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SifreHash")
@@ -133,7 +132,6 @@ namespace REMS.API.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SifreSalt")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -210,20 +208,37 @@ namespace REMS.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Aciklama")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<string>("AdaNo")
+                        .HasColumnType("text")
+                        .HasColumnName("ada_no");
 
-                    b.Property<string>("Ad")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<string>("Adres")
+                        .HasColumnType("text")
+                        .HasColumnName("adres");
+
+                    b.Property<decimal?>("AlanM2")
+                        .HasColumnType("numeric")
+                        .HasColumnName("alan_m2");
+
+                    b.Property<string>("KullaniciId")
+                        .HasColumnType("text")
+                        .HasColumnName("kullanici_id");
 
                     b.Property<int>("MahalleId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("mahalle_id");
+
+                    b.Property<string>("ParselNo")
+                        .HasColumnType("text")
+                        .HasColumnName("parsel_no");
 
                     b.Property<Polygon>("Sinir")
-                        .IsRequired()
-                        .HasColumnType("geometry");
+                        .HasColumnType("geometry")
+                        .HasColumnName("sinir");
+
+                    b.Property<string>("TasinmazTipi")
+                        .HasColumnType("text")
+                        .HasColumnName("tasinmaz_tipi");
 
                     b.HasKey("Id");
 

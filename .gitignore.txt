@@ -1,0 +1,23 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userprefs
+bin/
+obj/
+
+# SonarQube kalıntıları
+.sonarqube/
+
+# Angular / Node.js
+node_modules/
+dist/
+ssr-output/
+.angular/
+
+# İşletim sistemi dosyaları
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
