@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tasinmaz } from '../../models/tasinmaz.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TasinmazListeService {
 
-  private apiUrl = 'https://localhost:7195/api/Tasinmaz';
+  private apiUrl = `${environment.apiUrl}/Tasinmaz`;
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +17,7 @@ export class TasinmazListeService {
     return this.http.get<Tasinmaz[]>(this.apiUrl);
   }
 
-  tasinmazSil(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  tasinmazSil(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

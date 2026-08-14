@@ -19,16 +19,27 @@
     Henüz kayıtlı taşınmaz bulunmamaktadır.
   </div>
 
-<div class="table-responsive">
+    <!-- HARİTA KONTEYNERİ -->
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body p-0">
+        <!-- Haritanın içine yerleşeceği div. 'id="map"' çok önemlidir, Leaflet bu id'yi arayacak! -->
+        <div id="map" style="height: 400px; width: 100%; border-radius: 5px;"></div>
+      </div>
+    </div>
+
+  <div *ngIf="!yukleniyor && tasinmazlar.length > 0" class="table-responsive">
+
     <table class="table table-striped table-hover border">
 
       <thead class="table-dark">
         <tr>
           <th>Ada No</th>
           <th>Parsel No</th>
+          <th>İl / İlçe / Mahalle</th>
           <th>Adres</th>
           <th>Tip</th>
           <th>Alan (M²)</th>
+          <th>Kayıt Yapan</th>
           <th class="text-center">İşlemler</th>
         </tr>
       </thead>
@@ -41,6 +52,12 @@
 
           <td>{{ item.parselNo }}</td>
 
+          <td>
+            <span class="badge bg-secondary me-1">{{ item.ilAdi || 'Ankara' }}</span>
+            <span class="badge bg-info text-dark me-1">{{ item.ilceAdi || 'Çankaya' }}</span>
+            <small class="text-muted">{{ item.mahalleAdi || 'Bahçelievler' }}</small>
+          </td>
+
           <td>{{ item.adres }}</td>
 
           <td>
@@ -51,6 +68,10 @@
 
           <td>
             {{ item.alanM2 }} m²
+          </td>
+
+          <td>
+            <span class="text-primary fw-semibold">Sistem Yöneticisi</span>
           </td>
 
           <td class="text-center">

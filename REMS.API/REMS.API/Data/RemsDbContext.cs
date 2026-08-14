@@ -20,25 +20,28 @@ namespace REMS.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasPostgresExtension("postgis");
-
+            // 1. İller (Kusursuz Türkçe)
             modelBuilder.Entity<Il>().HasData(
                 new Il { Id = 1, Ad = "Ankara" },
-                new Il { Id = 2, Ad = "Düzce" }
+                new Il { Id = 2, Ad = "İstanbul" }
             );
 
+            // 2. İlçeler 
             modelBuilder.Entity<Ilce>().HasData(
                 new Ilce { Id = 1, Ad = "Çankaya", IlId = 1 },
                 new Ilce { Id = 2, Ad = "Yenimahalle", IlId = 1 },
-                new Ilce { Id = 3, Ad = "Merkez", IlId = 2 },
-                new Ilce { Id = 4, Ad = "Akçakoca", IlId = 2 }
+                new Ilce { Id = 3, Ad = "Kadıköy", IlId = 2 },
+                new Ilce { Id = 4, Ad = "Beşiktaş", IlId = 2 }
             );
 
+            // 3. Mahalleler
             modelBuilder.Entity<Mahalle>().HasData(
-                new Mahalle { Id = 1, Ad = "Bahçelievler Mahallesi", IlceId = 1 },
-                new Mahalle { Id = 2, Ad = "Beştepe Mahallesi", IlceId = 2 },
-                new Mahalle { Id = 3, Ad = "Konuralp Mahallesi", IlceId = 3 },
-                new Mahalle { Id = 4, Ad = "Osmaniye Mahallesi", IlceId = 4 }
+                new Mahalle { Id = 1, Ad = "Kavaklıdere Mahallesi", IlceId = 1 },
+                new Mahalle { Id = 2, Ad = "Bahçelievler Mahallesi", IlceId = 1 },
+                new Mahalle { Id = 3, Ad = "Batıkent Mahallesi", IlceId = 2 },
+                new Mahalle { Id = 4, Ad = "Caferağa Mahallesi", IlceId = 3 },
+                new Mahalle { Id = 5, Ad = "Moda Mahallesi", IlceId = 3 },
+                new Mahalle { Id = 6, Ad = "Bebek Mahallesi", IlceId = 4 }
             );
 
             modelBuilder.Entity<Kullanici>().HasData(

@@ -23,7 +23,7 @@ namespace REMS.API.Entities
         [Column("adres")]
         public string? Adres { get; set; }
 
-        [Column("tasinmaz_tipi")] // Veritabanındaki sütun adınız neyse (örn: tasinmaz_tipi)
+        [Column("tasinmaz_tipi")]
         public string? TasinmazTipi { get; set; }
 
         [Column("alan_m2")]
@@ -32,5 +32,7 @@ namespace REMS.API.Entities
         [JsonIgnore]
         [Column("sinir")]
         public Polygon? Sinir { get; set; }
+
+        public Mahalle? Mahalle { get; set; }
     }
 }

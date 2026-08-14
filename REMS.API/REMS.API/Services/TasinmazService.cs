@@ -53,7 +53,7 @@ namespace REMS.API.Services
                     ParselNo = model.ParselNo,
                     Adres = model.Adres,
                     TasinmazTipi = model.TasinmazTipi,
-                    AlanM2 = model.AlanM2,
+                    AlanM2 = model.AlanM2 ?? 0,
                     Sinir = polygon // Sayıları coğrafi bir alana dönüştürdük!
                 };
 
@@ -71,10 +71,16 @@ namespace REMS.API.Services
             }
         }
 
-        // 2. METOT: Taşınmazları DTO ile Listeleme
+        // 2. METOT: Taşınmazları İl, İlçe ve Mahalle Adlarıyla Birlikte DTO ile Listeleme
         public async Task<IEnumerable<TasinmazListDto>> GetAllPropertiesAsync()
         {
-            var tasinmazlar = await _context.Tasinmazlar.ToListAsync();
+            // Include zinciri ile Mahalle -> İlçe -> İl verilerini beraber çekiyoruz
+            var tasinmazlar = await _context.Tasinmazlar
+                .Include(t => t.Mahalle)
+                    .ThenInclude(m => m.Ilce)
+                        .ThenInclude(i => i.Il)
+                .ToListAsync();
+
             var dtoList = new List<TasinmazListDto>();
 
             foreach (var item in tasinmazlar)
@@ -84,6 +90,11 @@ namespace REMS.API.Services
                     Id = item.Id,
                     KullaniciId = item.KullaniciId,
                     MahalleId = item.MahalleId,
+
+                    MahalleAdi = item.Mahalle != null ? item.Mahalle.Ad : "",
+                    IlceAdi = item.Mahalle != null && item.Mahalle.Ilce != null ? item.Mahalle.Ilce.Ad : "",
+                    IlAdi = item.Mahalle != null && item.Mahalle.Ilce != null && item.Mahalle.Ilce.Il != null ? item.Mahalle.Ilce.Il.Ad : "",
+
                     AdaNo = item.AdaNo,
                     ParselNo = item.ParselNo,
                     Adres = item.Adres,

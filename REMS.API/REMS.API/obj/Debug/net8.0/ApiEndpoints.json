@@ -105,6 +105,27 @@
   },
   {
     "ContainingType": "REMS.API.Controllers.TasinmazController",
+    "Method": "UpdateProperty",
+    "RelativePath": "api/Tasinmaz/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "REMS.API.DTOs.Property.TasinmazUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "REMS.API.Controllers.TasinmazController",
     "Method": "DeleteProperty",
     "RelativePath": "api/Tasinmaz/{id}",
     "HttpMethod": "DELETE",
@@ -130,22 +151,6 @@
       {
         "Name": "model",
         "Type": "REMS.API.DTOs.Property.TasinmazCreateDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "REMS.API.Controllers.TasinmazController",
-    "Method": "UpdateProperty",
-    "RelativePath": "api/Tasinmaz/guncelle",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "model",
-        "Type": "TasinmazUpdateDto",
         "IsRequired": true
       }
     ],

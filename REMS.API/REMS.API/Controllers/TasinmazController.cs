@@ -43,22 +43,52 @@ namespace REMS.API.Controllers
             return StatusCode(500, new { message = "Taşınmaz eklenirken hata oluştu." });
         }
 
-        [HttpPut("guncelle")]
-        public async Task<IActionResult> UpdateProperty([FromBody] TasinmazUpdateDto model)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProperty(
+            int id,
+            [FromBody] TasinmazUpdateDto model)
         {
-            var sonuc = await _propertyService.UpdatePropertyAsync(model);
-            if (sonuc) return Ok(new { message = "Taşınmaz başarıyla güncellendi!" });
+            if (id != model.Id)
+            {
+                return BadRequest(new
+                {
+                    message = "URL'deki ID ile modeldeki ID aynı olmalıdır."
+                });
+            }
 
-            return BadRequest(new { message = "Güncelleme başarısız oldu veya kayıt bulunamadı." });
+            var sonuc = await _propertyService.UpdatePropertyAsync(model);
+
+            if (!sonuc)
+            {
+                return NotFound(new
+                {
+                    message = "Güncellenecek taşınmaz bulunamadı."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Taşınmaz başarıyla güncellendi!"
+            });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProperty(int id)
         {
             var sonuc = await _propertyService.DeletePropertyAsync(id);
-            if (sonuc) return Ok(new { message = "Taşınmaz başarıyla silindi!" });
 
-            return NotFound(new { message = "Silinecek kayıt bulunamadı." });
+            if (!sonuc)
+            {
+                return NotFound(new
+                {
+                    message = "Silinecek kayıt bulunamadı."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Taşınmaz başarıyla silindi!"
+            });
         }
     }
 }

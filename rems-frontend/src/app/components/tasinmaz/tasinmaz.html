@@ -22,6 +22,55 @@
         formControlName="parselNo">
     </div>
 
+    <div class="row">
+    <!-- İl Seçim Alanı -->
+    <div class="col-md-4 mb-3">
+      <label for="ilSelect" class="form-label">İl <span class="text-danger">*</span></label>
+      <select 
+        id="ilSelect" 
+        class="form-select" 
+        formControlName="ilId" 
+        (change)="onIlChange($event)">
+        <option value="" disabled selected>İl Seçiniz</option>
+        <!-- TypeScript'ten gelen iller listesi döngüye giriyor -->
+        <option *ngFor="let il of iller" [value]="il.id">
+          {{ il.ad }}
+        </option>
+      </select>
+    </div>
+
+    <!-- İlçe Seçim Alanı -->
+    <div class="col-md-4 mb-3">
+      <label for="ilceSelect" class="form-label">İlçe <span class="text-danger">*</span></label>
+      <select 
+        id="ilceSelect" 
+        class="form-select" 
+        formControlName="ilceId" 
+        (change)="onIlceChange($event)">
+        <option value="" disabled selected>Önce İl Seçiniz</option>
+        <!-- TypeScript'ten gelen ilçeler listesi döngüye giriyor -->
+        <option *ngFor="let ilce of ilceler" [value]="ilce.id">
+          {{ ilce.ad }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Mahalle Seçim Alanı -->
+    <div class="col-md-4 mb-3">
+      <label for="mahalleSelect" class="form-label">Mahalle <span class="text-danger">*</span></label>
+      <select 
+        id="mahalleSelect" 
+        class="form-select" 
+        formControlName="mahalleId">
+        <option value="" disabled selected>Önce İlçe Seçiniz</option>
+        <!-- TypeScript'ten gelen mahalleler listesi döngüye giriyor -->
+        <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">
+          {{ mahalle.ad }}
+        </option>
+      </select>
+    </div>
+  </div>
+
     <div class="mb-3">
       <label>Adres</label>
       <input
@@ -46,20 +95,9 @@
         formControlName="alanM2">
     </div>
 
-    <div class="mb-3">
-      <label>Mahalle ID</label>
-      <input
-        type="number"
-        class="form-control"
-        formControlName="mahalleId">
-    </div>
-
-    <div class="mb-3">
-      <label>Kullanıcı ID</label>
-      <input
-        type="text"
-        class="form-control"
-        formControlName="kullaniciId">
+    <div class="mb-3 p-3 bg-light border rounded">
+      <span class="text-muted d-block small">İşlemi Gerçekleştiren Kullanıcı:</span>
+      <strong class="text-dark">Sistem Yöneticisi (Admin)</strong>
     </div>
 
     <button type="submit" class="btn btn-success">

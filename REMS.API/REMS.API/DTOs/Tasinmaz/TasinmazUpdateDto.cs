@@ -1,6 +1,5 @@
 ﻿using System;
 
-// 1. DÜZELTME: Sınıfı global alandan çıkarıp projeye özel bir ad alanına (namespace) dahil ettik.
 namespace REMS.API.DTOs.Property 
 {
     public class TasinmazUpdateDto

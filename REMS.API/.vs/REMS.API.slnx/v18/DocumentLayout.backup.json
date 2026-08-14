@@ -3,6 +3,50 @@
   "WorkspaceRootPath": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\tasinmaz\\tasinmazcreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\tasinmaz\\tasinmazcreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\controllers\\tasinmazcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\controllers\\tasinmazcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\tasinmaz.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\tasinmaz.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\kullanici.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\kullanici.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\mahalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\mahalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\controllers\\kullanicicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\controllers\\kullanicicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\services\\tasinmazservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\services\\tasinmazservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\tasinmaz\\tasinmazupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\tasinmaz\\tasinmazupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\tasinmaz\\tasinmazlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\tasinmaz\\tasinmazlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\migrations\\remsdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\migrations\\remsdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\data\\remsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\data\\remsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -19,36 +63,12 @@
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\interfaces\\mahalleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\mahalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\mahalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\mahalle\\mahallelistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\mahalle\\mahallelistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\interfaces\\itasinmazservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\interfaces\\itasinmazservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\kullanici.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\kullanici.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\data\\remsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\data\\remsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\controllers\\tasinmazcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\controllers\\tasinmazcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\services\\tasinmazservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\services\\tasinmazservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\tasinmaz\\tasinmazupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\tasinmaz\\tasinmazupdatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\services\\kullaniciservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -79,10 +99,6 @@
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\interfaces\\iilservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\controllers\\kullanicicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\controllers\\kullanicicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\il.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\il.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -107,28 +123,12 @@
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\interfaces\\igirisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\entities\\tasinmaz.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\entities\\tasinmaz.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\tasinmaz\\tasinmazlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\tasinmaz\\tasinmazlistdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\services\\girisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\services\\girisservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\migrations\\remsdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\migrations\\remsdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\services\\hashservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\services\\hashservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\tasinmaz\\tasinmazcreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|solutionrelative:rems.api\\dtos\\tasinmaz\\tasinmazcreatedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C2221FDD-F1CB-996D-3136-1ED87DBE39CC}|REMS.API\\REMS.API.csproj|c:\\users\\esra\\desktop\\esra\\projects\\odakgis_staj\\rems\\rems.api\\rems.api\\dtos\\giris\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -146,71 +146,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MahalleController.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\MahalleController.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Controllers\\MahalleController.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\MahalleController.cs",
-              "RelativeToolTip": "REMS.API\\Controllers\\MahalleController.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAqwDQAAAABAAAAAAAAAA==",
+              "Title": "TasinmazController.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\TasinmazController.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Controllers\\TasinmazController.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\TasinmazController.cs",
+              "RelativeToolTip": "REMS.API\\Controllers\\TasinmazController.cs",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAAAF0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-13T14:05:24.616Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "MahalleService.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\MahalleService.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Services\\MahalleService.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\MahalleService.cs",
-              "RelativeToolTip": "REMS.API\\Services\\MahalleService.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAqwCkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-13T14:04:54.392Z",
+              "WhenOpened": "2026-08-12T06:23:16.073Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Program.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Program.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Program.cs",
-              "RelativeToolTip": "REMS.API\\Program.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAwwCcAAAA+AAAAAAAAAA==",
+              "Title": "TasinmazCreateDto.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
+              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
+              "RelativeToolTip": "REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAqwBUAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-11T11:41:52.944Z",
+              "WhenOpened": "2026-08-12T06:17:29.189Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "MahalleService.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\MahalleService.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Interfaces\\MahalleService.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\MahalleService.cs",
-              "RelativeToolTip": "REMS.API\\Interfaces\\MahalleService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Title": "Kullanici.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Kullanici.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Entities\\Kullanici.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Kullanici.cs",
+              "RelativeToolTip": "REMS.API\\Entities\\Kullanici.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAYwBkAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-13T14:04:29.003Z",
+              "WhenOpened": "2026-08-11T11:40:34.134Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "MahalleListDto.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
-              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
-              "RelativeToolTip": "REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "Tasinmaz.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Tasinmaz.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Entities\\Tasinmaz.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Tasinmaz.cs",
+              "RelativeToolTip": "REMS.API\\Entities\\Tasinmaz.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAcwCEAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-13T12:27:00.388Z",
+              "WhenOpened": "2026-08-12T06:30:28.76Z",
               "EditorCaption": ""
             },
             {
@@ -228,20 +215,140 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Kullanici.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Kullanici.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Entities\\Kullanici.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Kullanici.cs",
-              "RelativeToolTip": "REMS.API\\Entities\\Kullanici.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAYwBkAAAABAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "KullaniciController.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\KullaniciController.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Controllers\\KullaniciController.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\KullaniciController.cs",
+              "RelativeToolTip": "REMS.API\\Controllers\\KullaniciController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-11T11:40:34.134Z",
+              "WhenOpened": "2026-08-11T12:43:50.325Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
+              "Title": "TasinmazService.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\TasinmazService.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Services\\TasinmazService.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\TasinmazService.cs",
+              "RelativeToolTip": "REMS.API\\Services\\TasinmazService.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAIwDUAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-12T06:20:26.213Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TasinmazUpdateDto.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
+              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
+              "RelativeToolTip": "REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T10:24:25.224Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "TasinmazListDto.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
+              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
+              "RelativeToolTip": "REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-12T06:44:50.638Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "RemsDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Data\\RemsDbContext.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Data\\RemsDbContext.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Data\\RemsDbContext.cs",
+              "RelativeToolTip": "REMS.API\\Data\\RemsDbContext.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAUwD0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-11T12:00:59.017Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RemsDbContextModelSnapshot.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
+              "RelativeToolTip": "REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAKEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T06:12:19.886Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Program.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Program.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Program.cs",
+              "RelativeToolTip": "REMS.API\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAwwBYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-11T11:41:52.944Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "MahalleService.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\MahalleService.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Services\\MahalleService.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\MahalleService.cs",
+              "RelativeToolTip": "REMS.API\\Services\\MahalleService.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAqwCkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T14:04:54.392Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "MahalleController.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\MahalleController.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Controllers\\MahalleController.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\MahalleController.cs",
+              "RelativeToolTip": "REMS.API\\Controllers\\MahalleController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAqwDQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T14:05:24.616Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "MahalleService.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\MahalleService.cs",
+              "RelativeDocumentMoniker": "REMS.API\\Interfaces\\MahalleService.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\MahalleService.cs",
+              "RelativeToolTip": "REMS.API\\Interfaces\\MahalleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T14:04:29.003Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "MahalleListDto.cs",
+              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
+              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
+              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
+              "RelativeToolTip": "REMS.API\\DTOs\\Mahalle\\MahalleListDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-13T12:27:00.388Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
               "Title": "ITasinmazService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\ITasinmazService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Interfaces\\ITasinmazService.cs",
@@ -249,60 +356,11 @@
               "RelativeToolTip": "REMS.API\\Interfaces\\ITasinmazService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-12T06:19:17.097Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-12T06:19:17.097Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "RemsDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Data\\RemsDbContext.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Data\\RemsDbContext.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Data\\RemsDbContext.cs",
-              "RelativeToolTip": "REMS.API\\Data\\RemsDbContext.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAwAAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-11T12:00:59.017Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "TasinmazController.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\TasinmazController.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Controllers\\TasinmazController.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\TasinmazController.cs",
-              "RelativeToolTip": "REMS.API\\Controllers\\TasinmazController.cs",
-              "ViewState": "AgIAACwAAAAAAAAAAAAwwC0AAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-12T06:23:16.073Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "TasinmazService.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\TasinmazService.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Services\\TasinmazService.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\TasinmazService.cs",
-              "RelativeToolTip": "REMS.API\\Services\\TasinmazService.cs",
-              "ViewState": "AgIAALYAAAAAAAAAAAAuwMwAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-12T06:20:26.213Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "TasinmazUpdateDto.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
-              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
-              "RelativeToolTip": "REMS.API\\DTOs\\Tasinmaz\\TasinmazUpdateDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-13T10:24:25.224Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 17,
               "Title": "KullaniciService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\KullaniciService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Services\\KullaniciService.cs",
@@ -314,7 +372,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 18,
               "Title": "IKullaniciService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\IKullaniciService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Interfaces\\IKullaniciService.cs",
@@ -326,7 +384,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 19,
               "Title": "KullaniciListDto.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Kullanici\\KullaniciListDto.cs",
               "RelativeDocumentMoniker": "REMS.API\\DTOs\\Kullanici\\KullaniciListDto.cs",
@@ -338,7 +396,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 20,
               "Title": "IlceService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\IlceService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Services\\IlceService.cs",
@@ -350,7 +408,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 21,
               "Title": "IlService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\IlService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Services\\IlService.cs",
@@ -362,7 +420,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 23,
               "Title": "IIlService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\IIlService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Interfaces\\IIlService.cs",
@@ -374,7 +432,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 22,
               "Title": "IIlceService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\IIlceService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Interfaces\\IIlceService.cs",
@@ -386,19 +444,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "KullaniciController.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\KullaniciController.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Controllers\\KullaniciController.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\KullaniciController.cs",
-              "RelativeToolTip": "REMS.API\\Controllers\\KullaniciController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-11T12:43:50.325Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 24,
               "Title": "Il.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Il.cs",
               "RelativeDocumentMoniker": "REMS.API\\Entities\\Il.cs",
@@ -410,7 +456,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 25,
               "Title": "IlListDto.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Il\\IlListDto.cs",
               "RelativeDocumentMoniker": "REMS.API\\DTOs\\Il\\IlListDto.cs",
@@ -422,7 +468,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 26,
               "Title": "IlController.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\IlController.cs",
               "RelativeDocumentMoniker": "REMS.API\\Controllers\\IlController.cs",
@@ -434,7 +480,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 27,
               "Title": "IlceController.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\IlceController.cs",
               "RelativeDocumentMoniker": "REMS.API\\Controllers\\IlceController.cs",
@@ -446,7 +492,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 28,
               "Title": "GirisController.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Controllers\\GirisController.cs",
               "RelativeDocumentMoniker": "REMS.API\\Controllers\\GirisController.cs",
@@ -458,7 +504,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 29,
               "Title": "IGirisService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Interfaces\\IGirisService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Interfaces\\IGirisService.cs",
@@ -470,31 +516,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "Tasinmaz.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Tasinmaz.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Entities\\Tasinmaz.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Entities\\Tasinmaz.cs",
-              "RelativeToolTip": "REMS.API\\Entities\\Tasinmaz.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-12T06:30:28.76Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "TasinmazListDto.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
-              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
-              "RelativeToolTip": "REMS.API\\DTOs\\Tasinmaz\\TasinmazListDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAwwBIAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-12T06:44:50.638Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 30,
               "Title": "GirisService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\GirisService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Services\\GirisService.cs",
@@ -506,19 +528,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "RemsDbContextModelSnapshot.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
-              "RelativeDocumentMoniker": "REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
-              "RelativeToolTip": "REMS.API\\Migrations\\RemsDbContextModelSnapshot.cs",
-              "ViewState": "AgIAAHsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-13T06:12:19.886Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 31,
               "Title": "HashService.cs",
               "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\Services\\HashService.cs",
               "RelativeDocumentMoniker": "REMS.API\\Services\\HashService.cs",
@@ -527,18 +537,6 @@
               "ViewState": "AgIAAAUAAAAAAAAAAAA8wB0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-08-11T12:55:35.974Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "TasinmazCreateDto.cs",
-              "DocumentMoniker": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
-              "RelativeDocumentMoniker": "REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
-              "ToolTip": "C:\\Users\\Esra\\Desktop\\Esra\\Projects\\OdakGIS_Staj\\REMS\\REMS.API\\REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
-              "RelativeToolTip": "REMS.API\\DTOs\\Tasinmaz\\TasinmazCreateDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAwBoAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-12T06:17:29.189Z"
             },
             {
               "$type": "Document",
