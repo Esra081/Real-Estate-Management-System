@@ -47,13 +47,13 @@ hC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Control
 
 $$) 4
 $$9 ?((H N
-(( ** $õ
+(( ** $•
 iC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Controllers\TasinmazController.cs
 
 
 
  #F
-* : $ 4! 1(( .11 .:: .
+* : $ 4! 1(( .;; .NN .
 3 B .
 
 ) /
@@ -68,12 +68,13 @@ iC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Control
 (( )) 
 
 //) 7
-//U Z11C H
-11 22 
+00 33 
+11) .33 ;;C H
+;; == 
 
-88) 7
-88< >::C E
-:: ;; ›
+LL) 7
+LL< >NNC E
+NN PP ‘
 ]C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Data\RemsDbContext.cs
  		. ;
 		= D		M T
@@ -88,8 +89,8 @@ iC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Control
 
  *
 
-  /F
-= I! -   %% ,, „
+  /<
+= I! -  && // „
 ^C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\DTOs\Giris\LoginDto.cs
 
  
@@ -157,7 +158,7 @@ jC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\DTOs\Ta
 
  
 
-" .â
+" .†
 hC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\DTOs\Tasinmaz\TasinmazListDto.cs
 
   
@@ -168,40 +169,48 @@ hC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\DTOs\Ta
 
 		 
 
- 
+
+
+ 
 
- 
+ 
+
+ !
 
  
 
- #
+ 
 
- 
+ 
 
- +ä
+ #
+
+ 
+
+ +ä
 jC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\DTOs\Tasinmaz\TasinmazUpdateDto.cs
 
- "
+ "
 
- 
+ 
 
-		 
+ 
+
+		 
 
 
 
- 
+ 
 
- 
+ "
 
- "
+ 
 
- 
+ 
 
- 
+ 
 
- 
-
- &ˆ
+ &ˆ
 VC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Entities\Il.cs
 
  
@@ -259,7 +268,7 @@ XC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Entitie
 
  
 
- Ö
+ â
 \C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Entities\Tasinmaz.cs
 
  
@@ -280,7 +289,9 @@ XC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Entitie
 
  
 
-"" ‰
+"" 
+
+$$ ‰
 cC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Interfaces\IGirisService.cs
 
  "
@@ -373,7 +384,18 @@ pC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrati
 ¦¦ 
 ©© 
 ¬¬ 
-¯¯ š
+¯¯ Ñ
+|C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260814071211_LokasyonVerileriEklendi.cs
+
+
+
+ 0
+
+  "(
+4 D  ## 
+
+22  $‚
+226 F44 99 >> CC HH MM RR WW \\ aa ff kk š
 RC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Program.csv
  		 
 
@@ -463,16 +485,17 @@ bC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Service
 7 G
 L R  ( .
       (
-!! ## $$ %% ù
+!! ## $$ %% Ë
 cC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Services\TasinmazService.cs
 
-  Œ
-' / * 2<< == MM$ ,qq$ ,xx %
-œœ! )
-ÀÀ 
-ÇÇ! )
-ÏÏ 
-ÑÑ 
+  Ž
+' / * 2<< == NN$ ,||$ ,
+ƒƒ %
+§§! )
+ËË 
+ÒÒ! )
+ÚÚ 
+ÜÜ 
 - 4 
 
   0Z
@@ -485,86 +508,95 @@ cC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Service
 00  <<4 @
 
 KK8 M
-MM PP! ,
-NN hh kk 
-RR dd hh 
+NN VV! ,
+OO OO 
+PP! "PP& '
+QQ% &QQ* +
+TT ss vv 
+XX oo ss 
 
-oo1 <
-qq rr 
+zz1 <
+|| }} 
 
-vv+ ?
-vvD Fyy2 4˜
-xx {{ 
-‚‚ 
-ƒƒ "
-„„  
-…… 
-†† 
-‡‡ 
-ˆˆ #
-‰‰ 
- 
-& *
-+ /
-yy% &yy* +$
++ ?
 
-€€ 
-‘‘ 
-—— 
+D F
+„„2 4œ
 
-šš  3x
+ƒƒ 
+†† 
+ 
+ŽŽ "
+  
+ 
+‘‘ 
+’’ 
+““ #
+”” 
+˜˜ 
+˜˜& *
+šš+ /
 
-ššF K
-2 7
-¤¤# (
-¥¥! &
-¦¦ "
-§§  %
-¨¨ "
-©©$ )
-ªª #
-®®" 'x
+„„% &
+„„* +$
 
-œœ 
-ŸŸ 
-¤¤ 
-¥¥ 
-¦¦ 
-§§ 
-¨¨ 
-©© 
-ªª 
-¾¾ 
+‹‹ 
+œœ 
+¢¢ 
 
-% &
-* +T
+¥¥  3x
 
-¬¬ 
-°° 
-³³ 
-³³. 9
-µµ 
-µµ  +
-»»8 C$
+¥¥F K
+¨¨2 7
+¯¯# (
+°°! &
+±± "
+²²  %
+³³ "
+´´$ )
+µµ #
+¹¹" 'x
 
-¸¸ 
-»» &
-¼¼ )
+§§ 
+ªª 
+¯¯ 
+°° 
+±± 
+²² 
+³³ 
+´´ 
+µµ 
+ÉÉ 
 
-»» 
-¼¼8 <
+¨¨% &
+¨¨* +T
 
-¼¼ 
-¾¾ $
+·· 
+»» 
+¾¾ 
+¾¾. 9
+ÀÀ 
+ÀÀ  +
+ÆÆ8 C$
 
-ÅÅ  3
+ÃÃ 
+ÆÆ &
+ÇÇ )
 
-ÅÅ8 :
-ÈÈ2 4$
+ÆÆ 
+ÇÇ8 <
 
-ÇÇ 
-ÊÊ 
-ÏÏ( 0
+ÇÇ 
+ÉÉ $
 
-ÈÈ% &
-ÈÈ* +
+ÐÐ  3
+
+ÐÐ8 :
+ÓÓ2 4$
+
+ÒÒ 
+ÕÕ 
+ÚÚ( 0
+
+ÓÓ% &
+ÓÓ* +

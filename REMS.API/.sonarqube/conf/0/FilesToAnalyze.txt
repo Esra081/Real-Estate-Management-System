@@ -26,6 +26,8 @@ C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Interfac
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Interfaces\MahalleService.cs
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260812131441_IlkTablolar.cs
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260812131441_IlkTablolar.Designer.cs
+C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260814071211_LokasyonVerileriEklendi.cs
+C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260814071211_LokasyonVerileriEklendi.Designer.cs
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\RemsDbContextModelSnapshot.cs
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Program.cs
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Services\GirisService.cs

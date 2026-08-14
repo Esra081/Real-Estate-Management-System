@@ -14,200 +14,15 @@
         {
           "ruleId": "CS8618",
           "level": "warning",
-          "message": "Null atanamaz özellik 'Kullanicilar', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "suppressionStates": [
-            "suppressedInSource"
-          ],
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 9,
-                  "startColumn": 16,
-                  "endLine": 9,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 13,
-                  "startColumn": 33,
-                  "endLine": 13,
-                  "endColumn": 45
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Iller', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "suppressionStates": [
-            "suppressedInSource"
-          ],
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 9,
-                  "startColumn": 16,
-                  "endLine": 9,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 14,
-                  "startColumn": 26,
-                  "endLine": 14,
-                  "endColumn": 31
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Ilceler', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "suppressionStates": [
-            "suppressedInSource"
-          ],
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 9,
-                  "startColumn": 16,
-                  "endLine": 9,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 28,
-                  "endLine": 15,
-                  "endColumn": 35
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Mahalleler', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "suppressionStates": [
-            "suppressedInSource"
-          ],
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 9,
-                  "startColumn": 16,
-                  "endLine": 9,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 16,
-                  "startColumn": 31,
-                  "endLine": 16,
-                  "endColumn": 41
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Tasinmazlar', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "suppressionStates": [
-            "suppressedInSource"
-          ],
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 9,
-                  "startColumn": 16,
-                  "endLine": 9,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 32,
-                  "endLine": 17,
-                  "endColumn": 43
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
           "message": "Null atanamaz özellik 'AdaNo', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
           "locations": [
             {
               "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 9,
+                  "startLine": 8,
                   "startColumn": 23,
-                  "endLine": 9,
+                  "endLine": 8,
                   "endColumn": 28
                 }
               }
@@ -218,9 +33,9 @@
               "physicalLocation": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 9,
+                  "startLine": 8,
                   "startColumn": 23,
-                  "endLine": 9,
+                  "endLine": 8,
                   "endColumn": 28
                 }
               }
@@ -239,9 +54,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 23,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 31
                 }
               }
@@ -252,9 +67,9 @@
               "physicalLocation": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 23,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 31
                 }
               }
@@ -273,9 +88,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 11,
+                  "startLine": 10,
                   "startColumn": 23,
-                  "endLine": 11,
+                  "endLine": 10,
                   "endColumn": 28
                 }
               }
@@ -286,9 +101,9 @@
               "physicalLocation": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 11,
+                  "startLine": 10,
                   "startColumn": 23,
-                  "endLine": 11,
+                  "endLine": 10,
                   "endColumn": 28
                 }
               }
@@ -307,9 +122,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 12,
+                  "startLine": 11,
                   "startColumn": 23,
-                  "endLine": 12,
+                  "endLine": 11,
                   "endColumn": 35
                 }
               }
@@ -320,9 +135,9 @@
               "physicalLocation": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 12,
+                  "startLine": 11,
                   "startColumn": 23,
-                  "endLine": 12,
+                  "endLine": 11,
                   "endColumn": 35
                 }
               }
@@ -341,9 +156,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 16,
+                  "startLine": 15,
                   "startColumn": 27,
-                  "endLine": 16,
+                  "endLine": 15,
                   "endColumn": 39
                 }
               }
@@ -354,9 +169,9 @@
               "physicalLocation": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Tasinmaz/TasinmazUpdateDto.cs",
                 "region": {
-                  "startLine": 16,
+                  "startLine": 15,
                   "startColumn": 27,
-                  "endLine": 16,
+                  "endLine": 15,
                   "endColumn": 39
                 }
               }
@@ -426,6 +241,278 @@
                   "startColumn": 21,
                   "endLine": 11,
                   "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'AdSoyad', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 23,
+                  "endLine": 12,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 23,
+                  "endLine": 12,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Email', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 23,
+                  "endLine": 15,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 23,
+                  "endLine": 15,
+                  "endColumn": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'SifreHash', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 23,
+                  "endLine": 17,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 23,
+                  "endLine": 17,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'SifreSalt', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 23,
+                  "endLine": 18,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 23,
+                  "endLine": 18,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Rol', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 20,
+                  "startColumn": 23,
+                  "endLine": 20,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
+                "region": {
+                  "startLine": 20,
+                  "startColumn": 23,
+                  "endLine": 20,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Ad', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 23,
+                  "endLine": 10,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 23,
+                  "endLine": 10,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Il', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 19,
+                  "endLine": 12,
+                  "endColumn": 21
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 19,
+                  "endLine": 12,
+                  "endColumn": 21
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Mahalleler', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "region": {
+                  "startLine": 13,
+                  "startColumn": 37,
+                  "endLine": 13,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "region": {
+                  "startLine": 13,
+                  "startColumn": 37,
+                  "endLine": 13,
+                  "endColumn": 47
                 }
               }
             }
@@ -645,210 +732,6 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Mahalle/MahalleListDto.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 23,
-                  "endLine": 6,
-                  "endColumn": 25
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Mahalle/MahalleListDto.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 23,
-                  "endLine": 6,
-                  "endColumn": 25
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'AdSoyad', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 12,
-                  "startColumn": 23,
-                  "endLine": 12,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 12,
-                  "startColumn": 23,
-                  "endLine": 12,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Email', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 23,
-                  "endLine": 15,
-                  "endColumn": 28
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 23,
-                  "endLine": 15,
-                  "endColumn": 28
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'SifreHash', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 23,
-                  "endLine": 17,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 23,
-                  "endLine": 17,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'SifreSalt', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 18,
-                  "startColumn": 23,
-                  "endLine": 18,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 18,
-                  "startColumn": 23,
-                  "endLine": 18,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Rol', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 20,
-                  "startColumn": 23,
-                  "endLine": 20,
-                  "endColumn": 26
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Kullanici.cs",
-                "region": {
-                  "startLine": 20,
-                  "startColumn": 23,
-                  "endLine": 20,
-                  "endColumn": 26
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Ad', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Il.cs",
                 "region": {
                   "startLine": 10,
@@ -917,11 +800,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Mahalle/MahalleListDto.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 6,
                   "startColumn": 23,
-                  "endLine": 10,
+                  "endLine": 6,
                   "endColumn": 25
                 }
               }
@@ -930,80 +813,12 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Mahalle/MahalleListDto.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 6,
                   "startColumn": 23,
-                  "endLine": 10,
+                  "endLine": 6,
                   "endColumn": 25
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Il', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
-                "region": {
-                  "startLine": 12,
-                  "startColumn": 19,
-                  "endLine": 12,
-                  "endColumn": 21
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
-                "region": {
-                  "startLine": 12,
-                  "startColumn": 19,
-                  "endLine": 12,
-                  "endColumn": 21
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8618",
-          "level": "warning",
-          "message": "Null atanamaz özellik 'Mahalleler', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
-                "region": {
-                  "startLine": 13,
-                  "startColumn": 37,
-                  "endLine": 13,
-                  "endColumn": 47
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Entities/Ilce.cs",
-                "region": {
-                  "startLine": 13,
-                  "startColumn": 37,
-                  "endLine": 13,
-                  "endColumn": 47
                 }
               }
             }
@@ -1121,6 +936,40 @@
           "locations": [
             {
               "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Il/IlListDto.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 23,
+                  "endLine": 6,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Il/IlListDto.cs",
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 23,
+                  "endLine": 6,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Ad', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "locations": [
+            {
+              "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Ilce/IlceListDto.cs",
                 "region": {
                   "startLine": 6,
@@ -1151,16 +1000,19 @@
         {
           "ruleId": "CS8618",
           "level": "warning",
-          "message": "Null atanamaz özellik 'Ad', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "message": "Null atanamaz özellik 'Kullanicilar', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Il/IlListDto.cs",
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
                 "region": {
-                  "startLine": 6,
-                  "startColumn": 23,
-                  "endLine": 6,
-                  "endColumn": 25
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 29
                 }
               }
             }
@@ -1168,12 +1020,181 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Il/IlListDto.cs",
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
                 "region": {
-                  "startLine": 6,
-                  "startColumn": 23,
-                  "endLine": 6,
-                  "endColumn": 25
+                  "startLine": 13,
+                  "startColumn": 33,
+                  "endLine": 13,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Iller', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 26,
+                  "endLine": 14,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Ilceler', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 28,
+                  "endLine": 15,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Mahalleler', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 16,
+                  "startColumn": 31,
+                  "endLine": 16,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Null atanamaz özellik 'Tasinmazlar', oluşturucudan çıkış yaparken null olmayan bir değer içermelidir. 'Gerekli' değiştiricisini ekleyin veya özellik değerini null atanabilir olarak bildirmeyi göz önünde bulundurun.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Data/RemsDbContext.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 32,
+                  "endLine": 17,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Olası bir null başvurunun başvurma işlemi.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Services/TasinmazService.cs",
+                "region": {
+                  "startLine": 80,
+                  "startColumn": 39,
+                  "endLine": 80,
+                  "endColumn": 40
                 }
               }
             }
@@ -1191,9 +1212,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Services/TasinmazService.cs",
                 "region": {
-                  "startLine": 125,
+                  "startLine": 136,
                   "startColumn": 24,
-                  "endLine": 125,
+                  "endLine": 136,
                   "endColumn": 28
                 }
               }
@@ -1204,17 +1225,17 @@
           }
         },
         {
-          "ruleId": "S101",
+          "ruleId": "S125",
           "level": "warning",
-          "message": "Rename class 'IlceListDTO' to match pascal case naming rules, consider using 'IlceListDto'.",
+          "message": "Remove this commented out code.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Ilce/IlceListDto.cs",
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Program.cs",
                 "region": {
-                  "startLine": 3,
-                  "startColumn": 18,
-                  "endLine": 3,
+                  "startLine": 72,
+                  "startColumn": 1,
+                  "endLine": 72,
                   "endColumn": 29
                 }
               }
@@ -1246,17 +1267,17 @@
           }
         },
         {
-          "ruleId": "S125",
+          "ruleId": "S101",
           "level": "warning",
-          "message": "Remove this commented out code.",
+          "message": "Rename class 'IlceListDTO' to match pascal case naming rules, consider using 'IlceListDto'.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Program.cs",
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/DTOs/Ilce/IlceListDto.cs",
                 "region": {
-                  "startLine": 72,
-                  "startColumn": 1,
-                  "endLine": 72,
+                  "startLine": 3,
+                  "startColumn": 18,
+                  "endLine": 3,
                   "endColumn": 29
                 }
               }
@@ -1285,6 +1306,78 @@
           ],
           "properties": {
             "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Çağrılan yöntem art arda çağrılırsa ve geçirilen diziyi değiştirmezse 'static readonly' alanları sabit dizi bağımsız değişkenlerine tercih edilir",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Migrations/20260814071211_LokasyonVerileriEklendi.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 26,
+                  "endLine": 17,
+                  "endColumn": 46
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Çağrılan yöntem art arda çağrılırsa ve geçirilen diziyi değiştirmezse 'static readonly' alanları sabit dizi bağımsız değişkenlerine tercih edilir",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Migrations/20260814071211_LokasyonVerileriEklendi.cs",
+                "region": {
+                  "startLine": 26,
+                  "startColumn": 26,
+                  "endLine": 26,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Çağrılan yöntem art arda çağrılırsa ve geçirilen diziyi değiştirmezse 'static readonly' alanları sabit dizi bağımsız değişkenlerine tercih edilir",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/Esra/Desktop/Esra/Projects/OdakGIS_Staj/REMS/REMS.API/REMS.API/Migrations/20260814071211_LokasyonVerileriEklendi.cs",
+                "region": {
+                  "startLine": 37,
+                  "startColumn": 26,
+                  "endLine": 37,
+                  "endColumn": 56
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
           }
         },
         {
@@ -1397,6 +1490,20 @@
             "tags": [
               "Telemetry",
               "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CS8602": {
+          "id": "CS8602",
+          "shortDescription": "Olası bir null başvurunun başvurma işlemi.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8602)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
             ]
           }
         },

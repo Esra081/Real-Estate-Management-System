@@ -26,7 +26,9 @@ gC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Interfa
 fC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Interfaces\ITasinmazService.csutf-8m
 dC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Interfaces\MahalleService.csutf-8y
 pC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260812131441_IlkTablolar.csutf-8„
-yC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260812131441_IlkTablolar.Designer.csutf-8{
+yC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260812131441_IlkTablolar.Designer.csutf-8…
+|C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260814071211_LokasyonVerileriEklendi.csutf-8‘
+…C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\20260814071211_LokasyonVerileriEklendi.Designer.csutf-8{
 pC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Migrations\RemsDbContextModelSnapshot.csutf-8[
 RC:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Program.csutf-8i
 `C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Services\GirisService.csutf-8h

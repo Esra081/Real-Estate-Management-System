@@ -246,7 +246,6 @@ C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debu
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\REMS.API.csproj.Up2Date
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\REMS.API.dll
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\refint\REMS.API.dll
