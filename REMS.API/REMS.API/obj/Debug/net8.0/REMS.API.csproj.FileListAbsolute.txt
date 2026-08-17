@@ -252,3 +252,4 @@ C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debu
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\REMS.API.pdb
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\REMS.API.genruntimeconfig.cache
 C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\ref\REMS.API.dll
+C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

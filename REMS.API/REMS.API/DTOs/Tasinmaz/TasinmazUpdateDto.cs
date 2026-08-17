@@ -4,7 +4,7 @@ namespace REMS.API.DTOs.Property
 {
     public class TasinmazUpdateDto
     {
-        public int Id { get; set; } // Güncellenecek kaydın kimliği şarttır
+        public int Id { get; set; }
         public string AdaNo { get; set; }
         public string ParselNo { get; set; }
         public string Adres { get; set; }

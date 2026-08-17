@@ -12,6 +12,9 @@
         type="text"
         class="form-control"
         formControlName="adaNo">
+        <div *ngIf="tasinmazForm.get('adaNo')?.invalid && tasinmazForm.get('adaNo')?.touched" class="text-danger small mt-1">
+          Ada No alanı zorunludur.
+        </div>
     </div>
 
     <div class="mb-3">
@@ -20,6 +23,22 @@
         type="text"
         class="form-control"
         formControlName="parselNo">
+        <div *ngIf="tasinmazForm.get('parselNo')?.hasError('required') && tasinmazForm.get('parselNo')?.touched" class="text-danger small mt-1">
+          Parsel No bilgisi zorunludur.
+        </div>
+    </div>
+
+    <!-- Harita Çizim Alanı -->
+    <div class="mb-3">
+      <label class="form-label fw-bold">Taşınmaz Sınırları (Haritadan 4 Nokta Seçin)</label>
+      
+      <!-- OpenLayers haritasının içine gömüleceği div -->
+      <div id="draw-map" style="height: 400px; width: 100%; border: 2px solid #ccc; border-radius: 5px; cursor: crosshair;"></div>
+      
+      <!-- Validasyon Uyarısı: Reactive Forms yapısına uygun olarak -->
+      <small class="text-danger mt-1 d-block" *ngIf="tasinmazForm.get('koordinatlar')?.invalid && tasinmazForm.get('koordinatlar')?.touched">
+        Lütfen harita üzerinden taşınmazın 4 köşesini işaretleyerek sınırları belirleyin.
+      </small>
     </div>
 
     <div class="row">
@@ -36,6 +55,9 @@
         <option *ngFor="let il of iller" [value]="il.id">
           {{ il.ad }}
         </option>
+        <div *ngIf="tasinmazForm.get('ilId')?.invalid && tasinmazForm.get('ilId')?.touched" class="text-danger small mt-1">
+          Lütfen bir il seçiniz.
+        </div>
       </select>
     </div>
 
@@ -52,6 +74,9 @@
         <option *ngFor="let ilce of ilceler" [value]="ilce.id">
           {{ ilce.ad }}
         </option>
+      <div *ngIf="tasinmazForm.get('ilceId')?.invalid && tasinmazForm.get('ilceId')?.touched" class="text-danger small mt-1">
+        Lütfen bir ilçe seçiniz.
+      </div>
       </select>
     </div>
 
@@ -67,6 +92,9 @@
         <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">
           {{ mahalle.ad }}
         </option>
+        <div *ngIf="tasinmazForm.get('mahalleId')?.invalid && tasinmazForm.get('mahalleId')?.touched" class="text-danger small mt-1">
+          Lütfen bir mahalle seçiniz.
+        </div>
       </select>
     </div>
   </div>
@@ -77,14 +105,22 @@
         type="text"
         class="form-control"
         formControlName="adres">
+        <div *ngIf="tasinmazForm.get('adres')?.hasError('required') && tasinmazForm.get('adres')?.touched" class="text-danger small mt-1">
+          Adres bilgisi zorunludur.
+        </div>
     </div>
 
     <div class="mb-3">
-      <label>Taşınmaz Tipi</label>
-      <input
-        type="text"
-        class="form-control"
-        formControlName="tasinmazTipi">
+      <label class="form-label">Taşınmaz Tipi</label>
+      <select class="form-select" formControlName="tasinmazTipi">
+        <option value="">Seçiniz...</option>
+        <option value="Arsa">Arsa</option>
+        <option value="Bina">Bina</option>
+        <option value="Konut">Konut</option>
+      </select>
+      <div *ngIf="tasinmazForm.get('tasinmazTipi')?.invalid && tasinmazForm.get('tasinmazTipi')?.touched" class="text-danger small mt-1">
+        Taşınmaz tipi seçimi zorunludur.
+      </div>
     </div>
 
     <div class="mb-3">
@@ -93,6 +129,12 @@
         type="number"
         class="form-control"
         formControlName="alanM2">
+        <div *ngIf="tasinmazForm.get('alanM2')?.hasError('required') && tasinmazForm.get('alanM2')?.touched" class="text-danger small mt-1">
+          Alan bilgisi zorunludur.
+        </div>
+        <div *ngIf="tasinmazForm.get('alanM2')?.hasError('min') && tasinmazForm.get('alanM2')?.touched" class="text-danger small mt-1">
+          Alan 0'dan küçük olamaz.
+        </div>
     </div>
 
     <div class="mb-3 p-3 bg-light border rounded">

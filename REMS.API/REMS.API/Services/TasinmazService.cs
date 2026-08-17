@@ -129,6 +129,9 @@ namespace REMS.API.Services
         public async Task<TasinmazListDto> GetPropertyByIdAsync(int id)
         {
             var item = await _context.Tasinmazlar
+                .Include(t => t.Mahalle)
+                    .ThenInclude(m => m.Ilce)
+                        .ThenInclude(i => i.Il)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (item == null)
@@ -141,20 +144,32 @@ namespace REMS.API.Services
                 Id = item.Id,
                 KullaniciId = item.KullaniciId,
                 MahalleId = item.MahalleId,
+
+                // İl - İlçe - Mahalle bilgileri
+                IlAdi = item.Mahalle?.Ilce?.Il?.Ad ?? "",
+                IlceAdi = item.Mahalle?.Ilce?.Ad ?? "",
+                MahalleAdi = item.Mahalle?.Ad ?? "",
+
                 AdaNo = item.AdaNo,
                 ParselNo = item.ParselNo,
                 Adres = item.Adres,
                 TasinmazTipi = item.TasinmazTipi,
                 AlanM2 = item.AlanM2,
+
                 Koordinatlar = new List<double[]>()
             };
 
+            // Polygon koordinatlarını DTO'ya aktar
             if (item.Sinir != null && item.Sinir.ExteriorRing != null)
             {
                 foreach (var coordinate in item.Sinir.ExteriorRing.Coordinates)
                 {
                     dto.Koordinatlar.Add(
-                        new double[] { coordinate.X, coordinate.Y }
+                        new double[]
+                        {
+                    coordinate.X,
+                    coordinate.Y
+                        }
                     );
                 }
             }

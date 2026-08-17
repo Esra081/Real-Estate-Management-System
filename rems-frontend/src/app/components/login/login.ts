@@ -22,8 +22,11 @@ export class Login {
     this.authService.login(this.email, this.sifre).subscribe({
       next: (response) => {
         console.log('Giriş başarılı:', response);
-        // Başarılı giriş sonrası şimdilik konsola yazdırıp liste sayfasına yönlendirebiliriz
-        this.router.navigate(['/tasinmazlar']);
+        
+        // Token auth.ts içinde zaten kaydedildi. Biz sadece yönlendiriyoruz:
+        this.router.navigate(['/tasinmaz-liste']).then(success => {
+            console.log("Yönlendirme durumu:", success);
+        });
       },
       error: (err) => {
         this.hataMesaji = 'E-posta veya şifre hatalı!';

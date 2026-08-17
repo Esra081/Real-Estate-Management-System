@@ -1,12 +1,17 @@
 import { Routes } from '@angular/router';
 import { TasinmazListeComponent } from './components/tasinmaz-liste/tasinmaz-liste';
 import { TasinmazFormComponent } from './components/tasinmaz/tasinmaz';
+import { Login } from './components/login/login'; 
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'tasinmaz-liste',
+    redirectTo: 'login',
     pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    component: Login
   },
   {
     path: 'tasinmaz-liste',
@@ -19,5 +24,9 @@ export const routes: Routes = [
   {
     path: 'tasinmaz-duzenle/:id',
     component: TasinmazFormComponent
+  },
+  {
+    path: '**',
+    redirectTo: 'login'
   }
 ];

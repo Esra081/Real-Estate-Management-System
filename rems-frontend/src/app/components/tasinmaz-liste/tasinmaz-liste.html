@@ -22,7 +22,7 @@
     <!-- HARİTA KONTEYNERİ -->
     <div class="card mb-4 shadow-sm">
       <div class="card-body p-0">
-        <!-- Haritanın içine yerleşeceği div. 'id="map"' çok önemlidir, Leaflet bu id'yi arayacak! -->
+        <!-- Haritanın içine yerleşeceği div. OpenLayers bu id'yi kullanacak! -->
         <div id="map" style="height: 400px; width: 100%; border-radius: 5px;"></div>
       </div>
     </div>
@@ -53,9 +53,7 @@
           <td>{{ item.parselNo }}</td>
 
           <td>
-            <span class="badge bg-secondary me-1">{{ item.ilAdi || 'Ankara' }}</span>
-            <span class="badge bg-info text-dark me-1">{{ item.ilceAdi || 'Çankaya' }}</span>
-            <small class="text-muted">{{ item.mahalleAdi || 'Bahçelievler' }}</small>
+            {{ item.ilAdi }} / {{ item.ilceAdi }} / {{ item.mahalleAdi }}
           </td>
 
           <td>{{ item.adres }}</td>

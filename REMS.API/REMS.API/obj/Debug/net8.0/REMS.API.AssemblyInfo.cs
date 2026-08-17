@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("REMS.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20480592b4564d15472a564b21950ac33d3ce51e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e611b9e1b7a4d4badfe319719dcc5a9e67bcc02f")]
 [assembly: System.Reflection.AssemblyProductAttribute("REMS.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("REMS.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

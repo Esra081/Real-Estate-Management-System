@@ -16,6 +16,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "REMS.API.Controllers.GirisController",
+    "Method": "Register",
+    "RelativePath": "api/Giris/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "REMS.API.DTOs.RegisterDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "REMS.API.Controllers.IlController",
     "Method": "GetAll",
     "RelativePath": "api/Il",
