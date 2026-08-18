@@ -25,7 +25,7 @@ import VectorSource from 'ol/source/Vector';
 import Draw from 'ol/interaction/Draw';
 import Polygon from 'ol/geom/Polygon';
 import { fromLonLat, toLonLat } from 'ol/proj';
-
+import Feature from 'ol/Feature';
 
 
 
@@ -94,8 +94,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
         this.iller = data;
       },
       error: (hata) => {
-        console.error('İller yüklenirken hata oluştu:', hata);
-      }
+        console.error('Hata:', hata.message);      }
     });
   }
 

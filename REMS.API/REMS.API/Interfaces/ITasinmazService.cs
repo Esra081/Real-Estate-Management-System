@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+using REMS.API.DTOs;
+using REMS.API.DTOs.Common;
 using REMS.API.DTOs.Property;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace REMS.API.Interfaces
 {
@@ -11,5 +13,7 @@ namespace REMS.API.Interfaces
         Task<bool> AddPropertyAsync(TasinmazCreateDto model);
         Task<bool> UpdatePropertyAsync(TasinmazUpdateDto model);
         Task<bool> DeletePropertyAsync(int id);
+        Task<bool> DeletePropertiesAsync(List<int> ids);
+        Task<PagedResponseDto<TasinmazListDto>> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter);
     }
 }

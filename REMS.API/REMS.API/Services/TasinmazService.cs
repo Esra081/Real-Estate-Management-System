@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using REMS.API.Data;
+using REMS.API.DTOs;
+using REMS.API.DTOs.Common;
 using REMS.API.DTOs.Property;
-using REMS.API.Interfaces;
 using REMS.API.Entities;
+using REMS.API.Interfaces;
 
 namespace REMS.API.Services
 {
@@ -236,6 +238,146 @@ namespace REMS.API.Services
 
             return true;
         }
-    }
 
+        public async Task<bool> DeletePropertiesAsync(List<int> ids)
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                return false;
+            }
+
+            var silinecekler = await _context.Tasinmazlar
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+
+            if (silinecekler.Count == 0)
+            {
+                return false;
+            }
+
+            _context.Tasinmazlar.RemoveRange(silinecekler);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+
+        public async Task<PagedResponseDto<TasinmazListDto>> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter)
+        {
+            try
+            {
+                var query = _context.Tasinmazlar
+                    .AsNoTracking()
+                    .Include(t => t.Mahalle)
+                        .ThenInclude(m => m.Ilce)
+                            .ThenInclude(i => i.Il)
+                    .AsQueryable();
+
+                // İL FİLTRESİ
+                if (filter.IlId.HasValue)
+                {
+                    query = query.Where(t =>
+                        t.Mahalle.Ilce.IlId == filter.IlId.Value);
+                }
+
+                // İLÇE FİLTRESİ
+                if (filter.IlceId.HasValue)
+                {
+                    query = query.Where(t =>
+                        t.Mahalle.IlceId == filter.IlceId.Value);
+                }
+
+                // MAHALLE FİLTRESİ
+                if (filter.MahalleId.HasValue)
+                {
+                    query = query.Where(t =>
+                        t.MahalleId == filter.MahalleId.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(filter.AdaNo))
+                    query = query.Where(t => t.AdaNo.Contains(filter.AdaNo));
+
+                if (!string.IsNullOrWhiteSpace(filter.ParselNo))
+                    query = query.Where(t => t.ParselNo.Contains(filter.ParselNo));
+
+                if (!string.IsNullOrWhiteSpace(filter.Adres))
+                    query = query.Where(t => t.Adres.Contains(filter.Adres));
+
+                if (!string.IsNullOrWhiteSpace(filter.TasinmazTipi))
+                    query = query.Where(t => t.TasinmazTipi == filter.TasinmazTipi);
+
+                // TOPLAM KAYIT SAYISI
+                int totalCount = await query.CountAsync();
+
+                // PAGINATION
+                var tasinmazlar = await query
+                    .Skip((filter.PageNumber - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .ToListAsync();
+
+                // DTO LİSTESİ
+                var dtoList = new List<TasinmazListDto>();
+
+                foreach (var item in tasinmazlar)
+                {
+                    var dto = new TasinmazListDto
+                    {
+                        Id = item.Id,
+                        KullaniciId = item.KullaniciId,
+                        MahalleId = item.MahalleId,
+
+                        // İL / İLÇE / MAHALLE
+                        IlAdi = item.Mahalle?.Ilce?.Il?.Ad ?? "",
+                        IlceAdi = item.Mahalle?.Ilce?.Ad ?? "",
+                        MahalleAdi = item.Mahalle?.Ad ?? "",
+
+                        // TAŞINMAZ BİLGİLERİ
+                        AdaNo = item.AdaNo,
+                        ParselNo = item.ParselNo,
+                        Adres = item.Adres,
+                        TasinmazTipi = item.TasinmazTipi,
+                        AlanM2 = item.AlanM2,
+
+                        // KOORDİNATLAR
+                        Koordinatlar = new List<double[]>()
+                    };
+
+                    // POLİGON KOORDİNATLARINI DTO'YA AKTAR
+                    if (item.Sinir != null &&
+                        item.Sinir.ExteriorRing != null)
+                    {
+                        foreach (var coordinate in item.Sinir.ExteriorRing.Coordinates)
+                        {
+                            dto.Koordinatlar.Add(new double[]
+                            {
+                        coordinate.X,
+                        coordinate.Y
+                            });
+                        }
+                    }
+
+                    dtoList.Add(dto);
+                }
+
+                // PAGED RESPONSE
+                return new PagedResponseDto<TasinmazListDto>
+                {
+                    Data = dtoList,
+                    TotalCount = totalCount,
+                    TotalPages = (int)Math.Ceiling(
+                        totalCount / (double)filter.PageSize
+                    ),
+                    CurrentPage = filter.PageNumber
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    "Taşınmazlar listelenirken hata oluştu.",
+                    ex
+                );
+            }
+        }
+    }
 }

@@ -1,1 +1,0 @@
-IR<C:\Users\Esra\source\repos\REMS.API\REMS.API\REMS.API.csprojòCSharp12
