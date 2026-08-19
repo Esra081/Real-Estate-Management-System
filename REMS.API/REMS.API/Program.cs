@@ -39,6 +39,15 @@ builder.Services.AddScoped<IGirisService, GirisService>();
 // Mahalle Srvisimiz
 builder.Services.AddScoped<IMahalleService, MahalleService>();
 
+// Export (Excel/PDF) servis bağımlılığı
+builder.Services.AddScoped<IExportService, ExportService>();
+
+// Import (Excel'den İçe Aktarma) servis bağımlılığı
+builder.Services.AddScoped<IImportService, ImportService>();
+
+// Kullanıcı servis bağımlılığı
+builder.Services.AddScoped<IKullaniciService, KullaniciService>();
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

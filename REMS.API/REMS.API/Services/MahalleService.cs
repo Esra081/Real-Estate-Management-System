@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using REMS.API.Data;
 using REMS.API.DTOs.Mahalle;
 using REMS.API.Interfaces;
@@ -29,7 +29,9 @@ namespace REMS.API.Services
         public async Task<IEnumerable<MahalleListDto>> GetByIlceIdAsync(int ilceId)
         {
             return await _context.Mahalleler
+                .AsNoTracking()
                 .Where(x => x.IlceId == ilceId)
+                .OrderBy(x => x.Ad)
                 .Select(x => new MahalleListDto
                 {
                     Id = x.Id,

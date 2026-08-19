@@ -1,0 +1,40 @@
+// HARİTA POPUP (BİLGİ BALONU) STİLLERİ
+.ol-popup {
+  position: absolute;
+  background-color: #ffffff !important; // 👈 Düz beyaz arka plan (harita alta geçmesin diye)
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); // 👈 Haritadan ayıran net gölge
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid #ced4da;
+  bottom: 15px;
+  left: -50px;
+  min-width: 270px;
+  max-width: 320px;
+  z-index: 1000;
+  color: #212529; // Koyu ve net okunabilir yazı rengi
+
+  // Balonun altındaki küçük üçgen ok işareti (pointer)
+  &:after, &:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  &:after {
+    border-top-color: #ffffff;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+  }
+
+  &:before {
+    border-top-color: #ced4da;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+  }
+}

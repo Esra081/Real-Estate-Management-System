@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +20,7 @@ namespace REMS.API.Services
         public async Task<IEnumerable<IlListDTO>> GetAllAsync()
         {
             return await _context.Iller
+                .OrderBy(i => i.Id)
                 .Select(i => new IlListDTO { Id = i.Id, Ad = i.Ad })
                 .ToListAsync();
         }

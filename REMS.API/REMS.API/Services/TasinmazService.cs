@@ -22,6 +22,17 @@ namespace REMS.API.Services
         // 1. METOT: Taşınmaz Ekleme
         public async Task<bool> AddPropertyAsync(TasinmazCreateDto model)
         {
+            // SRS Mükerrer Kayıt Kontrolü: Aynı Mahallede Aynı Ada ve Parsel Numaralı Taşınmaz Var mı?
+            bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
+                t.MahalleId == model.MahalleId &&
+                t.AdaNo.ToLower() == model.AdaNo.Trim().ToLower() &&
+                t.ParselNo.ToLower() == model.ParselNo.Trim().ToLower());
+
+            if (mukerrerVarMi)
+            {
+                throw new InvalidOperationException($"Seçilen mahallede {model.AdaNo}/{model.ParselNo} Ada/Parsel numarasına sahip bir taşınmaz sistemde zaten kayıtlıdır.");
+            }
+
             // İşlem Güvenliği (Transaction) Başlatılıyor
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -187,6 +198,18 @@ namespace REMS.API.Services
             if (tasinmaz == null)
             {
                 return false;
+            }
+
+            // SRS Mükerrer Kayıt Kontrolü: Kendisi hariç aynı Mahallede aynı Ada/Parsel var mı?
+            bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
+                t.Id != model.Id &&
+                t.MahalleId == model.MahalleId &&
+                t.AdaNo.ToLower() == model.AdaNo.Trim().ToLower() &&
+                t.ParselNo.ToLower() == model.ParselNo.Trim().ToLower());
+
+            if (mukerrerVarMi)
+            {
+                throw new InvalidOperationException($"Seçilen mahallede {model.AdaNo}/{model.ParselNo} Ada/Parsel numarasına sahip başka bir taşınmaz zaten kayıtlıdır.");
             }
 
             tasinmaz.KullaniciId = model.KullaniciId.ToString();

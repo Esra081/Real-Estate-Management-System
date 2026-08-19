@@ -116,4 +116,41 @@ export class TasinmazListeService {
     );
   }
 
+  // EXCEL VE PDF DIŞA AKTARMA (API İSTEKLERİ)
+  exportToExcel(filtreler?: any): Observable<Blob> {
+    const params = this.filtreParametreleriniOlustur(filtreler);
+    return this.http.get(`${this.apiUrl}/export/excel`, {
+      params: params,
+      responseType: 'blob'
+    });
+  }
+
+  exportToPdf(filtreler?: any): Observable<Blob> {
+    const params = this.filtreParametreleriniOlustur(filtreler);
+    return this.http.get(`${this.apiUrl}/export/pdf`, {
+      params: params,
+      responseType: 'blob'
+    });
+  }
+
+  private filtreParametreleriniOlustur(filtreler?: any): HttpParams {
+    let params = new HttpParams();
+    if (filtreler) {
+      if (filtreler.ilId) params = params.append('ilId', filtreler.ilId);
+      if (filtreler.ilceId) params = params.append('ilceId', filtreler.ilceId);
+      if (filtreler.mahalleId) params = params.append('mahalleId', filtreler.mahalleId);
+      if (filtreler.adaNo) params = params.append('adaNo', filtreler.adaNo);
+      if (filtreler.parselNo) params = params.append('parselNo', filtreler.parselNo);
+      if (filtreler.adres) params = params.append('adres', filtreler.adres);
+      if (filtreler.tasinmazTipi) params = params.append('tasinmazTipi', filtreler.tasinmazTipi);
+    }
+    return params;
+  }
+
+  importFromExcel(dosya: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', dosya);
+    return this.http.post(`${this.apiUrl}/import-excel`, formData);
+  }
+
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,6 +12,8 @@ namespace REMS.API.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("TRUNCATE TABLE \"Mahalleler\", \"Ilceler\", \"Iller\" RESTART IDENTITY CASCADE;");
+
             migrationBuilder.InsertData(
                 table: "Iller",
                 columns: new[] { "Id", "Ad" },

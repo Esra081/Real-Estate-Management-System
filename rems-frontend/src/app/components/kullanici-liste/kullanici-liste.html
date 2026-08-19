@@ -1,0 +1,200 @@
+<div class="container-fluid px-4 py-3">
+
+  <!-- KPI SAYAÇ KARTLARI -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #e0f2fe 0%, #eff6ff 100%); border: 1px solid #bfdbfe !important;">
+        <span class="small fw-bold text-uppercase" style="color: #1e40af; font-size: 11px;">Toplam Kullanıcı</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ toplamKullanici }} <span class="fs-6 fw-normal text-secondary">Kişi</span></h2>
+        <span class="small fw-medium" style="color: #2563eb;">Kayıtlı Tüm Hesaplar</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%); border: 1px solid #e9d5ff !important;">
+        <span class="small fw-bold text-uppercase" style="color: #6b21a8; font-size: 11px;">Yöneticiler</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ adminSayisi }} <span class="fs-6 fw-normal text-secondary">Admin</span></h2>
+        <span class="small fw-medium" style="color: #7e22ce;">Tam Yetkili Yöneticiler</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%); border: 1px solid #bbf7d0 !important;">
+        <span class="small fw-bold text-uppercase" style="color: #166534; font-size: 11px;">Standart Üyeler</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ standartKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Kullanıcı</span></h2>
+        <span class="small fw-medium" style="color: #15803d;">Mülk Sahibi Hesaplar</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border: 1px solid #fde68a !important;">
+        <span class="small fw-bold text-uppercase" style="color: #92400e; font-size: 11px;">Aktif Hesaplar</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ aktifKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Aktif</span></h2>
+        <span class="small fw-medium" style="color: #b45309;">Giriş İzni Olan Hesaplar</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAŞLIK VE YENİ KULLANICI BUTONU -->
+  <div class="card border-0 shadow-sm mb-3 bg-white p-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="fw-bold mb-1 text-dark">Kullanıcı Yönetim Paneli</h4>
+        <p class="text-muted small mb-0">Sistem kullanıcılarını yönetin, yeni yetkili tanımlayın ve erişimleri kontrol edin.</p>
+      </div>
+
+      <button type="button" class="btn btn-primary fw-semibold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#kullaniciEkleModal">
+        + Yeni Kullanıcı Ekle
+      </button>
+    </div>
+  </div>
+
+  <!-- KULLANICI LİSTESİ TABLOSU -->
+  <div class="card border-0 shadow-sm bg-white mb-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+          <thead class="bg-light text-secondary">
+            <tr>
+              <th class="py-3 ps-3">Ad Soyad</th>
+              <th>E-Posta Adresi</th>
+              <th>Sistem Rolü</th>
+              <th>Durum</th>
+              <th>Taşınmaz Sayısı</th>
+              <th>Kayıt Tarihi</th>
+              <th class="text-center" style="width: 140px;">İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let k of kullanicilar">
+              <td class="ps-3">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    {{ k.adSoyad.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="fw-semibold text-dark">{{ k.adSoyad }}</span>
+                </div>
+              </td>
+              <td class="text-secondary">{{ k.email }}</td>
+              <td>
+                <span class="badge px-2 py-1 fw-medium"
+                      [ngClass]="k.rol === 'Admin' ? 'bg-purple-subtle text-primary border' : 'bg-light text-secondary border'"
+                      [style.background-color]="k.rol === 'Admin' ? '#f3e8ff' : ''"
+                      [style.color]="k.rol === 'Admin' ? '#7e22ce' : ''">
+                  {{ k.rol === 'Admin' ? 'Yönetici (Admin)' : 'Kullanıcı' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge rounded-pill" [ngClass]="k.aktifMi ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                  {{ k.aktifMi ? 'Aktif' : 'Pasif' }}
+                </span>
+              </td>
+              <td>
+                <span class="fw-bold text-dark">{{ k.tasinmazSayisi || 0 }}</span> <span class="text-muted small">Adet</span>
+              </td>
+              <td class="text-muted small">{{ k.olusturmaTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
+              <td class="text-center">
+                <div class="btn-group btn-group-sm">
+                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#kullaniciGuncelleModal" (click)="duzenleAc(k)">
+                    Düzenle
+                  </button>
+                  <button type="button" class="btn btn-outline-danger" (click)="kullaniciSil(k)">
+                    Sil
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- YENİ KULLANICI EKLE MODAL -->
+  <div class="modal fade" id="kullaniciEkleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+        <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">
+          <h6 class="modal-title fw-bold">Yeni Kullanıcı Tanımla</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="ekleModalKapatBtn"></button>
+        </div>
+        <form [formGroup]="ekleForm" (ngSubmit)="kullaniciEkle()">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Ad Soyad:</label>
+              <input type="text" class="form-control form-control-sm" formControlName="adSoyad" placeholder="Örn: Ahmet Yılmaz">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">E-Posta Adresi:</label>
+              <input type="email" class="form-control form-control-sm" formControlName="email" placeholder="ornek@rems.com">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Şifre:</label>
+              <input type="password" class="form-control form-control-sm" formControlName="sifre" placeholder="8-12 karakter">
+              <div class="text-muted" style="font-size: 11px;">Şifre en az 1 harf, 1 rakam ve 1 özel karakter (!@#$% vb.) içermelidir.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Rol:</label>
+              <select class="form-select form-select-sm" formControlName="rol">
+                <option value="Kullanici">Kullanıcı (Standart)</option>
+                <option value="Admin">Yönetici (Admin)</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="button" class="btn btn-light btn-sm border" data-bs-dismiss="modal" [disabled]="kaydediliyor">Vazgeç</button>
+            <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" [disabled]="kaydediliyor || ekleForm.invalid">
+              Kaydet ve Oluştur
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- KULLANICI GÜNCELLE MODAL -->
+  <div class="modal fade" id="kullaniciGuncelleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+        <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">
+          <h6 class="modal-title fw-bold">Kullanıcı Bilgilerini Güncelle</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="guncelleModalKapatBtn"></button>
+        </div>
+        <form [formGroup]="guncelleForm" (ngSubmit)="kullaniciGuncelle()">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Ad Soyad:</label>
+              <input type="text" class="form-control form-control-sm" formControlName="adSoyad">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">E-Posta Adresi:</label>
+              <input type="email" class="form-control form-control-sm" formControlName="email">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Rol:</label>
+              <select class="form-select form-select-sm" formControlName="rol">
+                <option value="Kullanici">Kullanıcı</option>
+                <option value="Admin">Yönetici (Admin)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Yeni Şifre (İsteğe Bağlı):</label>
+              <input type="password" class="form-control form-control-sm" formControlName="yeniSifre" placeholder="Değiştirmek istemiyorsanız boş bırakın">
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="aktifMiCheck" formControlName="aktifMi">
+              <label class="form-check-label small" for="aktifMiCheck">Hesap Aktif</label>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="button" class="btn btn-light btn-sm border" data-bs-dismiss="modal" [disabled]="kaydediliyor">Vazgeç</button>
+            <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" [disabled]="kaydediliyor">
+              Güncelle ve Kaydet
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
