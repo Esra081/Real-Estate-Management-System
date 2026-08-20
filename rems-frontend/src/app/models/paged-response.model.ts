@@ -3,4 +3,9 @@ export interface PagedResponse<T> {
   totalCount: number;
   totalPages: number;
   currentPage: number;
+  totalAreaM2?: number;
+  konutCount?: number;
+  arsaCount?: number;
+  binaCount?: number;
+  topCitiesSummary?: string;
 }

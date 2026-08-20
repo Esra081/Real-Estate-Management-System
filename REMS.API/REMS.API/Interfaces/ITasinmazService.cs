@@ -14,6 +14,6 @@ namespace REMS.API.Interfaces
         Task<bool> UpdatePropertyAsync(TasinmazUpdateDto model);
         Task<bool> DeletePropertyAsync(int id);
         Task<bool> DeletePropertiesAsync(List<int> ids);
-        Task<PagedResponseDto<TasinmazListDto>> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter);
+        Task<TasinmazPagedResponseDto> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter);
     }
 }

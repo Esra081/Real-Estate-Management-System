@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs.Kullanici;
@@ -11,10 +11,12 @@ namespace REMS.API.Controllers
     public class KullaniciController : ControllerBase
     {
         private readonly IKullaniciService _kullaniciService;
+        private readonly ILogService _logService;
 
-        public KullaniciController(IKullaniciService kullaniciService)
+        public KullaniciController(IKullaniciService kullaniciService, ILogService logService)
         {
             _kullaniciService = kullaniciService;
+            _logService = logService;
         }
 
         [HttpGet]
@@ -39,8 +41,12 @@ namespace REMS.API.Controllers
         {
             var (success, message) = await _kullaniciService.AddKullaniciAsync(model);
             if (!success)
+            {
+                await _logService.LogAsync("Kullanıcı Ekleme", $"Kullanıcı oluşturulamadı: {model.Email} - {message}", "Basarisiz", null, model.Email);
                 return BadRequest(new { message });
+            }
 
+            await _logService.LogAsync("Kullanıcı Ekleme", $"Yeni kullanıcı tanımlandı: {model.Email} (Rol: {model.Rol})", "Basarili", null, model.Email);
             return Ok(new { message });
         }
 
@@ -52,8 +58,12 @@ namespace REMS.API.Controllers
 
             var (success, message) = await _kullaniciService.UpdateKullaniciAsync(model);
             if (!success)
+            {
+                await _logService.LogAsync("Kullanıcı Güncelleme", $"Kullanıcı güncelleme başarısız: ID {id} - {message}", "Basarisiz", id.ToString(), model.Email);
                 return BadRequest(new { message });
+            }
 
+            await _logService.LogAsync("Kullanıcı Güncelleme", $"Kullanıcı bilgileri güncellendi: {model.Email} (Rol: {model.Rol}, Aktif: {model.AktifMi})", "Basarili", id.ToString(), model.Email);
             return Ok(new { message });
         }
 
@@ -62,8 +72,12 @@ namespace REMS.API.Controllers
         {
             var (success, message) = await _kullaniciService.DeleteKullaniciAsync(id);
             if (!success)
+            {
+                await _logService.LogAsync("Kullanıcı Silme", $"Kullanıcı silinemedi: ID {id} - {message}", "Basarisiz", id.ToString());
                 return BadRequest(new { message });
+            }
 
+            await _logService.LogAsync("Kullanıcı Silme", $"Kullanıcı ve tüm taşınmazları silindi: ID {id}", "Basarili", id.ToString());
             return Ok(new { message });
         }
     }

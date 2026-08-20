@@ -21,32 +21,27 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Property servis bağımlılığı
 builder.Services.AddScoped<ITasinmazService, TasinmazService>();
 
-// İl servis bağımlılığı
 builder.Services.AddScoped<IIlService, IlService>();
 
-// İlçe servis bağımlılığı
 builder.Services.AddScoped<IIlceService, IlceService>();
 
-// Hash servisimiz
 builder.Services.AddScoped<HashService>();
 
-// Auth servis bağımlılığı
 builder.Services.AddScoped<IGirisService, GirisService>();
 
-// Mahalle Srvisimiz
 builder.Services.AddScoped<IMahalleService, MahalleService>();
 
-// Export (Excel/PDF) servis bağımlılığı
 builder.Services.AddScoped<IExportService, ExportService>();
 
-// Import (Excel'den İçe Aktarma) servis bağımlılığı
 builder.Services.AddScoped<IImportService, ImportService>();
 
-// Kullanıcı servis bağımlılığı
 builder.Services.AddScoped<IKullaniciService, KullaniciService>();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ILogService, LogService>();
 
 
 builder.Services.AddControllers()

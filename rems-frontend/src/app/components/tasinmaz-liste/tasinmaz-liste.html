@@ -6,14 +6,18 @@
     <div class="col-12 col-sm-6 col-xl-3">
       <div class="card p-3 shadow-sm border-0 h-100 d-flex flex-column justify-content-between" style="background: linear-gradient(135deg, #e0f2fe 0%, #eff6ff 100%); border: 1px solid #bfdbfe !important; border-radius: 10px;">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          <span class="fw-bold text-uppercase" style="color: #1e40af; font-size: 11px; letter-spacing: 0.5px;">Toplam Taşınmaz</span>
+          <span class="fw-bold text-uppercase" style="color: #1e40af; font-size: 11px; letter-spacing: 0.5px;">
+            {{ auth.isAdmin ? 'Sistemdeki Toplam Taşınmaz' : 'Taşınmazlarım' }}
+          </span>
           <span class="badge bg-white text-primary border py-1 px-2 fw-medium" style="font-size: 10px;">Aktif Mülk</span>
         </div>
         <div class="d-flex align-items-baseline gap-1 my-1" style="height: 32px;">
           <span class="fs-4 fw-bold text-dark" style="line-height: 1;">{{ totalCount || tasinmazlar.length }}</span>
           <span class="text-secondary small fw-medium" style="font-size: 12px;">Adet</span>
         </div>
-        <div class="small fw-medium" style="font-size: 11px; color: #1e40af;">Sistemde Kayıtlı Mülk</div>
+        <div class="small fw-medium" style="font-size: 11px; color: #1e40af;">
+          {{ auth.isAdmin ? 'Tüm kullanıcılara ait kayıtlar' : 'Hesabınıza kayıtlı mülkler' }}
+        </div>
       </div>
     </div>
 
@@ -25,10 +29,11 @@
           <span class="badge bg-white text-success border py-1 px-2 fw-medium" style="font-size: 10px;">Yüzölçümü</span>
         </div>
         <div class="d-flex align-items-baseline gap-1 my-1" style="height: 32px;">
-          <span class="fs-4 fw-bold text-dark" style="line-height: 1;">{{ toplamAlan | number:'1.0-2' }}</span>
+          <!-- 👈 GENEL TOPLAM ALAN BURADA GÖSTERİLİYOR: -->
+          <span class="fs-4 fw-bold text-dark" style="line-height: 1;">{{ genelToplamAlan | number:'1.0-2' }}</span>
           <span class="text-secondary small fw-medium" style="font-size: 12px;">m²</span>
         </div>
-        <div class="small fw-medium" style="font-size: 11px; color: #166534;">Listelenen Toplam Alan</div>
+        <div class="small fw-medium" style="font-size: 11px; color: #166534;">Sistemdeki Genel Toplam Alan</div>
       </div>
     </div>
 
@@ -40,8 +45,9 @@
           <span class="badge bg-white text-purple border py-1 px-2 fw-medium" style="font-size: 10px; color: #7e22ce;">En Çok İller</span>
         </div>
         <div class="d-flex align-items-center my-1" style="height: 32px;">
-          <span class="fw-bold text-dark text-truncate" style="font-size: 14px; line-height: 1.2;" [title]="enCokBulunanIller">
-            {{ enCokBulunanIller }}
+          <!-- 👈 GENEL İL DAĞILIMI BURADA GÖSTERİLİYOR: -->
+          <span class="fw-bold text-dark text-truncate" style="font-size: 14px; line-height: 1.2;" [title]="genelEnCokIller">
+            {{ genelEnCokIller }}
           </span>
         </div>
         <div class="small fw-medium" style="font-size: 11px; color: #6b21a8;">Yoğunluk Gösteren İller</div>
@@ -56,9 +62,10 @@
           <span class="badge bg-white text-warning-emphasis border py-1 px-2 fw-medium" style="font-size: 10px;">Tip Ayrımı</span>
         </div>
         <div class="d-flex align-items-center gap-1 my-1" style="height: 32px;">
-          <span class="badge bg-white text-primary border px-2 py-1 fw-semibold" style="font-size: 11px;">Konut: {{ tipDagilimi.konut }}</span>
-          <span class="badge bg-white text-success border px-2 py-1 fw-semibold" style="font-size: 11px;">Arsa: {{ tipDagilimi.arsa }}</span>
-          <span class="badge bg-white text-warning-emphasis border px-2 py-1 fw-semibold" style="font-size: 11px;">Bina: {{ tipDagilimi.bina }}</span>
+          <!-- 👈 GENEL TİP SAYILARI BURADA GÖSTERİLİYOR: -->
+          <span class="badge bg-white text-primary border px-2 py-1 fw-semibold" style="font-size: 11px;">Konut: {{ genelKonutSayisi }}</span>
+          <span class="badge bg-white text-success border px-2 py-1 fw-semibold" style="font-size: 11px;">Arsa: {{ genelArsaSayisi }}</span>
+          <span class="badge bg-white text-warning-emphasis border px-2 py-1 fw-semibold" style="font-size: 11px;">Bina: {{ genelBinaSayisi }}</span>
         </div>
         <div class="small fw-medium" style="font-size: 11px; color: #92400e;">Mülk Tipi Dağılımı</div>
       </div>
@@ -77,9 +84,12 @@
           
           <!-- Üst Satır: Başlık & Dışa/İçe Aktarma Butonları -->
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-2 border-bottom">
-            <h5 class="fw-bold mb-0 text-dark" style="font-size: 14px;">Taşınmaz Listesi</h5>
+            <h5 class="fw-bold mb-0 text-dark" style="font-size: 14px;">
+              {{ auth.isAdmin ? 'Sistem Taşınmazları (Tümü)' : 'Taşınmaz Listem' }}
+            </h5>
             <div class="d-flex flex-wrap gap-1">
-              <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 11px;" (click)="excelModalAc()">
+              <!-- SRS REQ-10: Sadece Standart Kullanıcı mülk yükleyebilir/ekleyebilir -->
+              <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 11px;" (click)="excelModalAc()">
                 Excel'den Yükle
               </button>
               <button type="button" class="btn btn-sm btn-outline-success py-1 px-2" style="font-size: 11px;" (click)="excelIndir()">
@@ -88,7 +98,8 @@
               <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" style="font-size: 11px;" (click)="pdfIndir()">
                 PDF İndir
               </button>
-              <button type="button" class="btn btn-sm btn-primary fw-semibold py-1 px-3 shadow-sm" style="font-size: 11px;" (click)="yeniTasinmaz()">
+              <!-- SRS REQ-10: Sadece Standart Kullanıcı yeni taşınmaz ekleyebilir -->
+              <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-primary fw-semibold py-1 px-3 shadow-sm" style="font-size: 11px;" (click)="yeniTasinmaz()">
                 + Yeni Taşınmaz
               </button>
             </div>
@@ -118,13 +129,31 @@
             </div>
 
             <div class="row g-2 mt-1">
-              <div class="col-3">
-                <input type="text" class="form-control form-control-sm bg-light border-0" formControlName="adaNo" placeholder="Ada No">
+              <!-- SRS REQ-2: Admin için Kullanıcı (Sahip) Filtresi -->
+              <div [ngClass]="auth.isAdmin ? 'col-3' : 'col-4'">
+                <select *ngIf="auth.isAdmin" class="form-select form-select-sm bg-light border-0 text-primary fw-medium" formControlName="kullaniciId">
+                  <option value="">Tüm Kullanıcılar (Sahip)</option>
+                  <option *ngFor="let u of tumKullanicilar" [value]="u.id">{{ u.adSoyad }} ({{ u.email }})</option>
+                </select>
+                <input *ngIf="!auth.isAdmin" type="text" class="form-control form-control-sm bg-light border-0" formControlName="adaNo" placeholder="Ada No">
               </div>
-              <div class="col-3">
-                <input type="text" class="form-control form-control-sm bg-light border-0" formControlName="parselNo" placeholder="Parsel No">
+              
+              <div [ngClass]="auth.isAdmin ? 'col-2' : 'col-3'">
+                <input *ngIf="auth.isAdmin" type="text" class="form-control form-control-sm bg-light border-0" formControlName="adaNo" placeholder="Ada No">
+                <input *ngIf="!auth.isAdmin" type="text" class="form-control form-control-sm bg-light border-0" formControlName="parselNo" placeholder="Parsel No">
               </div>
-              <div class="col-3">
+
+              <div [ngClass]="auth.isAdmin ? 'col-2' : 'col-2'">
+                <input *ngIf="auth.isAdmin" type="text" class="form-control form-control-sm bg-light border-0" formControlName="parselNo" placeholder="Parsel No">
+                <select *ngIf="!auth.isAdmin" class="form-select form-select-sm bg-light border-0" formControlName="tasinmazTipi">
+                  <option value="">Tüm Tipler</option>
+                  <option value="Konut">Konut</option>
+                  <option value="Arsa">Arsa</option>
+                  <option value="Bina">Bina</option>
+                </select>
+              </div>
+
+              <div [ngClass]="auth.isAdmin ? 'col-2' : 'col-3'" *ngIf="auth.isAdmin">
                 <select class="form-select form-select-sm bg-light border-0" formControlName="tasinmazTipi">
                   <option value="">Tüm Tipler</option>
                   <option value="Konut">Konut</option>
@@ -132,7 +161,8 @@
                   <option value="Bina">Bina</option>
                 </select>
               </div>
-              <div class="col-3 d-flex gap-1">
+
+              <div [ngClass]="auth.isAdmin ? 'col-3' : 'col-3'" class="d-flex gap-1">
                 <button type="button" class="btn btn-primary btn-sm w-100 fw-semibold" (click)="filtrele()">
                   Filtrele
                 </button>
@@ -156,11 +186,12 @@
         Kayıtlı taşınmaz bulunamadı.
       </div>
 
-      <!-- Taşınmaz Veri Tablosu (İç Scroll ile Ekranı Doldurur) -->
+      <!-- Taşınmaz Veri Tablosu -->
       <div class="card border-0 shadow-sm bg-white flex-grow-1 d-flex flex-column overflow-hidden" *ngIf="!yukleniyor && tasinmazlar.length > 0" style="border-radius: 10px;">
         <div class="card-header bg-transparent border-bottom py-1 px-3 d-flex align-items-center justify-content-between flex-shrink-0">
           <span class="text-muted" style="font-size: 11px;">Haritada odaklanmak için satıra tıklayın</span>
-          <button type="button" class="btn btn-danger btn-sm px-2 py-0" [disabled]="seciliIdler.size === 0" (click)="secilenleriSil()" style="font-size: 11px;">
+          <!-- SRS REQ-10: Sadece Kullanıcılar toplu silebilir -->
+          <button *ngIf="!auth.isAdmin" type="button" class="btn btn-danger btn-sm px-2 py-0" [disabled]="seciliIdler.size === 0" (click)="secilenleriSil()" style="font-size: 11px;">
             Seçilenleri Sil <span *ngIf="seciliIdler.size > 0">({{ seciliIdler.size }})</span>
           </button>
         </div>
@@ -169,23 +200,29 @@
           <table class="table table-hover align-middle mb-0" style="font-size: 12px;">
             <thead class="bg-light text-secondary sticky-top" style="z-index: 1;">
               <tr>
-                <th class="text-center py-2" style="width: 30px;">
+                <th *ngIf="!auth.isAdmin" class="text-center py-2" style="width: 30px;">
                   <input type="checkbox" class="form-check-input" [checked]="tumSecili" (change)="tumunuSec($event)">
                 </th>
                 <th>Ada/Parsel</th>
+                <th *ngIf="auth.isAdmin">Mülk Sahibi</th> 
                 <th>Konum</th>
                 <th>Adres</th>
                 <th>Tip</th>
                 <th>Alan (m²)</th>
-                <th class="text-center" style="width: 90px;">İşlem</th>
+                <th *ngIf="!auth.isAdmin" class="text-center" style="width: 90px;">İşlem</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of tasinmazlar; trackBy: tasinmazTakip" (click)="haritadaGoster(item)" style="cursor: pointer;">
-                <td class="text-center" (click)="$event.stopPropagation()">
+                <td *ngIf="!auth.isAdmin" class="text-center" (click)="$event.stopPropagation()">
                   <input type="checkbox" class="form-check-input" [checked]="item.secili" (change)="secimDegistir(item, $event)">
                 </td>
                 <td class="fw-semibold text-dark text-nowrap">{{ item.adaNo }} / {{ item.parselNo }}</td>
+                <td *ngIf="auth.isAdmin">
+                  <span class="badge bg-light text-primary border fw-medium px-2 py-1" style="font-size: 11px;">
+                    {{ item.kullaniciAdi || 'Bilinmiyor' }}
+                  </span>
+                </td>
                 <td>
                   <span class="fw-medium text-dark">{{ item.ilAdi }}</span>, {{ item.ilceAdi }}
                   <div class="text-muted text-truncate" style="font-size: 10px; max-width: 110px;" [title]="item.mahalleAdi">{{ item.mahalleAdi }}</div>
@@ -206,7 +243,8 @@
                   </span>
                 </td>
                 <td class="fw-semibold text-secondary text-nowrap">{{ item.alanM2 | number:'1.0-2' }}</td>
-                <td class="text-center" (click)="$event.stopPropagation()">
+                <!-- SRS REQ-10: Sadece mülk sahibi güncelleyebilir ve silebilir -->
+                <td *ngIf="!auth.isAdmin" class="text-center" (click)="$event.stopPropagation()">
                   <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-outline-primary btn-sm py-0 px-1" style="font-size: 11px;" (click)="duzenle(item.id)">
                       Düzenle
@@ -240,7 +278,7 @@
 
     </div>
 
-    <!-- SAĞ KOLON (%50): CANLI POLİGON HARİTASI (TAM EKRAN YÜKSEKLİĞİNDE) -->
+    <!-- SAĞ KOLON (%50): CANLI POLİGON HARİTASI -->
     <div class="col-12 col-xl-6">
       <div class="card border-0 shadow-sm bg-white d-flex flex-column" style="height: calc(100vh - 210px); min-height: 560px; border-radius: 10px; overflow: hidden;">
         <div class="card-header bg-transparent border-bottom py-1 px-3 d-flex align-items-center justify-content-between flex-shrink-0">
@@ -274,7 +312,7 @@
   </div>
 
   <!-- EXCEL İÇE AKTARMA (IMPORT) MODAL DİYALOĞU -->
-  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.55); z-index: 1055;" *ngIf="excelModalAcik">
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.55); z-index: 1055;" *ngIf="excelModalAcik && !auth.isAdmin">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
         <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">

@@ -15,6 +15,7 @@ import { LokasyonService } from '../../services/lokasyon.service';
 import { Il } from '../../models/il.model';
 import { Ilce } from '../../models/ilce.model';
 import { Mahalle } from '../../models/mahalle.model';
+import { Auth } from '../../core/auth';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -53,7 +54,8 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
     private tasinmazService: TasinmazService,
     private lokasyonService: LokasyonService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private auth: Auth
   ) {}
 
   ngOnInit(): void {
@@ -79,7 +81,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
       ilId: ['', Validators.required],
       ilceId: ['', Validators.required],
       mahalleId: ['', Validators.required],
-      kullaniciId: [1], // Zorunluluğu kaldırıp varsayılan bir ID veriyoruz//kullaniciId: ['', Validators.required],
+      kullaniciId: [this.auth.currentUser?.id || ''],
       koordinatlar: [[], Validators.required]
     });
   }
@@ -388,7 +390,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
       Object.keys(this.tasinmazForm.controls).forEach(key => {
         const control = this.tasinmazForm.get(key);
         if (control?.invalid) {
-          console.log(`  - Hatalı/Eksik Alan: ${key}`, control.errors);
+          console.log('  - Hatalı/Eksik Alan:', key, control.errors);
         }
       });
       this.tasinmazForm.markAllAsTouched();
@@ -399,21 +401,17 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
     console.log("✅ Form geçerli, API isteği hazırlanıyor...");
 
     const formVerisi = this.tasinmazForm.value;
-    const gelenId = formVerisi.kullaniciId;
-    const gecerliBirGuidMi = typeof gelenId === 'string' && gelenId.length > 20;
+    const aktifKullaniciId = this.auth.currentUser?.id || "00000000-0000-0000-0000-000000000001";
 
-    // 1. DÖNÜŞÜM: Backend'e gidecek "ortak ve temiz" veriyi hazırlıyoruz.
-    // Hem eklemede hem güncellemede bu temizlenmiş veriyi kullanacağız!
-    // 1. DÖNÜŞÜM: Backend'e gidecek "ortak ve temiz" veriyi hazırlıyoruz.
     const hazirTasinmazData = {
-      id: 0, // 👈 TypeScript'in kızmaması için bu satırı ekledik
+      id: 0,
       adaNo: formVerisi.adaNo,
       parselNo: formVerisi.parselNo,
       adres: formVerisi.adres,
       tasinmazTipi: formVerisi.tasinmazTipi,
       alanM2: Number(formVerisi.alanM2),
       mahalleId: Number(formVerisi.mahalleId), 
-      kullaniciId: gecerliBirGuidMi ? gelenId : "00000000-0000-0000-0000-000000000001",
+      kullaniciId: (this.duzenlemeModu && formVerisi.kullaniciId && formVerisi.kullaniciId.length > 20) ? formVerisi.kullaniciId : aktifKullaniciId,
       koordinatlar: formVerisi.koordinatlar
     };
 

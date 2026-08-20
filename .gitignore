@@ -21,3 +21,6 @@ ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
+
+tr_db_olusturma/** linguist-documentation
+*.sql linguist-detectable=false

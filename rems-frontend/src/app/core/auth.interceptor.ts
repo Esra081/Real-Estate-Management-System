@@ -1,5 +1,16 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  return next(req); // Token sormadan doğrudan isteği gönderir
+  const token = localStorage.getItem('rems_token');
+  
+  if (token) {
+    const authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return next(authReq);
+  }
+  
+  return next(req);
 };

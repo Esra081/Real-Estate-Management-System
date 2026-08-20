@@ -1,14 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using REMS.API.Data;
+using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs;
 using REMS.API.DTOs.Auth;
-using REMS.API.Entities;
 using REMS.API.Interfaces;
-using System;
-using System.Linq;
-using System.Security.Cryptography; // Hashing işlemleri (HMACSHA512) için
-using System.Text;
 using System.Threading.Tasks;
 
 namespace REMS.API.Controllers
@@ -18,15 +11,12 @@ namespace REMS.API.Controllers
     public class GirisController : ControllerBase
     {
         private readonly IGirisService _authService;
+        private readonly ILogService _logService;
 
-
-        private readonly RemsDbContext _context;
-
-        // Constructor (Yapıcı Metot) içine context'i enjekte ediyoruz (Dependency Injection)
-        public GirisController(IGirisService authService, RemsDbContext context)
+        public GirisController(IGirisService authService, ILogService logService)
         {
             _authService = authService;
-            _context = context;
+            _logService = logService;
         }
 
         [HttpPost("login")]
@@ -36,8 +26,11 @@ namespace REMS.API.Controllers
 
             if (token == null)
             {
+                await _logService.LogAsync("Giriş", $"Hatalı şifre veya e-posta ile giriş denemesi: {model.Email}", "Basarisiz", null, model.Email);
                 return Unauthorized(new { message = "E-posta veya şifre hatalı!" });
             }
+
+            await _logService.LogAsync("Giriş", $"Kullanıcı sisteme başarıyla giriş yaptı: {model.Email}", "Basarili", null, model.Email);
 
             return Ok(new
             {
@@ -46,43 +39,20 @@ namespace REMS.API.Controllers
             });
         }
 
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
-            if (_context.Kullanicilar.Any(x => x.Email == request.Email))
+            var (success, message) = await _authService.RegisterAsync(request);
+
+            if (!success)
             {
-                return BadRequest(new { message = "Bu e-posta adresi zaten kullanılıyor." });
+                await _logService.LogAsync("Kayıt", $"Başarısız kayıt denemesi: {request.Email} - Gerekçe: {message}", "Basarisiz", null, request.Email);
+                return BadRequest(new { message });
             }
 
-            // GÜVENLİK: Şifreyi aşağıda yazdığımız metotla hashleyip tuzluyoruz.
-            CreatePasswordHash(request.Sifre, out byte[] passwordHash, out byte[] passwordSalt);
+            await _logService.LogAsync("Kayıt", $"Yeni kullanıcı hesabı oluşturuldu: {request.Email}", "Basarili", null, request.Email);
 
-            // MODEL OLUŞTURMA
-            var yeniKullanici = new Kullanici
-            {
-                AdSoyad = request.AdSoyad, // DTO'dan gelen ismi veritabanı modeline aktarıyoruz
-                Email = request.Email,
-                SifreHash = Convert.ToBase64String(passwordHash),
-                SifreSalt = Convert.ToBase64String(passwordSalt),
-                Rol = "Kullanici"
-            };
-
-            // VERİTABANINA KAYIT
-            _context.Kullanicilar.Add(yeniKullanici);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Kullanıcı başarıyla oluşturuldu." });
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            // HMACSHA512: .NET'in içindeki en güvenli kriptografi sınıflarından biridir.
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key; // Algoritmanın ürettiği rastgele anahtarı Salt olarak alıyoruz.
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)); // Şifreyi byte'a çevirip hash'liyoruz.
-            }
+            return Ok(new { message });
         }
     }
 }

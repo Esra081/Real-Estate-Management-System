@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace REMS.API.DTOs.Property 
 {
@@ -11,7 +11,7 @@ namespace REMS.API.DTOs.Property
         public string TasinmazTipi { get; set; }
         public decimal AlanM2 { get; set; }
         public int MahalleId { get; set; }
-        public Guid KullaniciId { get; set; }
+        public string? KullaniciId { get; set; }
         public double[][] Koordinatlar { get; set; }
     }
 }

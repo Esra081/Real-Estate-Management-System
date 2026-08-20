@@ -74,6 +74,10 @@ export class TasinmazListeService {
         );
       }
 
+      if (filtreler.kullaniciId) {
+        params = params.append('kullaniciId', filtreler.kullaniciId);
+      }
+
       if (filtreler.pageNumber) {
         params = params.append(
           'pageNumber',
@@ -143,6 +147,7 @@ export class TasinmazListeService {
       if (filtreler.parselNo) params = params.append('parselNo', filtreler.parselNo);
       if (filtreler.adres) params = params.append('adres', filtreler.adres);
       if (filtreler.tasinmazTipi) params = params.append('tasinmazTipi', filtreler.tasinmazTipi);
+      if (filtreler.kullaniciId) params = params.append('kullaniciId', filtreler.kullaniciId);
     }
     return params;
   }

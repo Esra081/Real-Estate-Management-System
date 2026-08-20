@@ -71,4 +71,11 @@ export class Auth {
   get isAdmin(): boolean {
     return this.currentUser?.rol === 'Admin';
   }
+
+  register(adSoyad: string, email: string, sifre: string) {
+    return this.http.post<{ message: string }>(
+      `${this.baseUrl}/register`,
+      { adSoyad, email, sifre }
+    );
+  }
 }

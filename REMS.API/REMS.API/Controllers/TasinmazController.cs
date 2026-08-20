@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs;
 using REMS.API.DTOs.Property;
 using REMS.API.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace REMS.API.Controllers
@@ -13,15 +16,18 @@ namespace REMS.API.Controllers
         private readonly ITasinmazService _tasinmazService;
         private readonly IExportService _exportService;
         private readonly IImportService _importService;
+        private readonly ILogService _logService;
 
         public TasinmazController(
             ITasinmazService tasinmazService,
             IExportService exportService,
-            IImportService importService)
+            IImportService importService,
+            ILogService logService)
         {
             _tasinmazService = tasinmazService;
             _exportService = exportService;
             _importService = importService;
+            _logService = logService;
         }
 
         [HttpGet]
@@ -48,12 +54,16 @@ namespace REMS.API.Controllers
             try
             {
                 var sonuc = await _tasinmazService.AddPropertyAsync(model);
-                if (sonuc) return Ok(new { message = "Taşınmaz başarıyla eklendi!" });
-
+                if (sonuc)
+                {
+                    await _logService.LogAsync("Taşınmaz Ekleme", $"Ada: {model.AdaNo}, Parsel: {model.ParselNo}, Tip: {model.TasinmazTipi} mülkü eklendi.", "Basarili", model.KullaniciId);
+                    return Ok(new { message = "Taşınmaz başarıyla eklendi!" });
+                }
                 return StatusCode(500, new { message = "Taşınmaz eklenirken hata oluştu." });
             }
-            catch (System.InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
+                await _logService.LogAsync("Taşınmaz Ekleme", $"Ekleme hatası: {ex.Message}", "Basarisiz", model.KullaniciId);
                 return BadRequest(new { message = ex.Message });
             }
         }
@@ -70,10 +80,12 @@ namespace REMS.API.Controllers
                 if (!sonuc)
                     return NotFound(new { message = "Güncellenecek taşınmaz bulunamadı." });
 
+                await _logService.LogAsync("Taşınmaz Güncelleme", $"ID: {id} taşınmazı (Ada: {model.AdaNo}, Parsel: {model.ParselNo}) güncellendi.", "Basarili", model.KullaniciId);
                 return Ok(new { message = "Taşınmaz başarıyla güncellendi!" });
             }
-            catch (System.InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
+                await _logService.LogAsync("Taşınmaz Güncelleme", $"ID: {id} taşınmazı güncellenirken hata: {ex.Message}", "Basarisiz", model.KullaniciId);
                 return BadRequest(new { message = ex.Message });
             }
         }
@@ -85,7 +97,8 @@ namespace REMS.API.Controllers
             if (!sonuc)
                 return NotFound(new { message = "Silinecek kayıt bulunamadı." });
 
-            return Ok(new { message = "Taşınmaz başarıyla silindi!" });
+            await _logService.LogAsync("Taşınmaz Silme", $"ID: {id} numaralı taşınmaz sistemden silindi.", "Basarili");
+            return Ok(new { message = "Taşınmaz silindi!" });
         }
 
         [HttpPost("toplu-sil")]
@@ -98,63 +111,66 @@ namespace REMS.API.Controllers
             if (!sonuc)
                 return NotFound(new { message = "Silinecek kayıtlar bulunamadı." });
 
-            return Ok(new { message = $"{ids.Count} adet taşınmaz başarıyla silindi!" });
+            await _logService.LogAsync("Toplu Taşınmaz Silme", $"{ids.Count} adet taşınmaz topluca silindi. (ID'ler: {string.Join(", ", ids)})", "Basarili");
+            return Ok(new { message = $"{ids.Count} adet taşınmaz başarıyla silindi." });
         }
 
         [HttpGet("export/excel")]
         public async Task<IActionResult> ExportToExcel([FromQuery] TasinmazFilterDto filter)
         {
-            // 1. Sayfalama kısıtını kaldırıyoruz (kullanıcı o anki filtredeki tüm verileri indirsin diye)
             filter.PageSize = int.MaxValue;
             filter.PageNumber = 1;
-            // 2. Filtrelenmiş verileri veritabanından çekiyoruz
+            
             var pagedResult = await _tasinmazService.GetFilteredTasinmazlarAsync(filter);
-
-            // 3. Verileri Excel dosyası baytlarına dönüştürüyoruz
             var excelBytes = _exportService.ExportTasinmazlarToExcel(pagedResult.Data);
-            // 4. Tarayıcıya dosya (.xlsx) indirme yanıtı dönüyoruz
+
+            await _logService.LogAsync("Excel Dışa Aktarma", "Taşınmaz listesi Excel dosyası olarak indirildi.", "Basarili", filter.KullaniciId);
+
             return File(
                 excelBytes,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"Tasinmazlar_{System.DateTime.Now:yyyyMMdd_HHmm}.xlsx"
+                $"Tasinmazlar_{DateTime.Now:yyyyMMdd_HHmm}.xlsx"
             );
         }
 
         [HttpGet("export/pdf")]
         public async Task<IActionResult> ExportToPdf([FromQuery] TasinmazFilterDto filter)
         {
-            // 1. Sayfalama kısıtını kaldırıyoruz
             filter.PageSize = int.MaxValue;
             filter.PageNumber = 1;
-            // 2. Filtrelenmiş verileri çekiyoruz
-            var pagedResult = await _tasinmazService.GetFilteredTasinmazlarAsync(filter);
 
-            // 3. Verileri PDF baytlarına dönüştürüyoruz
+            var pagedResult = await _tasinmazService.GetFilteredTasinmazlarAsync(filter);
             var pdfBytes = _exportService.ExportTasinmazlarToPdf(pagedResult.Data);
-            // 4. Tarayıcıya dosya (.pdf) indirme yanıtı dönüyoruz
+
+            await _logService.LogAsync("PDF Dışa Aktarma", "Taşınmaz listesi PDF raporu olarak indirildi.", "Basarili", filter.KullaniciId);
+
             return File(
                 pdfBytes,
                 "application/pdf",
-                $"Tasinmazlar_{System.DateTime.Now:yyyyMMdd_HHmm}.pdf"
+                $"Tasinmazlar_{DateTime.Now:yyyyMMdd_HHmm}.pdf"
             );
-
         }
 
         [HttpPost("import-excel")]
-        public async Task<IActionResult> ImportFromExcel(Microsoft.AspNetCore.Http.IFormFile file)
+        public async Task<IActionResult> ImportFromExcel(Microsoft.AspNetCore.Http.IFormFile file, [FromForm] string? kullaniciId)
         {
-            // 1. Dosya var mı kontrolü
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Lütfen bir Excel (.xlsx) dosyası yükleyin." });
-            // 2. Servisi çalıştırıp Excel verilerini doğrula ve kaydet
-            string varsayilanKullaniciId = "00000000-0000-0000-0000-000000000001";
-            var (success, message, count) = await _importService.ImportTasinmazlarFromExcelAsync(file, varsayilanKullaniciId);
-            // 3. Sonuca göre HTTP yanıtı dön
+
+            string hedefKullaniciId = !string.IsNullOrEmpty(kullaniciId) 
+                ? kullaniciId 
+                : "d28888e9-2ba9-473a-a40f-e38cb54f9b35";
+
+            var (success, message, count) = await _importService.ImportTasinmazlarFromExcelAsync(file, hedefKullaniciId);
+
             if (!success)
             {
-                return BadRequest(new { message = message });
+                await _logService.LogAsync("Excel İçe Aktarma", $"Excel yükleme başarısız: {message}", "Basarisiz", hedefKullaniciId);
+                return BadRequest(new { message });
             }
-            return Ok(new { message = message, count = count });
+
+            await _logService.LogAsync("Excel İçe Aktarma", $"Excel dosyasından {count} adet yeni taşınmaz yüklendi.", "Basarili", hedefKullaniciId);
+            return Ok(new { message, count });
         }
     }
 }

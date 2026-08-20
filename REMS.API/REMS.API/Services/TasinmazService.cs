@@ -286,7 +286,7 @@ namespace REMS.API.Services
         }
 
 
-        public async Task<PagedResponseDto<TasinmazListDto>> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter)
+        public async Task<TasinmazPagedResponseDto> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter)
         {
             try
             {
@@ -330,8 +330,32 @@ namespace REMS.API.Services
                 if (!string.IsNullOrWhiteSpace(filter.TasinmazTipi))
                     query = query.Where(t => t.TasinmazTipi == filter.TasinmazTipi);
 
+                // KULLANICI FİLTRESİ
+                if (!string.IsNullOrWhiteSpace(filter.KullaniciId))
+                {
+                    query = query.Where(t => t.KullaniciId == filter.KullaniciId);
+                }
+
                 // TOPLAM KAYIT SAYISI
                 int totalCount = await query.CountAsync();
+
+                // 👈 GENEL TOPLAM İSTATİSTİKLERİ:
+                decimal totalAreaM2 = await query.SumAsync(t => t.AlanM2 ?? 0);
+                int konutCount = await query.CountAsync(t => t.TasinmazTipi == "Konut");
+                int arsaCount = await query.CountAsync(t => t.TasinmazTipi == "Arsa");
+                int binaCount = await query.CountAsync(t => t.TasinmazTipi == "Bina");
+
+                var topCities = await query
+                    .Where(t => t.Mahalle != null && t.Mahalle.Ilce != null && t.Mahalle.Ilce.Il != null)
+                    .GroupBy(t => t.Mahalle.Ilce.Il.Ad)
+                    .Select(g => new { IlAdi = g.Key, Count = g.Count() })
+                    .OrderByDescending(x => x.Count)
+                    .Take(3)
+                    .ToListAsync();
+
+                string topCitiesSummary = topCities.Any()
+                    ? string.Join(", ", topCities.Select(c => $"{c.IlAdi} ({c.Count})"))
+                    : "Kayıt Yok";
 
                 // PAGINATION
                 var tasinmazlar = await query
@@ -339,15 +363,31 @@ namespace REMS.API.Services
                     .Take(filter.PageSize)
                     .ToListAsync();
 
+                // 1. Kullanıcı isim haritasını hazırlıyoruz
+                var kullaniciListesi = await _context.Kullanicilar.AsNoTracking().ToListAsync();
+                var kullaniciMap = kullaniciListesi.ToDictionary(k => k.Id.ToString().ToLower(), k => k.AdSoyad);
+
                 // DTO LİSTESİ
                 var dtoList = new List<TasinmazListDto>();
 
                 foreach (var item in tasinmazlar)
                 {
+                    string kId = (item.KullaniciId ?? "").ToLower().Trim();
+                    string sahipAdi = "Bilinmiyor";
+                    if (kullaniciMap.TryGetValue(kId, out var bulunanAd))
+                    {
+                        sahipAdi = bulunanAd;
+                    }
+                    else if (kId == "1" || kId.StartsWith("00000000"))
+                    {
+                        sahipAdi = "Eski Sistem Kaydı";
+                    }
+
                     var dto = new TasinmazListDto
                     {
                         Id = item.Id,
                         KullaniciId = item.KullaniciId,
+                        KullaniciAdi = sahipAdi,
                         MahalleId = item.MahalleId,
 
                         // İL / İLÇE / MAHALLE
@@ -384,14 +424,17 @@ namespace REMS.API.Services
                 }
 
                 // PAGED RESPONSE
-                return new PagedResponseDto<TasinmazListDto>
+                return new TasinmazPagedResponseDto
                 {
                     Data = dtoList,
                     TotalCount = totalCount,
-                    TotalPages = (int)Math.Ceiling(
-                        totalCount / (double)filter.PageSize
-                    ),
-                    CurrentPage = filter.PageNumber
+                    TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize),
+                    CurrentPage = filter.PageNumber,
+                    TotalAreaM2 = totalAreaM2,
+                    KonutCount = konutCount,
+                    ArsaCount = arsaCount,
+                    BinaCount = binaCount,
+                    TopCitiesSummary = topCitiesSummary
                 };
             }
             catch (Exception ex)

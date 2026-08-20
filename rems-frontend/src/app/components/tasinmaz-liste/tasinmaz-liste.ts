@@ -19,7 +19,10 @@ import { Tasinmaz } from '../../models/tasinmaz.model';
 import { Il } from '../../models/il.model';
 import { Ilce } from '../../models/ilce.model';
 import { Mahalle } from '../../models/mahalle.model';
+import { Kullanici } from '../../models/kullanici.model';
 import { LokasyonService } from '../../services/lokasyon.service';
+import { KullaniciService } from '../../services/kullanici.service';
+import { Auth } from '../../core/auth';
 
 // OpenLayers
 import Map from 'ol/Map';
@@ -55,6 +58,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   iller: Il[] = [];
   ilceler: Ilce[] = [];
   mahalleler: Mahalle[] = [];
+  tumKullanicilar: Kullanici[] = []; // Admin için kullanıcı listesi
   seciliIdler = new Set<number>();
   tumSecili = false;
   sayfalamaDizisi: number[] = [];
@@ -62,6 +66,11 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   secilenTasinmaz: Tasinmaz | null = null;
   secilenExcelDosyasi: File | null = null;
   importYukleniyor = false;
+  genelToplamAlan: number = 0;
+  genelKonutSayisi: number = 0;
+  genelArsaSayisi: number = 0;
+  genelBinaSayisi: number = 0;
+  genelEnCokIller: string = 'Kayıt Yok';
 
   tasinmazTakip(index: number, tasinmaz: Tasinmaz): number {
     return tasinmaz.id;
@@ -81,9 +90,10 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private lokasyonService: LokasyonService,
+    private kullaniciService: KullaniciService,
+    public auth: Auth, // 👈 Auth servisini public ekliyoruz ki HTML'de auth.isAdmin kullanabilelim
     private ngZone: NgZone
   ) {}
-
 
   ngOnInit(): void {
     this.filtreForm = this.fb.group({
@@ -93,12 +103,24 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
       adaNo: [''],
       parselNo: [''],
       adres: [''],
-      tasinmazTipi: ['']
+      tasinmazTipi: [''],
+      kullaniciId: [''] // 👈 Kullanıcı Filtresi
     });
+
     this.illeriGetir();
+
+    // Admin ise filtrede göstermek için kullanıcıları çek
+    if (this.auth.isAdmin) {
+      this.kullaniciService.getKullanicilar().subscribe({
+        next: (users) => {
+          this.tumKullanicilar = users || [];
+          this.cdr.detectChanges();
+        }
+      });
+    }
+
     this.veriGetir();
   }
-
 
   ngAfterViewInit(): void {
     this.haritayiBaslat();
@@ -196,89 +218,77 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  
-    private haritayiBaslat(): void {
-      this.ngZone.runOutsideAngular(() => {
-        this.vectorSource = new VectorSource();
-        this.vectorLayer = new VectorLayer({
-          source: this.vectorSource,
-          style: new Style({ 
-            fill: new Fill({
-              color: 'rgba(51, 136, 255, 0.5)'
-            }),
-            stroke: new Stroke({
-              color: 'blue',
-              width: 2
-            })
+  private haritayiBaslat(): void {
+    this.ngZone.runOutsideAngular(() => {
+      this.vectorSource = new VectorSource();
+      this.vectorLayer = new VectorLayer({
+        source: this.vectorSource,
+        style: new Style({ 
+          fill: new Fill({
+            color: 'rgba(51, 136, 255, 0.5)'
+          }),
+          stroke: new Stroke({
+            color: 'blue',
+            width: 2
           })
-        });
-        this.map = new Map({
-          target: 'map',
-          layers: [new TileLayer({ source: new OSM() }), this.vectorLayer],
-          view: new View({
-            center: fromLonLat([32.85411, 39.92077]),
-            zoom: 6
-          })
-        });
-        // Popup HTML elementini haritaya Overlay olarak bağlıyoruz
-        const popupElement = document.getElementById('popup');
-        if (popupElement) {
-          this.popupOverlay = new Overlay({
-            element: popupElement,
-            autoPan: {
-              animation: {
-                duration: 250
-              }
+        })
+      });
+      this.map = new Map({
+        target: 'map',
+        layers: [new TileLayer({ source: new OSM() }), this.vectorLayer],
+        view: new View({
+          center: fromLonLat([32.85411, 39.92077]),
+          zoom: 6
+        })
+      });
+
+      const popupElement = document.getElementById('popup');
+      if (popupElement) {
+        this.popupOverlay = new Overlay({
+          element: popupElement,
+          autoPan: {
+            animation: {
+              duration: 250
             }
-          });
-          this.map.addOverlay(this.popupOverlay);
-        }
-        // Haritaya Tıklama Olayı (Poligona tıklandı mı?)
-        this.map.on('singleclick', (evt) => {
-          const feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => f);
-          if (feature) {
-            const bilgi = feature.get('tasinmazBilgi');
-            if (bilgi) {
-              this.secilenTasinmaz = bilgi;
-              this.popupOverlay.setPosition(evt.coordinate); // Balonu tıklanan yere koy
-              this.cdr.detectChanges();
-            }
-          } else {
-            this.popupKapat();
           }
         });
-        // Fare ile poligon üzerine gelindiğinde imleci el işareti (pointer) yap
-        this.map.on('pointermove', (evt) => {
-          const hit = this.map.hasFeatureAtPixel(evt.pixel);
-          this.map.getViewport().style.cursor = hit ? 'pointer' : '';
-        });
-      });
-    }
-    // Popup kapatma metodu
-    popupKapat(): void {
-      if (this.popupOverlay) {
-        this.popupOverlay.setPosition(undefined); // Haritadan gizle
+        this.map.addOverlay(this.popupOverlay);
       }
-      this.secilenTasinmaz = null;
-      this.cdr.detectChanges();
+
+      this.map.on('singleclick', (evt) => {
+        const feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => f);
+        if (feature) {
+          const bilgi = feature.get('tasinmazBilgi');
+          if (bilgi) {
+            this.secilenTasinmaz = bilgi;
+            this.popupOverlay.setPosition(evt.coordinate);
+            this.cdr.detectChanges();
+          }
+        } else {
+          this.popupKapat();
+        }
+      });
+
+      this.map.on('pointermove', (evt) => {
+        const hit = this.map.hasFeatureAtPixel(evt.pixel);
+        this.map.getViewport().style.cursor = hit ? 'pointer' : '';
+      });
+    });
+  }
+
+  popupKapat(): void {
+    if (this.popupOverlay) {
+      this.popupOverlay.setPosition(undefined);
     }
+    this.secilenTasinmaz = null;
+    this.cdr.detectChanges();
+  }
 
   private haritadaTasinmazaGit(tasinmaz: Tasinmaz): void {
-    if (!this.map || !this.vectorSource) {
-      return;
-    }
+    if (!this.map || !this.vectorSource) return;
+    if (!tasinmaz.koordinatlar || tasinmaz.koordinatlar.length === 0) return;
 
-    if (!tasinmaz.koordinatlar || tasinmaz.koordinatlar.length === 0) {
-      console.warn(
-        'Seçilen taşınmazın koordinatı bulunamadı:',
-        tasinmaz.id
-      );
-      return;
-    }
-
-    const koordinatlar = tasinmaz.koordinatlar.map(k =>
-      fromLonLat([k[0], k[1]])
-    );
+    const koordinatlar = tasinmaz.koordinatlar.map(k => fromLonLat([k[0], k[1]]));
     const poligon = new Polygon([koordinatlar]);
     const feature = new Feature({
       geometry: poligon,
@@ -287,7 +297,6 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
 
     this.vectorSource.clear();
     this.vectorSource.addFeature(feature);
-    // Haritayı taşınmaza yaklaştır
     this.map.getView().fit(poligon.getExtent(), {
       padding: [80, 80, 80, 80],
       duration: 800,
@@ -295,115 +304,80 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-
   veriGetir(): void {
     this.yukleniyor = true;
-    const formFiltreleri =
-      this.filtreForm.value;
-    const gidenFiltreler = {
+    const formFiltreleri = this.filtreForm.value;
+    
+    const gidenFiltreler: any = {
       ...formFiltreleri,
-      pageNumber:
-        this.currentPage,
-      pageSize:
-        this.pageSize
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize
     };
 
-    this.tasinmazListeService
-      .getTasinmazlar(gidenFiltreler)
-      .subscribe({
-        next: (response: any) => {
-          if (response) {
-            // PagedResponse
-            if (
-              response.data &&
-              Array.isArray(response.data)
-            ) {
-              const totalP = response.totalPages || 1;
+    // Eğer kullanıcı standart kullanıcı ise SADECE KENDİ MÜLKLERİNİ çeker!
+    if (!this.auth.isAdmin && this.auth.currentUser) {
+      gidenFiltreler.kullaniciId = this.auth.currentUser.id;
+    }
 
-              // Eğer bu sayfadaki tüm kayıtlar silindiyse ve önceki sayfa varsa, otomatik olarak önceki sayfayı getir
-              if (response.data.length === 0 && this.currentPage > 1) {
-                this.currentPage = Math.max(1, Math.min(this.currentPage - 1, totalP));
-                this.veriGetir();
-                return;
-              }
-
-              this.tasinmazlar =
-                response.data;
-              this.totalPages =
-                totalP;
-              this.totalCount =
-                response.totalCount ||
-                response.data.length;
-              this.currentPage =
-                response.currentPage || 1;
-            }
-
-            else if (
-              Array.isArray(response)
-            ) {
-              this.tasinmazlar =
-                response;
-              this.totalPages = 1;
-              this.totalCount =
-                response.length;
-            }
-            else {
-              this.tasinmazlar = [];
-            }
-          } else {
-            this.tasinmazlar = [];
+    this.tasinmazListeService.getTasinmazlar(gidenFiltreler).subscribe({
+      next: (response: any) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          const totalP = response.totalPages || 1;
+          if (response.data.length === 0 && this.currentPage > 1) {
+            this.currentPage = Math.max(1, Math.min(this.currentPage - 1, totalP));
+            this.veriGetir();
+            return;
           }
-          this.sayfalamaDizisi = Array.from(
-            { length: this.totalPages },
-            (_, i) => i + 1
-          );
-          this.tasinmazlar.forEach(t => {
-            t.secili = this.seciliIdler.has(t.id);
-          });
-          this.tumSecili = this.tasinmazlar.length > 0 && this.tasinmazlar.every(t => t.secili);
-          this.yukleniyor = false;
-          this.poligonlariCiz();
-          this.cdr.detectChanges();
-        },
 
-        error: (hata) => {
-          console.error(
-            'Veriler getirilirken hata oluştu:',
-            hata
-          );
+          this.tasinmazlar = response.data;
+          this.totalPages = totalP;
+          this.totalCount = response.totalCount || response.data.length;
+          this.currentPage = response.currentPage || 1;
+
+                    this.genelToplamAlan = response.totalAreaM2 || 0;
+          this.genelKonutSayisi = response.konutCount || 0;
+          this.genelArsaSayisi = response.arsaCount || 0;
+          this.genelBinaSayisi = response.binaCount || 0;
+          this.genelEnCokIller = response.topCitiesSummary || 'Kayıt Yok';
+          
+        } else if (Array.isArray(response)) {
+          this.tasinmazlar = response;
+          this.totalPages = 1;
+          this.totalCount = response.length;
+        } else {
           this.tasinmazlar = [];
-          this.sayfalamaDizisi = [];
-          this.tumSecili = false;
-          this.yukleniyor = false;
-          this.poligonlariCiz();
-          this.cdr.detectChanges();
         }
-      });
+
+        this.sayfalamaDizisi = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+        this.tasinmazlar.forEach(t => {
+          t.secili = this.seciliIdler.has(t.id);
+        });
+        this.tumSecili = this.tasinmazlar.length > 0 && this.tasinmazlar.every(t => t.secili);
+        this.yukleniyor = false;
+        this.poligonlariCiz();
+        this.cdr.detectChanges();
+      },
+      error: (hata) => {
+        console.error('Veriler getirilirken hata oluştu:', hata);
+        this.tasinmazlar = [];
+        this.sayfalamaDizisi = [];
+        this.tumSecili = false;
+        this.yukleniyor = false;
+        this.poligonlariCiz();
+        this.cdr.detectChanges();
+      }
+    });
   }
 
-  sayfaDegistir(
-    yeniSayfa: number
-  ): void {
-    if (
-      yeniSayfa >= 1 &&
-      yeniSayfa <= this.totalPages
-    ) {
-      this.currentPage =
-        yeniSayfa;
-
+  sayfaDegistir(yeniSayfa: number): void {
+    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages) {
+      this.currentPage = yeniSayfa;
       this.veriGetir();
     }
   }
 
   filtrele(): void {
-
-    console.log(
-      'Filtrele butonuna basıldı, güncel form:',
-      this.filtreForm.value
-    );
-
     this.currentPage = 1;
-
     this.veriGetir();
   }
 
@@ -415,7 +389,8 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
       adaNo: '',
       parselNo: '',
       adres: '',
-      tasinmazTipi: ''
+      tasinmazTipi: '',
+      kullaniciId: ''
     });
 
     this.ilceler = [];
@@ -425,146 +400,85 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   }
 
   private poligonlariCiz(): void {
-    if (
-      !this.map ||
-      !this.vectorSource
-    ) {
-      return;
-    }
-
+    if (!this.map || !this.vectorSource) return;
     this.vectorSource.clear();
 
-    this.tasinmazlar.forEach(
-      tasinmaz => {
-        if (
-          tasinmaz.koordinatlar &&
-          tasinmaz.koordinatlar.length > 0
-        ) {
-          const donusturulmusKoordinatlar =
-            tasinmaz.koordinatlar.map(
-              k =>
-                fromLonLat([
-                  k[0],
-                  k[1]
-                ])
-            );
-
-          const poligon =
-            new Polygon([
-              donusturulmusKoordinatlar
-            ]);
-
-
-          const feature =
-            new Feature({
-              geometry: poligon,
-              tasinmazBilgi:
-                tasinmaz
-            });
-
-          this.vectorSource
-            .addFeature(feature);
-        }
+    this.tasinmazlar.forEach(tasinmaz => {
+      if (tasinmaz.koordinatlar && tasinmaz.koordinatlar.length > 0) {
+        const donusturulmusKoordinatlar = tasinmaz.koordinatlar.map(k => fromLonLat([k[0], k[1]]));
+        const poligon = new Polygon([donusturulmusKoordinatlar]);
+        const feature = new Feature({
+          geometry: poligon,
+          tasinmazBilgi: tasinmaz
+        });
+        this.vectorSource.addFeature(feature);
       }
-    );
+    });
   }
 
   secilenleriSil(): void {
     const secilenIdler = Array.from(this.seciliIdler);
-    if (secilenIdler.length === 0) {
-      return;
-    }
+    if (secilenIdler.length === 0) return;
 
-    const onay = confirm(
-      `${secilenIdler.length} adet taşınmazı silmek istediğinize emin misiniz?`
-    );
-
-    if (!onay) {
-      return;
-    }
+    const onay = confirm(`${secilenIdler.length} adet taşınmazı silmek istediğinize emin misiniz?`);
+    if (!onay) return;
 
     this.yukleniyor = true;
-    this.tasinmazListeService
-      .tasinmazlariSil(secilenIdler)
-      .subscribe({
-        next: () => {
-          this.seciliIdler.clear();
-          this.tumSecili = false;
-          this.veriGetir();
-        },
-        error: (hata) => {
-          console.error(
-            'Taşınmazlar silinirken hata oluştu:',
-            hata
-          );
-          alert('Taşınmazlar silinirken bir hata oluştu.');
-          this.yukleniyor = false;
-          this.cdr.detectChanges();
-        }
-      });
+    this.tasinmazListeService.tasinmazlariSil(secilenIdler).subscribe({
+      next: () => {
+        this.seciliIdler.clear();
+        this.tumSecili = false;
+        this.veriGetir();
+      },
+      error: (hata) => {
+        console.error('Taşınmazlar silinirken hata oluştu:', hata);
+        alert('Taşınmazlar silinirken bir hata oluştu.');
+        this.yukleniyor = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   yeniTasinmaz(): void {
-    this.router.navigate([
-      '/tasinmaz-ekle'
-    ]);
+    this.router.navigate(['/tasinmaz-ekle']);
   }
 
   duzenle(id: number): void {
-
-    this.router.navigate([
-      '/tasinmaz-duzenle',
-      id
-    ]);
+    this.router.navigate(['/tasinmaz-duzenle', id]);
   }
 
   sil(id: number): void {
-
-    const onay = confirm(
-      'Bu taşınmazı silmek istediğinize emin misiniz?'
-    );
-
-    if (!onay) {
-      return;
-    }
+    const onay = confirm('Bu taşınmazı silmek istediğinize emin misiniz?');
+    if (!onay) return;
 
     this.yukleniyor = true;
-    this.tasinmazListeService
-      .tasinmazSil(id)
-      .subscribe({
-        next: () => {
-          this.seciliIdler.delete(id);
-          this.tumSecili = this.tasinmazlar.length > 0 && this.tasinmazlar.every(t => this.seciliIdler.has(t.id));
-          this.veriGetir();
-        },
-        error: (hata) => {
-          console.error(
-            'Taşınmaz silinirken hata oluştu:',
-            hata
-          );
-          alert(
-            'Taşınmaz silinirken bir hata oluştu.'
-          );
-          this.yukleniyor = false;
-          this.cdr.detectChanges();
-        }
-      });
+    this.tasinmazListeService.tasinmazSil(id).subscribe({
+      next: () => {
+        this.seciliIdler.delete(id);
+        this.tumSecili = this.tasinmazlar.length > 0 && this.tasinmazlar.every(t => this.seciliIdler.has(t.id));
+        this.veriGetir();
+      },
+      error: (hata) => {
+        console.error('Taşınmaz silinirken hata oluştu:', hata);
+        alert('Taşınmaz silinirken bir hata oluştu.');
+        this.yukleniyor = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
-  // EXCEL DOSYASI İNDİRME FONKSİYONU
   excelIndir(): void {
-    const filtreler = this.filtreForm.value;
+    const filtreler = { ...this.filtreForm.value };
+    if (!this.auth.isAdmin && this.auth.currentUser) {
+      filtreler.kullaniciId = this.auth.currentUser.id;
+    }
     this.tasinmazListeService.exportToExcel(filtreler).subscribe({
       next: (blob: Blob) => {
-        // 1. Dosya için geçici bir URL üret
         const url = window.URL.createObjectURL(blob);
-        // 2. Sanal bir <a> linki oluştur
         const link = document.createElement('a');
         link.href = url;
         link.download = `Tasinmazlar_${new Date().getTime()}.xlsx`;
-        // 3. Otomatik tıklat ve indir
         link.click();
-        // 4. Belleği serbest bırak
         window.URL.revokeObjectURL(url);
       },
       error: (err) => {
@@ -574,9 +488,11 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // PDF DOSYASI İNDİRME FONKSİYONU
   pdfIndir(): void {
-    const filtreler = this.filtreForm.value;
+    const filtreler = { ...this.filtreForm.value };
+    if (!this.auth.isAdmin && this.auth.currentUser) {
+      filtreler.kullaniciId = this.auth.currentUser.id;
+    }
     this.tasinmazListeService.exportToPdf(filtreler).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -594,16 +510,8 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   }
 
   excelModalAcik = false;
-
-  excelModalAc(): void {
-    this.excelModalAcik = true;
-    this.secilenExcelDosyasi = null;
-  }
-
-  excelModalKapat(): void {
-    this.excelModalAcik = false;
-    this.secilenExcelDosyasi = null;
-  }
+  excelModalAc(): void { this.excelModalAcik = true; this.secilenExcelDosyasi = null; }
+  excelModalKapat(): void { this.excelModalAcik = false; this.secilenExcelDosyasi = null; }
 
   excelDosyaSecildi(event: any): void {
     const dosya = event.target.files[0];
@@ -630,20 +538,16 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         this.secilenExcelDosyasi = null;
         this.importYukleniyor = false;
         this.excelModalAcik = false;
-        
-        // Listeyi ve haritayı yenile
         this.veriGetir();
       },
       error: (err: any) => {
         console.error('İçe aktarma hatası:', err);
-        const hataMesaji = err.error?.message || 'İçe aktarma başarısız oldu. Lütfen dosya formatını ve verileri kontrol edin.';
-        alert(hataMesaji);
+        alert(err.error?.message || 'İçe aktarma başarısız oldu.');
         this.importYukleniyor = false;
       }
     });
   }
 
-  // TAŞINMAZ TİPİ DAĞILIMI (KONUT / ARSA / BİNA SAYILARI)
   get tipDagilimi(): { konut: number; arsa: number; bina: number; diger: number } {
     let konut = 0, arsa = 0, bina = 0, diger = 0;
     if (this.tasinmazlar) {
@@ -657,8 +561,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     }
     return { konut, arsa, bina, diger };
   }
-  
-  // TABLODAN SATIRA TIKLANDIĞINDA HARİTADA O TAŞINMAZI GÖSTER
+
   haritadaGoster(item: Tasinmaz): void {
     this.secilenTasinmaz = item;
     this.haritadaTasinmazaGit(item);
@@ -669,7 +572,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-   get toplamAlan(): number {
+  get toplamAlan(): number {
     return (this.tasinmazlar || []).reduce((toplam, t) => toplam + (Number(t.alanM2) || 0), 0);
   }
   get benzersizIlSayisi(): number {

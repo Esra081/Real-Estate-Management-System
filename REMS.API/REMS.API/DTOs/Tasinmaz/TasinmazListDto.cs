@@ -15,7 +15,7 @@ namespace REMS.API.DTOs.Property
         public string? Adres { get; set; }
         public string? TasinmazTipi { get; set; }
         public decimal? AlanM2 { get; set; }
-
+        public string? KullaniciAdi { get; set; }
         public List<double[]>? Koordinatlar { get; set; }
     }
 }

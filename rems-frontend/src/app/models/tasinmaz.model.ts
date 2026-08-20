@@ -1,6 +1,7 @@
 export interface Tasinmaz {
   id: number;
   kullaniciId: string;
+  kullaniciAdi?: string;
   ilAdi?: string;
   ilceAdi?: string;
   mahalleAdi?: string;
