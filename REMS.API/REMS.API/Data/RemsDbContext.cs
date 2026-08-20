@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using REMS.API.Entities;
 
@@ -52,8 +52,8 @@ namespace REMS.API.Data
                     Id = Guid.Parse("d28888e9-2ba9-473a-a40f-e38cb54f9b35"),
                     AdSoyad = "Sistem Yöneticisi",
                     Email = "admin@rems.com",
-                    SifreHash = "ornek_hash",
-                    SifreSalt = "ornek_salt",
+                    SifreHash = "xGdPN49aJiC+vNCrJv+l5rWVse55J86Cvh2zr24NFDs=",
+                    SifreSalt = "K8j9Lm2N4p6Q8r0T2v4X6z8B0d2F4h6J",
                     Rol = "Admin",
                     OlusturmaTarihi = new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc),
                     AktifMi = true

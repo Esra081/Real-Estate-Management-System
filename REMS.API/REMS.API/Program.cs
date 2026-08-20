@@ -6,8 +6,12 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "Esraklc.081";
+var fullConnectionString = $"{connectionString};Password={dbPassword};";
+
 builder.Services.AddDbContext<REMS.API.Data.RemsDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseNpgsql(fullConnectionString,
     o => o.UseNetTopologySuite()));
 
 // Angular'a (4200 portuna) izin veren CORS ayarımız

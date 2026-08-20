@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using REMS.API.Data;
 using REMS.API.DTOs.Kullanici;
 using REMS.API.Entities;
+using REMS.API.Helpers;
 using REMS.API.Interfaces;
 
 namespace REMS.API.Services
@@ -79,7 +79,7 @@ namespace REMS.API.Services
             if (emailVarMi)
                 return (false, "Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut.");
 
-            var (sifreGecerli, sifreHata) = SifreGecerliMi(model.Sifre);
+            var (sifreGecerli, sifreHata) = PasswordValidator.SifreGecerliMi(model.Sifre);
             if (!sifreGecerli)
                 return (false, sifreHata);
 
@@ -124,7 +124,7 @@ namespace REMS.API.Services
 
             if (!string.IsNullOrWhiteSpace(model.YeniSifre))
             {
-                var (sifreGecerli, sifreHata) = SifreGecerliMi(model.YeniSifre);
+                var (sifreGecerli, sifreHata) = PasswordValidator.SifreGecerliMi(model.YeniSifre);
                 if (!sifreGecerli)
                     return (false, sifreHata);
 
@@ -168,21 +168,6 @@ namespace REMS.API.Services
                 await transaction.RollbackAsync();
                 return (false, $"Silme işlemi sırasında hata oluştu: {ex.Message}");
             }
-        }
-
-        private (bool Gecerli, string Hata) SifreGecerliMi(string sifre)
-        {
-            if (string.IsNullOrWhiteSpace(sifre) || sifre.Length < 8 || sifre.Length > 12)
-                return (false, "Şifre 8 ile 12 karakter arasında olmalıdır.");
-
-            bool harfVarMi = Regex.IsMatch(sifre, @"[a-zA-Z]");
-            bool rakamVarMi = Regex.IsMatch(sifre, @"\d");
-            bool ozelKarakterVarMi = Regex.IsMatch(sifre, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]");
-
-            if (!harfVarMi || !rakamVarMi || !ozelKarakterVarMi)
-                return (false, "Şifre en az 1 harf, 1 rakam ve 1 özel karakter içermelidir.");
-
-            return (true, string.Empty);
         }
     }
 }

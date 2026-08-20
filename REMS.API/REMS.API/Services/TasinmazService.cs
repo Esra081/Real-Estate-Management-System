@@ -22,7 +22,6 @@ namespace REMS.API.Services
         // 1. METOT: Taşınmaz Ekleme
         public async Task<bool> AddPropertyAsync(TasinmazCreateDto model)
         {
-            // SRS Mükerrer Kayıt Kontrolü: Aynı Mahallede Aynı Ada ve Parsel Numaralı Taşınmaz Var mı?
             bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
                 t.MahalleId == model.MahalleId &&
                 t.AdaNo.ToLower() == model.AdaNo.Trim().ToLower() &&
@@ -33,31 +32,11 @@ namespace REMS.API.Services
                 throw new InvalidOperationException($"Seçilen mahallede {model.AdaNo}/{model.ParselNo} Ada/Parsel numarasına sahip bir taşınmaz sistemde zaten kayıtlıdır.");
             }
 
-            // İşlem Güvenliği (Transaction) Başlatılıyor
             using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
-                var coordinates = new List<Coordinate>();
+                var polygon = KoordinatlardanPoligonUret(model.Koordinatlar.Select(k => new[] { k[0], k[1] }));
 
-                // Frontend'den gelen listeyi NTS formatına çevir
-                foreach (var nokta in model.Koordinatlar)
-                {
-                    coordinates.Add(new Coordinate(nokta[0], nokta[1]));
-                }
-
-                // KURAL: Poligonun başlangıç ve bitiş noktası aynı olmalıdır!
-                if (!coordinates.First().Equals2D(coordinates.Last()))
-                {
-                    coordinates.Add(coordinates.First());
-                }
-
-                // SRID 4326: Dünya standartı (GPS/Google Maps) koordinat sistemi
-                var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-                var ring = geometryFactory.CreateLinearRing(coordinates.ToArray());
-                var polygon = geometryFactory.CreatePolygon(ring);
-
-                // YENİLENEN KISIM: Eski Ad ve Aciklama yerine yeni veritabanı sütunlarımızı bağladık
                 var yeniTasinmaz = new Tasinmaz
                 {
                     KullaniciId = model.KullaniciId,
@@ -67,19 +46,17 @@ namespace REMS.API.Services
                     Adres = model.Adres,
                     TasinmazTipi = model.TasinmazTipi,
                     AlanM2 = model.AlanM2 ?? 0,
-                    Sinir = polygon // Sayıları coğrafi bir alana dönüştürdük!
+                    Sinir = polygon
                 };
 
                 await _context.Tasinmazlar.AddAsync(yeniTasinmaz);
                 await _context.SaveChangesAsync();
-
                 await transaction.CommitAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"Hata: {ex.Message}");
                 return false;
             }
         }
@@ -87,59 +64,17 @@ namespace REMS.API.Services
         // 2. METOT: Taşınmazları İl, İlçe ve Mahalle Adlarıyla Birlikte DTO ile Listeleme
         public async Task<IEnumerable<TasinmazListDto>> GetAllPropertiesAsync()
         {
-            // Include zinciri ile Mahalle -> İlçe -> İl verilerini beraber çekiyoruz
             var tasinmazlar = await _context.Tasinmazlar
                 .Include(t => t.Mahalle)
                     .ThenInclude(m => m.Ilce)
                         .ThenInclude(i => i.Il)
                 .ToListAsync();
 
-            var dtoList = new List<TasinmazListDto>();
-
-            foreach (var item in tasinmazlar)
-            {
-                var dto = new TasinmazListDto
-                {
-                    Id = item.Id,
-                    KullaniciId = item.KullaniciId,
-                    MahalleId = item.MahalleId,
-
-                    MahalleAdi = item.Mahalle != null ? item.Mahalle.Ad : "",
-                    IlceAdi = item.Mahalle != null && item.Mahalle.Ilce != null ? item.Mahalle.Ilce.Ad : "",
-                    IlAdi = item.Mahalle != null && item.Mahalle.Ilce != null && item.Mahalle.Ilce.Il != null ? item.Mahalle.Ilce.Il.Ad : "",
-
-                    AdaNo = item.AdaNo,
-                    ParselNo = item.ParselNo,
-                    Adres = item.Adres,
-                    TasinmazTipi = item.TasinmazTipi,
-                    AlanM2 = item.AlanM2,
-                    Koordinatlar = new List<double[]>()
-                };
-
-                // Geometri Dönüşümü: Poligonu tekrar koordinat dizisine çeviriyoruz
-                if (item.Sinir != null && item.Sinir.ExteriorRing != null)
-                {
-                    foreach (var coordinate in item.Sinir.ExteriorRing.Coordinates)
-                    {
-                        dto.Koordinatlar.Add(new double[] { coordinate.X, coordinate.Y });
-                    }
-                }
-
-                dtoList.Add(dto);
-            }
-
-            return dtoList;
+            return tasinmazlar.Select(item => EntityToDto(item)).ToList();
         }
 
-        // 3. METOT: Standart Liste
-        public async Task<IEnumerable<Tasinmaz>> GetAllAsync()
-        {
-            var tasinmazlar = await _context.Tasinmazlar.ToListAsync();
-            return tasinmazlar;
-        }
-
-        // id ile kayıt bul
-        public async Task<TasinmazListDto> GetPropertyByIdAsync(int id)
+        // 3. METOT: ID ile Kayıt Bulma
+        public async Task<TasinmazListDto?> GetPropertyByIdAsync(int id)
         {
             var item = await _context.Tasinmazlar
                 .Include(t => t.Mahalle)
@@ -147,60 +82,17 @@ namespace REMS.API.Services
                         .ThenInclude(i => i.Il)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (item == null)
-            {
-                return null;
-            }
+            if (item == null) return null;
 
-            var dto = new TasinmazListDto
-            {
-                Id = item.Id,
-                KullaniciId = item.KullaniciId,
-                MahalleId = item.MahalleId,
-
-                // İl - İlçe - Mahalle bilgileri
-                IlAdi = item.Mahalle?.Ilce?.Il?.Ad ?? "",
-                IlceAdi = item.Mahalle?.Ilce?.Ad ?? "",
-                MahalleAdi = item.Mahalle?.Ad ?? "",
-
-                AdaNo = item.AdaNo,
-                ParselNo = item.ParselNo,
-                Adres = item.Adres,
-                TasinmazTipi = item.TasinmazTipi,
-                AlanM2 = item.AlanM2,
-
-                Koordinatlar = new List<double[]>()
-            };
-
-            // Polygon koordinatlarını DTO'ya aktar
-            if (item.Sinir != null && item.Sinir.ExteriorRing != null)
-            {
-                foreach (var coordinate in item.Sinir.ExteriorRing.Coordinates)
-                {
-                    dto.Koordinatlar.Add(
-                        new double[]
-                        {
-                    coordinate.X,
-                    coordinate.Y
-                        }
-                    );
-                }
-            }
-
-            return dto;
+            return EntityToDto(item);
         }
 
+        // 4. METOT: Güncelleme
         public async Task<bool> UpdatePropertyAsync(TasinmazUpdateDto model)
         {
-            var tasinmaz = await _context.Tasinmazlar
-                .FirstOrDefaultAsync(x => x.Id == model.Id);
+            var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == model.Id);
+            if (tasinmaz == null) return false;
 
-            if (tasinmaz == null)
-            {
-                return false;
-            }
-
-            // SRS Mükerrer Kayıt Kontrolü: Kendisi hariç aynı Mahallede aynı Ada/Parsel var mı?
             bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
                 t.Id != model.Id &&
                 t.MahalleId == model.MahalleId &&
@@ -212,80 +104,44 @@ namespace REMS.API.Services
                 throw new InvalidOperationException($"Seçilen mahallede {model.AdaNo}/{model.ParselNo} Ada/Parsel numarasına sahip başka bir taşınmaz zaten kayıtlıdır.");
             }
 
-            tasinmaz.KullaniciId = model.KullaniciId.ToString();
+            tasinmaz.KullaniciId = model.KullaniciId?.ToString();
             tasinmaz.MahalleId = model.MahalleId;
             tasinmaz.AdaNo = model.AdaNo;
             tasinmaz.ParselNo = model.ParselNo;
             tasinmaz.Adres = model.Adres;
             tasinmaz.TasinmazTipi = model.TasinmazTipi;
             tasinmaz.AlanM2 = model.AlanM2;
-
-            var coordinates = new List<Coordinate>();
-
-            foreach (var nokta in model.Koordinatlar)
-            {
-                coordinates.Add(new Coordinate(nokta[0], nokta[1]));
-            }
-
-            if (!coordinates.First().Equals2D(coordinates.Last()))
-            {
-                coordinates.Add(coordinates.First());
-            }
-
-            var geometryFactory =
-                NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-
-            var ring = geometryFactory.CreateLinearRing(coordinates.ToArray());
-            var polygon = geometryFactory.CreatePolygon(ring);
-
-            tasinmaz.Sinir = polygon;
+            tasinmaz.Sinir = KoordinatlardanPoligonUret(model.Koordinatlar);
 
             await _context.SaveChangesAsync();
-
             return true;
         }
 
+        // 5. METOT: Silme
         public async Task<bool> DeletePropertyAsync(int id)
         {
-            var tasinmaz = await _context.Tasinmazlar
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (tasinmaz == null)
-            {
-                return false;
-            }
+            var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == id);
+            if (tasinmaz == null) return false;
 
             _context.Tasinmazlar.Remove(tasinmaz);
-
             await _context.SaveChangesAsync();
-
             return true;
         }
 
+        // 6. METOT: Toplu Silme
         public async Task<bool> DeletePropertiesAsync(List<int> ids)
         {
-            if (ids == null || ids.Count == 0)
-            {
-                return false;
-            }
+            if (ids == null || ids.Count == 0) return false;
 
-            var silinecekler = await _context.Tasinmazlar
-                .Where(x => ids.Contains(x.Id))
-                .ToListAsync();
-
-            if (silinecekler.Count == 0)
-            {
-                return false;
-            }
+            var silinecekler = await _context.Tasinmazlar.Where(x => ids.Contains(x.Id)).ToListAsync();
+            if (silinecekler.Count == 0) return false;
 
             _context.Tasinmazlar.RemoveRange(silinecekler);
-
             await _context.SaveChangesAsync();
-
             return true;
         }
 
-
+        // 7. METOT: Filtrelenmiş ve Sayfalanmış Liste
         public async Task<TasinmazPagedResponseDto> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter)
         {
             try
@@ -297,26 +153,14 @@ namespace REMS.API.Services
                             .ThenInclude(i => i.Il)
                     .AsQueryable();
 
-                // İL FİLTRESİ
                 if (filter.IlId.HasValue)
-                {
-                    query = query.Where(t =>
-                        t.Mahalle.Ilce.IlId == filter.IlId.Value);
-                }
+                    query = query.Where(t => t.Mahalle.Ilce.IlId == filter.IlId.Value);
 
-                // İLÇE FİLTRESİ
                 if (filter.IlceId.HasValue)
-                {
-                    query = query.Where(t =>
-                        t.Mahalle.IlceId == filter.IlceId.Value);
-                }
+                    query = query.Where(t => t.Mahalle.IlceId == filter.IlceId.Value);
 
-                // MAHALLE FİLTRESİ
                 if (filter.MahalleId.HasValue)
-                {
-                    query = query.Where(t =>
-                        t.MahalleId == filter.MahalleId.Value);
-                }
+                    query = query.Where(t => t.MahalleId == filter.MahalleId.Value);
 
                 if (!string.IsNullOrWhiteSpace(filter.AdaNo))
                     query = query.Where(t => t.AdaNo.Contains(filter.AdaNo));
@@ -330,16 +174,10 @@ namespace REMS.API.Services
                 if (!string.IsNullOrWhiteSpace(filter.TasinmazTipi))
                     query = query.Where(t => t.TasinmazTipi == filter.TasinmazTipi);
 
-                // KULLANICI FİLTRESİ
                 if (!string.IsNullOrWhiteSpace(filter.KullaniciId))
-                {
                     query = query.Where(t => t.KullaniciId == filter.KullaniciId);
-                }
 
-                // TOPLAM KAYIT SAYISI
                 int totalCount = await query.CountAsync();
-
-                // 👈 GENEL TOPLAM İSTATİSTİKLERİ:
                 decimal totalAreaM2 = await query.SumAsync(t => t.AlanM2 ?? 0);
                 int konutCount = await query.CountAsync(t => t.TasinmazTipi == "Konut");
                 int arsaCount = await query.CountAsync(t => t.TasinmazTipi == "Arsa");
@@ -357,73 +195,21 @@ namespace REMS.API.Services
                     ? string.Join(", ", topCities.Select(c => $"{c.IlAdi} ({c.Count})"))
                     : "Kayıt Yok";
 
-                // PAGINATION
                 var tasinmazlar = await query
                     .Skip((filter.PageNumber - 1) * filter.PageSize)
                     .Take(filter.PageSize)
                     .ToListAsync();
 
-                // 1. Kullanıcı isim haritasını hazırlıyoruz
                 var kullaniciListesi = await _context.Kullanicilar.AsNoTracking().ToListAsync();
                 var kullaniciMap = kullaniciListesi.ToDictionary(k => k.Id.ToString().ToLower(), k => k.AdSoyad);
 
-                // DTO LİSTESİ
-                var dtoList = new List<TasinmazListDto>();
-
-                foreach (var item in tasinmazlar)
+                var dtoList = tasinmazlar.Select(item =>
                 {
                     string kId = (item.KullaniciId ?? "").ToLower().Trim();
-                    string sahipAdi = "Bilinmiyor";
-                    if (kullaniciMap.TryGetValue(kId, out var bulunanAd))
-                    {
-                        sahipAdi = bulunanAd;
-                    }
-                    else if (kId == "1" || kId.StartsWith("00000000"))
-                    {
-                        sahipAdi = "Eski Sistem Kaydı";
-                    }
+                    string sahipAdi = kullaniciMap.TryGetValue(kId, out var ad) ? ad : "Bilinmiyor";
+                    return EntityToDto(item, sahipAdi);
+                }).ToList();
 
-                    var dto = new TasinmazListDto
-                    {
-                        Id = item.Id,
-                        KullaniciId = item.KullaniciId,
-                        KullaniciAdi = sahipAdi,
-                        MahalleId = item.MahalleId,
-
-                        // İL / İLÇE / MAHALLE
-                        IlAdi = item.Mahalle?.Ilce?.Il?.Ad ?? "",
-                        IlceAdi = item.Mahalle?.Ilce?.Ad ?? "",
-                        MahalleAdi = item.Mahalle?.Ad ?? "",
-
-                        // TAŞINMAZ BİLGİLERİ
-                        AdaNo = item.AdaNo,
-                        ParselNo = item.ParselNo,
-                        Adres = item.Adres,
-                        TasinmazTipi = item.TasinmazTipi,
-                        AlanM2 = item.AlanM2,
-
-                        // KOORDİNATLAR
-                        Koordinatlar = new List<double[]>()
-                    };
-
-                    // POLİGON KOORDİNATLARINI DTO'YA AKTAR
-                    if (item.Sinir != null &&
-                        item.Sinir.ExteriorRing != null)
-                    {
-                        foreach (var coordinate in item.Sinir.ExteriorRing.Coordinates)
-                        {
-                            dto.Koordinatlar.Add(new double[]
-                            {
-                        coordinate.X,
-                        coordinate.Y
-                            });
-                        }
-                    }
-
-                    dtoList.Add(dto);
-                }
-
-                // PAGED RESPONSE
                 return new TasinmazPagedResponseDto
                 {
                     Data = dtoList,
@@ -439,11 +225,57 @@ namespace REMS.API.Services
             }
             catch (Exception ex)
             {
-                throw new Exception(
-                    "Taşınmazlar listelenirken hata oluştu.",
-                    ex
-                );
+                throw new InvalidOperationException("Taşınmazlar listelenirken hata oluştu.", ex);
             }
+        }
+
+        // 🌟 ORTAK DTO DÖNÜŞTÜRÜCÜ (3 farklı yerdeki kod tekrarını tek metoda topladı)
+        private static TasinmazListDto EntityToDto(Tasinmaz item, string? sahipAdi = null)
+        {
+            return new TasinmazListDto
+            {
+                Id = item.Id,
+                KullaniciId = item.KullaniciId,
+                KullaniciAdi = sahipAdi,
+                MahalleId = item.MahalleId,
+                IlAdi = item.Mahalle?.Ilce?.Il?.Ad ?? "",
+                IlceAdi = item.Mahalle?.Ilce?.Ad ?? "",
+                MahalleAdi = item.Mahalle?.Ad ?? "",
+                AdaNo = item.AdaNo,
+                ParselNo = item.ParselNo,
+                Adres = item.Adres,
+                TasinmazTipi = item.TasinmazTipi,
+                AlanM2 = item.AlanM2,
+                Koordinatlar = PoligondanKoordinatlariAl(item.Sinir)
+            };
+        }
+
+        // 🌟 ORTAK YARDIMCI METOT 1: Koordinattan Poligon Üretir
+        private static Polygon KoordinatlardanPoligonUret(IEnumerable<double[]> koordinatListesi)
+        {
+            var coordinates = koordinatListesi.Select(k => new Coordinate(k[0], k[1])).ToList();
+            if (!coordinates.First().Equals2D(coordinates.Last()))
+            {
+                coordinates.Add(coordinates.First());
+            }
+
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var ring = geometryFactory.CreateLinearRing(coordinates.ToArray());
+            return geometryFactory.CreatePolygon(ring);
+        }
+
+        // 🌟 ORTAK YARDIMCI METOT 2: Poligondan Koordinatları Çıkarır
+        private static List<double[]> PoligondanKoordinatlariAl(Polygon? sinir)
+        {
+            var koordinatlar = new List<double[]>();
+            if (sinir?.ExteriorRing != null)
+            {
+                foreach (var coordinate in sinir.ExteriorRing.Coordinates)
+                {
+                    koordinatlar.Add(new double[] { coordinate.X, coordinate.Y });
+                }
+            }
+            return koordinatlar;
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +10,7 @@ using REMS.API.Data;
 using REMS.API.DTOs;
 using REMS.API.DTOs.Auth;
 using REMS.API.Entities;
+using REMS.API.Helpers;
 using REMS.API.Interfaces;
 
 namespace REMS.API.Services
@@ -49,19 +49,6 @@ namespace REMS.API.Services
 
             //  SHA-256 + Salt Doğrulaması
             bool sifreDogruMu = _hashService.VerifyPassword(model.Sifre, kullanici.SifreHash, kullanici.SifreSalt ?? "");
-
-            // İlk Kurulum Admini için Otomatik SHA-256 Yükseltmesi:
-            // Eğer veritabanında admin henüz 'ornek_hash' durumundaysa ve 'Admin123!' ile giriyorsa
-            // şifresini anında SHA-256 + Salt ile şifreleyip veritabanına kalıcı olarak kaydeder.
-            if (!sifreDogruMu && kullanici.SifreHash == "ornek_hash" && model.Sifre == "Admin123!")
-            {
-                string yeniSalt = _hashService.CreateSalt();
-                string yeniHash = _hashService.HashPassword("Admin123!", yeniSalt);
-                kullanici.SifreSalt = yeniSalt;
-                kullanici.SifreHash = yeniHash;
-                await _context.SaveChangesAsync();
-                sifreDogruMu = true;
-            }
 
             // Şifre uyuşmuyorsa giriş reddedilir
             if (!sifreDogruMu)
@@ -112,8 +99,8 @@ namespace REMS.API.Services
                 return (false, "Bu e-posta adresi ile kayıtlı bir hesap zaten var.");
             }
 
-            // Şifre kuralı kontrolü (8-12 karakter, harf+rakam+özel karakter)
-            var (sifreGecerli, sifreHata) = SifreGecerliMi(request.Sifre);
+            // Şifre kuralı kontrolü (Ortak PasswordValidator kullanılır)
+            var (sifreGecerli, sifreHata) = PasswordValidator.SifreGecerliMi(request.Sifre);
             if (!sifreGecerli)
             {
                 return (false, sifreHata);
@@ -139,21 +126,6 @@ namespace REMS.API.Services
             await _context.SaveChangesAsync();
 
             return (true, "Hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.");
-        }
-
-        private (bool Gecerli, string Hata) SifreGecerliMi(string sifre)
-        {
-            if (string.IsNullOrWhiteSpace(sifre) || sifre.Length < 8 || sifre.Length > 12)
-                return (false, "Şifre 8 ile 12 karakter arasında olmalıdır.");
-
-            bool harfVarMi = Regex.IsMatch(sifre, @"[a-zA-Z]");
-            bool rakamVarMi = Regex.IsMatch(sifre, @"\d");
-            bool ozelKarakterVarMi = Regex.IsMatch(sifre, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]");
-
-            if (!harfVarMi || !rakamVarMi || !ozelKarakterVarMi)
-                return (false, "Şifre en az 1 harf, 1 rakam ve 1 özel karakter içermelidir.");
-
-            return (true, string.Empty);
         }
     }
 }

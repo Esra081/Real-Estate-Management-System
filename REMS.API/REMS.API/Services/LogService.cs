@@ -68,8 +68,7 @@ namespace REMS.API.Services
             }
             catch (Exception ex)
             {
-                // Log kaydederken hata olursa ana uygulamanın akışı kesilmesin diye konsola yazdırıp geçiyoruz
-                Console.WriteLine($"[LOGLAMA HATASI]: {ex.Message}");
+                // Log kaydederken hata oluşursa ana sistem akışının kesilmemesi için sessizce devam edilir
             }
         }
 
