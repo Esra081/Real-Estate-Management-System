@@ -7,6 +7,7 @@ using REMS.API.DTOs.Common;
 using REMS.API.DTOs.Property;
 using REMS.API.Entities;
 using REMS.API.Interfaces;
+using REMS.API.Helpers;
 
 namespace REMS.API.Services
 {
@@ -35,7 +36,7 @@ namespace REMS.API.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var polygon = KoordinatlardanPoligonUret(model.Koordinatlar.Select(k => new[] { k[0], k[1] }));
+                var polygon = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
 
                 var yeniTasinmaz = new Tasinmaz
                 {
@@ -111,7 +112,7 @@ namespace REMS.API.Services
             tasinmaz.Adres = model.Adres;
             tasinmaz.TasinmazTipi = model.TasinmazTipi;
             tasinmaz.AlanM2 = model.AlanM2;
-            tasinmaz.Sinir = KoordinatlardanPoligonUret(model.Koordinatlar);
+            tasinmaz.Sinir = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
 
             await _context.SaveChangesAsync();
             return true;
@@ -229,7 +230,7 @@ namespace REMS.API.Services
             }
         }
 
-        // 🌟 ORTAK DTO DÖNÜŞTÜRÜCÜ (3 farklı yerdeki kod tekrarını tek metoda topladı)
+        // ORTAK DTO DÖNÜŞTÜRÜCÜ (3 farklı yerdeki kod tekrarını tek metoda topladı)
         private static TasinmazListDto EntityToDto(Tasinmaz item, string? sahipAdi = null)
         {
             return new TasinmazListDto
@@ -246,36 +247,8 @@ namespace REMS.API.Services
                 Adres = item.Adres,
                 TasinmazTipi = item.TasinmazTipi,
                 AlanM2 = item.AlanM2,
-                Koordinatlar = PoligondanKoordinatlariAl(item.Sinir)
+                Koordinatlar = GeometryHelper.PoligondanDiziKoordinatAl(item.Sinir)
             };
-        }
-
-        // 🌟 ORTAK YARDIMCI METOT 1: Koordinattan Poligon Üretir
-        private static Polygon KoordinatlardanPoligonUret(IEnumerable<double[]> koordinatListesi)
-        {
-            var coordinates = koordinatListesi.Select(k => new Coordinate(k[0], k[1])).ToList();
-            if (!coordinates.First().Equals2D(coordinates.Last()))
-            {
-                coordinates.Add(coordinates.First());
-            }
-
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            var ring = geometryFactory.CreateLinearRing(coordinates.ToArray());
-            return geometryFactory.CreatePolygon(ring);
-        }
-
-        // 🌟 ORTAK YARDIMCI METOT 2: Poligondan Koordinatları Çıkarır
-        private static List<double[]> PoligondanKoordinatlariAl(Polygon? sinir)
-        {
-            var koordinatlar = new List<double[]>();
-            if (sinir?.ExteriorRing != null)
-            {
-                foreach (var coordinate in sinir.ExteriorRing.Coordinates)
-                {
-                    koordinatlar.Add(new double[] { coordinate.X, coordinate.Y });
-                }
-            }
-            return koordinatlar;
         }
     }
 }

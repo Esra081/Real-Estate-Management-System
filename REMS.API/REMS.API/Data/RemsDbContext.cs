@@ -17,6 +17,7 @@ namespace REMS.API.Data
         public DbSet<Tasinmaz> Tasinmazlar { get; set; }
 
         public DbSet<Log> Loglar { get; set; }
+        public DbSet<AlanAnalizGeometri> AlanAnalizGeometrileri { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

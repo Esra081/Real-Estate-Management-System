@@ -5,6 +5,7 @@ using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using REMS.API.Data;
 using REMS.API.Entities;
+using REMS.API.Helpers;
 using REMS.API.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -184,10 +185,11 @@ namespace REMS.API.Services
                     }
 
                     // Koordinat Metnini Poligona Çevirme (Format: "32.85,39.90; 32.86,39.90; ...")
-                    var coordinates = new List<Coordinate>();
+                    Polygon polygon;
                     try
                     {
                         var noktaDizisi = koordinatStr.Split(new[] { ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
+                        var coordList = new List<double[]>();
                         foreach (var nokta in noktaDizisi)
                         {
                             var parcalar = nokta.Trim().Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -195,37 +197,25 @@ namespace REMS.API.Services
                             {
                                 double lon = double.Parse(parcalar[0].Replace(",", "."), CultureInfo.InvariantCulture);
                                 double lat = double.Parse(parcalar[1].Replace(",", "."), CultureInfo.InvariantCulture);
-                                coordinates.Add(new Coordinate(lon, lat));
+                                coordList.Add(new[] { lon, lat });
                             }
                         }
 
-                        if (coordinates.Count < 3)
+                        if (coordList.Count < 3)
                         {
                             return (false, $"Satır {satirNo}: Geçerli bir poligon için en az 3 koordinat noktası gereklidir.", 0);
                         }
-                          
-                        // Poligonu kapatma kuralı (İlk nokta ile son nokta aynı olmalıdır)
-                        if (!coordinates.First().Equals2D(coordinates.Last()))
-                        {
-                            coordinates.Add(coordinates.First());
-                        }
 
-                        if (coordinates.Count < 4)
-                        {
-                            return (false, $"Satır {satirNo}: Geçerli bir kapalı poligon oluşturulamadı.", 0);
-                        }
+                        polygon = GeometryHelper.KoordinatlardanPoligonUret(coordList);
                     }
                     catch (Exception)
                     {
                         return (false, $"Satır {satirNo}: Koordinat formatı hatalı. Örnek: '32.859,39.905; 32.861,39.905; 32.861,39.903; 32.859,39.903; 32.859,39.905'", 0);
                     }
 
-                    var ring = geometryFactory.CreateLinearRing(coordinates.ToArray());
-                    var polygon = geometryFactory.CreatePolygon(ring);
-
                     var tasinmaz = new Tasinmaz
                     {
-                        KullaniciId = string.IsNullOrWhiteSpace(kullaniciId) ? "00000000-0000-0000-0000-000000000001" : kullaniciId,
+                        KullaniciId = kullaniciId,
                         MahalleId = eslesenMahalle.Id,
                         AdaNo = adaNo,
                         ParselNo = parselNo,

@@ -1,0 +1,216 @@
+<div class="container-fluid px-4 py-3">
+
+  <!-- 1. KPI SAYAÇ KARTLARI -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #e0f2fe 0%, #eff6ff 100%); border: 1px solid #bfdbfe !important;">
+        <span class="small fw-bold text-uppercase" style="color: #1e40af; font-size: 11px;">Toplam Log Kaydı</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ totalCount }} <span class="fs-6 fw-normal text-secondary">İşlem</span></h2>
+        <span class="small fw-medium" style="color: #2563eb;">Sistemde Kayıtlı Hareketler</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%); border: 1px solid #bbf7d0 !important;">
+        <span class="small fw-bold text-uppercase" style="color: #166534; font-size: 11px;">Başarılı İşlemler</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ basariliSayisi }} <span class="fs-6 fw-normal text-secondary">Adet (Sayfada)</span></h2>
+        <span class="small fw-medium" style="color: #15803d;">Sorunsuz Tamamlananlar</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%); border: 1px solid #fecaca !important;">
+        <span class="small fw-bold text-uppercase" style="color: #991b1b; font-size: 11px;">Hatalı / Başarısız</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ basarisizSayisi }} <span class="fs-6 fw-normal text-secondary">Adet (Sayfada)</span></h2>
+        <span class="small fw-medium" style="color: #dc2626;">Hata Alan İstekler</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%); border: 1px solid #e9d5ff !important;">
+        <span class="small fw-bold text-uppercase" style="color: #6b21a8; font-size: 11px;">Toplam Sayfa</span>
+        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ currentPage }} / {{ totalPages || 1 }}</h2>
+        <span class="small fw-medium" style="color: #7e22ce;">Sayfa Başı {{ pageSize }} Kayıt</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. BAŞLIK VE DIŞA AKTARMA BUTONLARI -->
+  <div class="card border-0 shadow-sm mb-3 bg-white p-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <h4 class="fw-bold mb-1 text-dark">Sistem Denetim Logları</h4>
+        <p class="text-muted small mb-0">Kullanıcı girişlerini, CRUD işlemlerini ve sistem aktivitelerini tarih/IP bazlı inceleyin.</p>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-success fw-semibold px-3 shadow-sm d-flex align-items-center gap-1" (click)="excelIndir()">
+          <span>📊</span> Excel İndir
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-danger fw-semibold px-3 shadow-sm d-flex align-items-center gap-1" (click)="pdfIndir()">
+          <span>📄</span> PDF İndir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. DETAYLI FİLTRELEME FORMU -->
+  <div class="card border-0 shadow-sm bg-white mb-4">
+    <div class="card-header bg-white py-3 border-bottom-0">
+      <h6 class="fw-bold mb-0 text-secondary">Filtreleme Seçenekleri</h6>
+    </div>
+    <div class="card-body pt-0">
+      <form [formGroup]="filtreForm" (ngSubmit)="filtrele()">
+        <div class="row g-3">
+          
+          <!-- Kullanıcı Filtresi -->
+          <div class="col-12 col-md-4 col-lg-2">
+            <label class="form-label small fw-bold text-muted">Kullanıcı:</label>
+            <select class="form-select form-select-sm" formControlName="kullaniciId">
+              <option value="">Tüm Kullanıcılar</option>
+              <option *ngFor="let u of kullanicilar" [value]="u.id">{{ u.adSoyad }} ({{ u.email }})</option>
+            </select>
+          </div>
+
+          <!-- İşlem Tipi Filtresi -->
+          <div class="col-12 col-md-4 col-lg-2">
+            <label class="form-label small fw-bold text-muted">İşlem Tipi:</label>
+            <select class="form-select form-select-sm" formControlName="islemTipi">
+              <option value="">Tüm İşlemler</option>
+              <option *ngFor="let tip of islemTipleri" [value]="tip">{{ tip }}</option>
+            </select>
+          </div>
+
+          <!-- Durum Filtresi -->
+          <div class="col-12 col-md-4 col-lg-2">
+            <label class="form-label small fw-bold text-muted">Durum:</label>
+            <select class="form-select form-select-sm" formControlName="durum">
+              <option value="">Hepsi</option>
+              <option value="Basarili">Başarılı</option>
+              <option value="Basarisiz">Başarısız</option>
+            </select>
+          </div>
+
+          <!-- Başlangıç Tarihi -->
+          <div class="col-12 col-md-6 col-lg-2">
+            <label class="form-label small fw-bold text-muted">Başlangıç Tarihi:</label>
+            <input type="date" class="form-control form-control-sm" formControlName="baslangicTarihi">
+          </div>
+
+          <!-- Bitiş Tarihi -->
+          <div class="col-12 col-md-6 col-lg-2">
+            <label class="form-label small fw-bold text-muted">Bitiş Tarihi:</label>
+            <input type="date" class="form-control form-control-sm" formControlName="bitisTarihi">
+          </div>
+
+          <!-- Serbest Arama (Açıklama / Metin) -->
+          <div class="col-12 col-lg-2">
+            <label class="form-label small fw-bold text-muted">Arama (Açıklama/IP):</label>
+            <input type="text" class="form-control form-control-sm" formControlName="aramaMetni" placeholder="Ara...">
+          </div>
+
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+          <button type="button" class="btn btn-light btn-sm px-3 border text-secondary" (click)="filtreyiTemizle()">
+            Filtreleri Temizle
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm px-4 fw-semibold shadow-sm">
+            Filtrele
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. LOG TABLOSU -->
+  <div class="card border-0 shadow-sm bg-white mb-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+          <thead class="bg-light text-secondary">
+            <tr>
+              <th class="py-3 ps-3" style="width: 170px;">Zaman</th>
+              <th style="width: 200px;">Kullanıcı</th>
+              <th style="width: 170px;">İşlem Tipi</th>
+              <th style="width: 110px;">Durum</th>
+              <th style="width: 130px;">IP Adresi</th>
+              <th>Açıklama / Detay</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Yükleniyor Durumu -->
+            <tr *ngIf="yukleniyor">
+              <td colspan="6" class="text-center py-5 text-muted">
+                <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                Log kayıtları getiriliyor...
+              </td>
+            </tr>
+
+            <!-- Kayıt Bulunamadı Durumu -->
+            <tr *ngIf="!yukleniyor && loglar.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted">
+                Kriterlere uygun herhangi bir log kaydı bulunamadı.
+              </td>
+            </tr>
+
+            <!-- Log Satırları -->
+            <tr *ngFor="let l of loglar">
+              <td class="ps-3 text-muted small font-monospace">
+                {{ l.tarih | date:'dd.MM.yyyy HH:mm:ss' }}
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-circle bg-secondary bg-opacity-10 text-secondary fw-bold d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
+                    {{ (l.kullaniciAdi || l.kullaniciEmail || 'S').charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    <div class="fw-semibold text-dark">{{ l.kullaniciAdi || 'Sistem / Anonim' }}</div>
+                    <div class="text-muted" style="font-size: 11px;">{{ l.kullaniciEmail || '-' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                  {{ l.islemTipi }}
+                </span>
+              </td>
+              <td>
+                <span class="badge rounded-pill px-2 py-1"
+                      [ngClass]="l.durum === 'Basarili' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                  {{ l.durum === 'Basarili' ? 'Başarılı' : 'Başarısız' }}
+                </span>
+              </td>
+              <td>
+                <code class="text-secondary small bg-light px-2 py-1 rounded border">{{ l.ipAdresi || '-' }}</code>
+              </td>
+              <td class="text-dark">
+                {{ l.aciklama }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. SAYFALAMA (PAGINATION) -->
+    <div class="card-footer bg-white d-flex flex-wrap justify-content-between align-items-center py-3 border-top" *ngIf="totalPages > 1">
+      <div class="text-muted small">
+        Toplam <strong>{{ totalCount }}</strong> log kaydından <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - <strong>{{ currentPage === totalPages ? totalCount : currentPage * pageSize }}</strong> arası gösteriliyor
+      </div>
+
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="sayfaDegistir(currentPage - 1)">Önceki</button>
+        </li>
+        <li class="page-item" *ngFor="let page of sayfalamaDizisi" [class.active]="currentPage === page">
+          <button class="page-link" (click)="sayfaDegistir(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="sayfaDegistir(currentPage + 1)">Sonraki</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>

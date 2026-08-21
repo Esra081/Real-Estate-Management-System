@@ -24,25 +24,25 @@ export class Auth {
       { email, sifre }
     ).pipe(
       tap(res => {
-        localStorage.setItem('token', res.token);
+        sessionStorage.setItem('token', res.token);
       })
     );
   }
 
   // 2. Çıkış Yapma (Logout)
   logout() {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 
   // 3. Kullanıcı Giriş Yapmış mı?
   get isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!sessionStorage.getItem('token');
   }
 
   // 4. Token'ı çözüp giriş yapan kullanıcının bilgilerini dönen akıllı Getter
   get currentUser(): AktifKullanici | null {
-    const token = localStorage.getItem('token');
+   const token = sessionStorage.getItem('token');
     if (!token) return null;
 
     try {

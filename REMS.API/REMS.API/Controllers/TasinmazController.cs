@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs;
 using REMS.API.DTOs.Property;
 using REMS.API.Interfaces;
+using REMS.API.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,11 @@ namespace REMS.API.Controllers
         {
             if (model == null || model.Koordinatlar.Count < 3)
                 return BadRequest(new { message = "Bir poligon için en az 3 nokta gereklidir." });
+
+            if (string.IsNullOrEmpty(model.KullaniciId))
+            {
+                model.KullaniciId = User.GetUserId();
+            }
 
             try
             {
@@ -157,9 +163,12 @@ namespace REMS.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Lütfen bir Excel (.xlsx) dosyası yükleyin." });
 
-            string hedefKullaniciId = !string.IsNullOrEmpty(kullaniciId) 
-                ? kullaniciId 
-                : "d28888e9-2ba9-473a-a40f-e38cb54f9b35";
+            // 1. Kullanıcı ID'sini dinamik al (Varsa formdan, yoksa giriş yapmış kullanıcının token'ından):
+            string? hedefKullaniciId = !string.IsNullOrEmpty(kullaniciId) ? kullaniciId : User.GetUserId();
+
+            // 2. Eğer kullanıcı giriş yapmamışsa kesinlikle izin verme:
+            if (string.IsNullOrEmpty(hedefKullaniciId))
+                return Unauthorized(new { message = "Kullanıcı oturumu bulunamadı. Lütfen giriş yapınız." });
 
             var (success, message, count) = await _importService.ImportTasinmazlarFromExcelAsync(file, hedefKullaniciId);
 

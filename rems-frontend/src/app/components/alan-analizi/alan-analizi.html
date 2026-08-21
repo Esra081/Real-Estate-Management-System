@@ -1,0 +1,152 @@
+<div class="container-fluid px-4 py-3">
+
+  <!-- BAŞLIK -->
+  <div class="card border-0 shadow-sm mb-3 bg-white p-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h4 class="fw-bold mb-1 text-dark">Mekansal Alan Analizi (GIS)</h4>
+        <p class="text-muted small mb-0">
+          Harita üzerinde poligonlar çizin, kaydedin veya kesişim (Intersection) ve birleşim (Union) analizi uygulayın.
+        </p>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" (click)="haritayiTemizle()">
+          <span>🗑️</span> Haritayı Temizle
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BİLDİRİM / MESAJ ALANI -->
+  <div *ngIf="mesaj" class="alert alert-{{ mesajTipi }} alert-dismissible fade show shadow-sm py-2 px-3 small" role="alert">
+    <strong>Bilgi:</strong> {{ mesaj }}
+    <button type="button" class="btn-close py-2" (click)="mesaj = null"></button>
+  </div>
+
+  <div class="row g-3">
+    
+    <!-- SOL PANEL: KONTROLLER VE SONUÇ KARTI -->
+    <div class="col-12 col-lg-4">
+      
+      <!-- 1. KART: ÇİZİM & SEÇİM ARAÇLARI -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white py-2 border-bottom fw-bold text-secondary small text-uppercase">
+          1. Çizim & Seçim Araçları
+        </div>
+        <div class="card-body">
+          <p class="small text-muted mb-2">Çizmek istediğiniz poligonu seçin ve haritaya tıklayarak köşelerini belirleyin:</p>
+          
+          <div class="d-grid gap-2 mb-3">
+            <button class="btn btn-sm text-start d-flex justify-content-between align-items-center"
+                    [ngClass]="aktifEtiket === 'A' ? 'btn-primary' : 'btn-outline-primary'"
+                    (click)="cizimBaslat('A')">
+              <span>✏️ <strong>A</strong> Poligonu Çiz (Mavi)</span>
+              <span *ngIf="poligonlar['A']" class="badge bg-success">Çizildi ✓</span>
+            </button>
+
+            <button class="btn btn-sm text-start d-flex justify-content-between align-items-center"
+                    [ngClass]="aktifEtiket === 'B' ? 'btn-success' : 'btn-outline-success'"
+                    (click)="cizimBaslat('B')">
+              <span>✏️ <strong>B</strong> Poligonu Çiz (Yeşil)</span>
+              <span *ngIf="poligonlar['B']" class="badge bg-success">Çizildi ✓</span>
+            </button>
+
+            <button class="btn btn-sm text-start d-flex justify-content-between align-items-center"
+                    [ngClass]="aktifEtiket === 'C' ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'"
+                    (click)="cizimBaslat('C')">
+              <span>✏️ <strong>C</strong> Poligonu Çiz (Turuncu)</span>
+              <span *ngIf="poligonlar['C']" class="badge bg-success">Çizildi ✓</span>
+            </button>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-dark flex-fill" (click)="cizimleriKaydet()" [disabled]="yukleniyor">
+              💾 Çizimleri Kaydet
+            </button>
+            <button class="btn btn-sm btn-outline-primary flex-fill" (click)="autoSelect()" [disabled]="yukleniyor">
+              ⚡ Auto-Select (Getir)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. KART: MEKANSAL ANALİZLER -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white py-2 border-bottom fw-bold text-secondary small text-uppercase">
+          2. Mekansal Analiz Motoru
+        </div>
+        <div class="card-body">
+          <p class="small text-muted mb-2">Çizilen veya yüklenen geometriler üzerinde işlem yapın:</p>
+
+          <div class="d-grid gap-2">
+            <!-- Kesişim -->
+            <button class="btn btn-sm btn-outline-danger text-start fw-semibold py-2" 
+                    (click)="kesisimHesapla('A', 'B')" [disabled]="yukleniyor">
+              <span>🔴 Kesişim Hesapla: <strong>A ∩ B</strong></span>
+              <div class="small fw-normal text-muted" style="font-size: 11px;">Ortak alanı kırmızıyla boyar (DB'ye kaydedilmez)</div>
+            </button>
+
+            <!-- 2'li Birleşim -->
+            <button class="btn btn-sm btn-outline-purple text-start fw-semibold py-2" 
+                    style="border-color: #a855f7; color: #7e22ce;"
+                    (click)="birlesimHesapla(['A', 'B'])" [disabled]="yukleniyor">
+              <span>🟣 2'li Birleşim: <strong>A ∪ B → D</strong></span>
+              <div class="small fw-normal text-muted" style="font-size: 11px;">İki alanı birleştirir ve 'D' olarak DB'ye kaydeder</div>
+            </button>
+
+            <!-- 3'lü Birleşim -->
+            <button class="btn btn-sm btn-outline-purple text-start fw-semibold py-2" 
+                    style="border-color: #9333ea; color: #6b21a8;"
+                    (click)="birlesimHesapla(['A', 'B', 'C'])" [disabled]="yukleniyor">
+              <span>🟣 3'lü Birleşim: <strong>A ∪ B ∪ C → E</strong></span>
+              <div class="small fw-normal text-muted" style="font-size: 11px;">Üç alanı birleştirir ve 'E' olarak DB'ye kaydeder</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. KART: ANALİZ SONUÇ KARTI -->
+      <div class="card border-0 shadow-sm" *ngIf="sonuc">
+        <div class="card-header bg-white py-2 border-bottom fw-bold text-success small text-uppercase d-flex justify-content-between align-items-center">
+          <span>📊 Analiz Sonucu</span>
+          <span class="badge bg-success">{{ sonuc.sonucEtiketi || 'Tamamlandı' }}</span>
+        </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <span class="text-muted small">Uygulanan İşlem:</span>
+            <div class="fw-bold text-dark fs-6">{{ sonuc.islemTipi }}</div>
+          </div>
+          <div class="mb-2">
+            <span class="text-muted small">Hesaplanan Yüzey Alanı:</span>
+            <div class="fw-bold text-primary fs-5">{{ sonuc.alanM2 | number:'1.2-2' }} <span class="fs-6 text-secondary">m²</span></div>
+          </div>
+          <div class="small text-muted">
+            {{ sonuc.mesaj }}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SAĞ PANEL: OPENLAYERS HARİTASI -->
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm p-2 bg-white position-relative" style="height: 650px;">
+        
+        <!-- HARİTA CONTAINER -->
+        <div id="alanAnaliziMap" class="w-100 h-100 rounded"></div>
+
+        <!-- HARİTA LEJANTI (KÖŞE BİLGİ KUTUSU) -->
+        <div class="position-absolute bottom-0 start-0 m-4 p-2 bg-white bg-opacity-90 rounded shadow-sm border small" style="z-index: 1000; font-size: 11px;">
+          <div class="fw-bold mb-1 text-secondary">Renk Lejantı:</div>
+          <div class="d-flex align-items-center gap-1 mb-1"><span class="badge" style="background:#2563eb;">■</span> A Poligonu</div>
+          <div class="d-flex align-items-center gap-1 mb-1"><span class="badge" style="background:#16a34a;">■</span> B Poligonu</div>
+          <div class="d-flex align-items-center gap-1 mb-1"><span class="badge" style="background:#ea580c;">■</span> C Poligonu</div>
+          <div class="d-flex align-items-center gap-1 mb-1"><span class="badge" style="background:#dc2626;">■</span> Kesişim (A ∩ B)</div>
+          <div class="d-flex align-items-center gap-1"><span class="badge" style="background:#7e22ce;">■</span> Birleşim (D / E)</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

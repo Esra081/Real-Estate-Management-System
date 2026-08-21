@@ -1,20 +1,44 @@
 <!-- KURUMSAL ÜST MENÜ (NAVBAR) -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 shadow-sm" 
-     *ngIf="auth.isLoggedIn"
+     *ngIf="auth.isLoggedIn && !router.url.includes('login')"
      style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;">
   <div class="container-fluid px-4">
     
     <!-- Logo ve Sistem Adı -->
-    <a class="navbar-brand fw-bold text-white fs-5" routerLink="/tasinmaz-liste">
+    <div class="navbar-brand fw-bold text-white fs-5 me-4 user-select-none d-flex align-items-center" style="cursor: default;">
       <span>REMS <span class="badge bg-primary-subtle text-primary-emphasis fs-6 fw-normal px-2 py-1 ms-1">GIS</span></span>
-    </a>
-
-    <!-- Sayfa Linkleri (Sadece Admin için Kullanıcı Yönetimi) -->
-    <div class="navbar-nav me-auto ms-3 d-flex flex-row gap-2" *ngIf="auth.isAdmin">
-      <a class="nav-link text-white-50 px-3 py-1 rounded" routerLink="/kullanici-yonetimi" routerLinkActive="text-white bg-primary fw-semibold">
-        Kullanıcı Yönetimi
-      </a>
     </div>
+
+
+    <!-- 4 Ana Sayfa Menü Linkleri -->
+    <div class="navbar-nav me-auto d-flex flex-row align-items-center gap-2"></div>
+
+    <!-- Sayfa 1: Taşınmazlar (Herkes görür) -->
+      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+         routerLink="/tasinmaz-liste" 
+         routerLinkActive="text-white bg-primary fw-semibold">
+        Taşınmazlar
+      </a>
+      <!-- Sayfa 2: Kullanıcı Yönetimi (Sadece Admin) -->
+      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+         *ngIf="auth.isAdmin"
+         routerLink="/kullanici-yonetimi" 
+         routerLinkActive="text-white bg-primary fw-semibold">
+        Kullanıcılar
+      </a>
+      <!-- Sayfa 3: Sistem Logları (Sadece Admin) -->
+      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+         *ngIf="auth.isAdmin"
+         routerLink="/log-yonetimi" 
+         routerLinkActive="text-white bg-primary fw-semibold">
+        Sistem Logları
+      </a>
+      <!-- Sayfa 4: Alan Analizi (Herkes görür) -->
+      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+         routerLink="/alan-analizi" 
+         routerLinkActive="text-white bg-primary fw-semibold">
+        Alan Analizi
+      </a>
 
     <!-- Sağ Köşe: Dinamik Kullanıcı Rozeti & Çıkış -->
     <div class="d-flex align-items-center gap-3 ms-auto" *ngIf="auth.currentUser as user">

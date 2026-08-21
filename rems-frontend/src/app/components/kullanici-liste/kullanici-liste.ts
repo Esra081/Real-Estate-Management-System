@@ -19,6 +19,8 @@ export class KullaniciListeComponent implements OnInit {
   guncelleForm!: FormGroup;
   secilenKullaniciId: string | null = null;
   kaydediliyor = false;
+  ekleModalAcik = false;
+  guncelleModalAcik = false;
 
   constructor(
     private kullaniciService: KullaniciService,
@@ -80,10 +82,8 @@ export class KullaniciListeComponent implements OnInit {
     this.kullaniciService.kullaniciEkle(this.ekleForm.value).subscribe({
       next: (res) => {
         alert(res.message || 'Kullanıcı başarıyla eklendi.');
-        this.ekleForm.reset({ rol: 'Kullanici' });
         this.kaydediliyor = false;
-        const modalKapat = document.getElementById('ekleModalKapatBtn');
-        if (modalKapat) modalKapat.click();
+        this.modalKapat();
         this.veriGetir();
       },
       error: (err) => {
@@ -91,18 +91,6 @@ export class KullaniciListeComponent implements OnInit {
         alert(err.error?.message || 'Kullanıcı eklenirken bir hata oluştu.');
         this.kaydediliyor = false;
       }
-    });
-  }
-
-  duzenleAc(k: Kullanici): void {
-    this.secilenKullaniciId = k.id;
-    this.guncelleForm.patchValue({
-      id: k.id,
-      adSoyad: k.adSoyad,
-      email: k.email,
-      rol: k.rol,
-      aktifMi: k.aktifMi,
-      yeniSifre: ''
     });
   }
 
@@ -118,8 +106,7 @@ export class KullaniciListeComponent implements OnInit {
       next: (res) => {
         alert(res.message || 'Kullanıcı başarıyla güncellendi.');
         this.kaydediliyor = false;
-        const modalKapat = document.getElementById('guncelleModalKapatBtn');
-        if (modalKapat) modalKapat.click();
+        this.modalKapat();
         this.veriGetir();
       },
       error: (err) => {
@@ -134,6 +121,9 @@ export class KullaniciListeComponent implements OnInit {
     const onay = confirm(`"${k.adSoyad}" isimli kullanıcıyı silmek istediğinize emin misiniz?\n\nDİKKAT: Bu kullanıcıya ait tüm taşınmazlar da kalıcı olarak silinecektir!`);
     if (!onay) return;
 
+    this.yukleniyor = true;
+    this.cdr.detectChanges();
+
     this.kullaniciService.kullaniciSil(k.id).subscribe({
       next: (res) => {
         alert(res.message || 'Kullanıcı ve taşınmazları silindi.');
@@ -142,7 +132,37 @@ export class KullaniciListeComponent implements OnInit {
       error: (err) => {
         console.error('Silme hatası:', err);
         alert(err.error?.message || 'Silme işlemi sırasında hata oluştu.');
+        this.yukleniyor = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  // Modal açma / kapama fonksiyonları:
+  ekleModalAc(): void {
+    this.ekleForm.reset({ rol: 'Kullanici' });
+    this.ekleModalAcik = true;
+    this.cdr.detectChanges();
+  }
+
+  modalKapat(): void {
+    this.ekleModalAcik = false;
+    this.guncelleModalAcik = false;
+    this.secilenKullaniciId = null;
+    this.cdr.detectChanges();
+  }
+
+  duzenleAc(k: Kullanici): void {
+    this.secilenKullaniciId = k.id;
+    this.guncelleForm.patchValue({
+      id: k.id,
+      adSoyad: k.adSoyad,
+      email: k.email,
+      rol: k.rol,
+      aktifMi: k.aktifMi,
+      yeniSifre: ''
+    });
+    this.guncelleModalAcik = true;
+    this.cdr.detectChanges();
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using REMS.API.Data;
@@ -79,7 +80,7 @@ namespace REMS.API.Services
             if (emailVarMi)
                 return (false, "Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut.");
 
-            var (sifreGecerli, sifreHata) = PasswordValidator.SifreGecerliMi(model.Sifre);
+            var (sifreGecerli, sifreHata) = SifreGecerliMi(model.Sifre);
             if (!sifreGecerli)
                 return (false, sifreHata);
 
@@ -124,7 +125,7 @@ namespace REMS.API.Services
 
             if (!string.IsNullOrWhiteSpace(model.YeniSifre))
             {
-                var (sifreGecerli, sifreHata) = PasswordValidator.SifreGecerliMi(model.YeniSifre);
+                var (sifreGecerli, sifreHata) = SifreGecerliMi(model.YeniSifre);
                 if (!sifreGecerli)
                     return (false, sifreHata);
 
@@ -168,6 +169,11 @@ namespace REMS.API.Services
                 await transaction.RollbackAsync();
                 return (false, $"Silme işlemi sırasında hata oluştu: {ex.Message}");
             }
+        }
+
+        private (bool Gecerli, string Hata) SifreGecerliMi(string sifre)
+        {
+            return PasswordValidator.SifreGecerliMi(sifre);
         }
     }
 }

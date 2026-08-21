@@ -43,7 +43,7 @@
         <p class="text-muted small mb-0">Sistem kullanıcılarını yönetin, yeni yetkili tanımlayın ve erişimleri kontrol edin.</p>
       </div>
 
-      <button type="button" class="btn btn-primary fw-semibold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#kullaniciEkleModal">
+      <button type="button" class="btn btn-primary fw-semibold px-3 shadow-sm" (click)="ekleModalAc()">
         + Yeni Kullanıcı Ekle
       </button>
     </div>
@@ -95,7 +95,7 @@
               <td class="text-muted small">{{ k.olusturmaTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
               <td class="text-center">
                 <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#kullaniciGuncelleModal" (click)="duzenleAc(k)">
+                  <button type="button" class="btn btn-outline-primary" (click)="duzenleAc(k)">
                     Düzenle
                   </button>
                   <button type="button" class="btn btn-outline-danger" (click)="kullaniciSil(k)">
@@ -111,12 +111,12 @@
   </div>
 
   <!-- YENİ KULLANICI EKLE MODAL -->
-  <div class="modal fade" id="kullaniciEkleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+  <div class="modal d-block" *ngIf="ekleModalAcik" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
         <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">
           <h6 class="modal-title fw-bold">Yeni Kullanıcı Tanımla</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="ekleModalKapatBtn"></button>
+          <button type="button" class="btn-close btn-close-white" (click)="modalKapat()"></button>
         </div>
         <form [formGroup]="ekleForm" (ngSubmit)="kullaniciEkle()">
           <div class="modal-body p-4">
@@ -142,7 +142,7 @@
             </div>
           </div>
           <div class="modal-footer border-top-0 pt-0">
-            <button type="button" class="btn btn-light btn-sm border" data-bs-dismiss="modal" [disabled]="kaydediliyor">Vazgeç</button>
+            <button type="button" class="btn btn-light btn-sm border" (click)="modalKapat()" [disabled]="kaydediliyor">Vazgeç</button>
             <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" [disabled]="kaydediliyor || ekleForm.invalid">
               Kaydet ve Oluştur
             </button>
@@ -153,12 +153,12 @@
   </div>
 
   <!-- KULLANICI GÜNCELLE MODAL -->
-  <div class="modal fade" id="kullaniciGuncelleModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+  <div class="modal d-block" *ngIf="guncelleModalAcik" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
         <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">
           <h6 class="modal-title fw-bold">Kullanıcı Bilgilerini Güncelle</h6>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" id="guncelleModalKapatBtn"></button>
+          <button type="button" class="btn-close btn-close-white" (click)="modalKapat()"></button>
         </div>
         <form [formGroup]="guncelleForm" (ngSubmit)="kullaniciGuncelle()">
           <div class="modal-body p-4">
@@ -187,7 +187,7 @@
             </div>
           </div>
           <div class="modal-footer border-top-0 pt-0">
-            <button type="button" class="btn btn-light btn-sm border" data-bs-dismiss="modal" [disabled]="kaydediliyor">Vazgeç</button>
+            <button type="button" class="btn btn-light btn-sm border" (click)="modalKapat()" [disabled]="kaydediliyor">Vazgeç</button>
             <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" [disabled]="kaydediliyor">
               Güncelle ve Kaydet
             </button>

@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTOs\AlanAnalizi\AlanAnalizIstekDto.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="DTOs\AlanAnalizi\AlanAnalizIstekDto.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.29" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.29">
