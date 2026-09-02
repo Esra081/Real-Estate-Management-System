@@ -59,11 +59,11 @@ namespace REMS.API.Controllers
 
             try
             {
-                var sonuc = await _tasinmazService.AddPropertyAsync(model);
-                if (sonuc)
+                var yeniId = await _tasinmazService.AddPropertyAsync(model);
+                if (yeniId > 0)
                 {
                     await _logService.LogAsync("Taşınmaz Ekleme", $"Ada: {model.AdaNo}, Parsel: {model.ParselNo}, Tip: {model.TasinmazTipi} mülkü eklendi.", "Basarili", model.KullaniciId);
-                    return Ok(new { message = "Taşınmaz başarıyla eklendi!" });
+                    return Ok(new { message = "Taşınmaz başarıyla eklendi!", id = yeniId });
                 }
                 return StatusCode(500, new { message = "Taşınmaz eklenirken hata oluştu." });
             }
@@ -80,14 +80,28 @@ namespace REMS.API.Controllers
             if (id != model.Id)
                 return BadRequest(new { message = "URL'deki ID ile modeldeki ID aynı olmalıdır." });
 
+            if (string.IsNullOrEmpty(model.KullaniciId))
+            {
+                model.KullaniciId = User.GetUserId();
+            }
+
             try
             {
                 var sonuc = await _tasinmazService.UpdatePropertyAsync(model);
-                if (!sonuc)
-                    return NotFound(new { message = "Güncellenecek taşınmaz bulunamadı." });
+                if (!sonuc.Success)
+                    return NotFound(new { message = sonuc.Message });
 
-                await _logService.LogAsync("Taşınmaz Güncelleme", $"ID: {id} taşınmazı (Ada: {model.AdaNo}, Parsel: {model.ParselNo}) güncellendi.", "Basarili", model.KullaniciId);
-                return Ok(new { message = "Taşınmaz başarıyla güncellendi!" });
+                // 1. DURUM: HİÇBİR ŞEY DEĞİŞMEDİYSE LOG ATMA, BİLGİ DÖN
+                if (!sonuc.HasChanges)
+                {
+                    return Ok(new { message = "Herhangi bir değişiklik yapılmadı.", hasChanges = false });
+                }
+
+                // 2. DURUM: DEĞİŞİKLİK VARSA HANGİ ALANLARIN DEĞİŞTİĞİNİ DETAYLI LOGLA
+                string logAciklama = $"ID: {id} taşınmazı (Ada: {model.AdaNo}, Parsel: {model.ParselNo}) güncellendi. Değişiklikler: [{sonuc.DiffSummary}]";
+                await _logService.LogAsync("Taşınmaz Güncelleme", logAciklama, "Basarili", model.KullaniciId);
+
+                return Ok(new { message = "Taşınmaz başarıyla güncellendi!", hasChanges = true, diffSummary = sonuc.DiffSummary });
             }
             catch (InvalidOperationException ex)
             {
@@ -95,6 +109,7 @@ namespace REMS.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProperty(int id)
@@ -180,6 +195,32 @@ namespace REMS.API.Controllers
 
             await _logService.LogAsync("Excel İçe Aktarma", $"Excel dosyasından {count} adet yeni taşınmaz yüklendi.", "Basarili", hedefKullaniciId);
             return Ok(new { message, count });
+        }
+
+        [HttpPost("{id}/resim-yukle")]
+        public async Task<IActionResult> ResimYukle(int id, Microsoft.AspNetCore.Http.IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "Lütfen geçerli bir fotoğraf dosyası (JPEG/PNG) seçiniz." });
+
+            string? userId = User.GetUserId();
+
+            try
+            {
+                var dosyaErisimYolu = await _tasinmazService.ResimYukleAsync(id, file);
+                await _logService.LogAsync("Fotoğraf Yükleme", $"ID: {id} numaralı taşınmaza yeni fotoğraf yüklendi. Dosya: {file.FileName}", "Basarili", userId);
+                return Ok(new { message = "Fotoğraf başarıyla yüklendi!", resimUrl = dosyaErisimYolu });
+            }
+            catch (InvalidOperationException ex)
+            {
+                await _logService.LogAsync("Fotoğraf Yükleme", $"ID: {id} taşınmazına fotoğraf yüklenirken hata: {ex.Message}", "Basarisiz", userId);
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogAsync("Fotoğraf Yükleme", $"ID: {id} taşınmazı için fotoğraf sunucu hatası: {ex.Message}", "Basarisiz", userId);
+                return StatusCode(500, new { message = "Fotoğraf yüklenirken bir hata oluştu: " + ex.Message });
+            }
         }
     }
 }

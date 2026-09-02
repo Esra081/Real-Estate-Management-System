@@ -1,68 +1,134 @@
-<!-- KURUMSAL ÜST MENÜ (NAVBAR) -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 shadow-sm" 
-     *ngIf="auth.isLoggedIn && !router.url.includes('login')"
-     style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;">
+<!-- KURUMSAL ÜST BAR (KOYU ORMAN YEŞİLİ & LİMON YEŞİLİ VURGULU NAVBAR) -->
+<nav class="navbar navbar-expand-lg py-2 shadow-sm" style="background-color: var(--rems-dark-forest, #1E241A); border-bottom: 1px solid var(--rems-olive-dark, #2A3324);" *ngIf="auth.isLoggedIn && !router.url.includes('login')">
   <div class="container-fluid px-4">
     
-    <!-- Logo ve Sistem Adı -->
-    <div class="navbar-brand fw-bold text-white fs-5 me-4 user-select-none d-flex align-items-center" style="cursor: default;">
-      <span>REMS <span class="badge bg-primary-subtle text-primary-emphasis fs-6 fw-normal px-2 py-1 ms-1">GIS</span></span>
+    <!-- Sol: Modern Logo -->
+    <div class="navbar-brand d-flex align-items-center gap-2 me-4" style="cursor: default;">
+      <div>
+        <span class="fw-bold fs-5 text-white" style="letter-spacing: -0.5px;">REMS</span>
+        <span class="badge ms-1" style="background-color: var(--rems-accent, #C6F051); color: var(--rems-accent-text, #1E241A); font-weight: 800; font-size: 11px;">GIS</span>
+      </div>
     </div>
 
-
-    <!-- 4 Ana Sayfa Menü Linkleri -->
-    <div class="navbar-nav me-auto d-flex flex-row align-items-center gap-2"></div>
-
-    <!-- Sayfa 1: Taşınmazlar (Herkes görür) -->
-      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+    <!-- Orta: Sayfa Modül Linkleri -->
+    <div class="navbar-nav me-auto d-flex flex-row align-items-center gap-1">
+      
+      <!-- Taşınmazlar -->
+      <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          routerLink="/tasinmaz-liste" 
-         routerLinkActive="text-white bg-primary fw-semibold">
-        Taşınmazlar
+         routerLinkActive="active-forest-pill">
+         Taşınmazlar
       </a>
-      <!-- Sayfa 2: Kullanıcı Yönetimi (Sadece Admin) -->
-      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+
+      <!-- Alan Analizi -->
+      <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
+         routerLink="/alan-analizi" 
+         routerLinkActive="active-forest-pill">
+         Mekansal Alan Analizi
+      </a>
+
+      <!-- Kullanıcı Yönetimi (Admin) -->
+      <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          *ngIf="auth.isAdmin"
          routerLink="/kullanici-yonetimi" 
-         routerLinkActive="text-white bg-primary fw-semibold">
-        Kullanıcılar
+         routerLinkActive="active-forest-pill">
+         Kullanıcılar
       </a>
-      <!-- Sayfa 3: Sistem Logları (Sadece Admin) -->
-      <a class="nav-link text-white-50 px-3 py-1 rounded" 
+
+      <!-- Sistem Logları (Admin) -->
+      <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          *ngIf="auth.isAdmin"
          routerLink="/log-yonetimi" 
-         routerLinkActive="text-white bg-primary fw-semibold">
-        Sistem Logları
-      </a>
-      <!-- Sayfa 4: Alan Analizi (Herkes görür) -->
-      <a class="nav-link text-white-50 px-3 py-1 rounded" 
-         routerLink="/alan-analizi" 
-         routerLinkActive="text-white bg-primary fw-semibold">
-        Alan Analizi
+         routerLinkActive="active-forest-pill">
+         Sistem Logları
       </a>
 
-    <!-- Sağ Köşe: Dinamik Kullanıcı Rozeti & Çıkış -->
-    <div class="d-flex align-items-center gap-3 ms-auto" *ngIf="auth.currentUser as user">
-      <div class="d-flex align-items-center gap-2 text-white bg-white bg-opacity-10 px-3 py-1 rounded-pill border border-white border-opacity-10">
-        <!-- Baş Harf -->
-        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 13px;">
-          {{ user.adSoyad.charAt(0).toUpperCase() }}
-        </div>
-        <div class="small leading-tight">
-          <div class="fw-semibold">{{ user.adSoyad }}</div>
-          <div class="text-white-50" style="font-size: 11px;">
-            {{ user.rol === 'Admin' ? 'Yönetici (Admin)' : 'Kullanıcı' }}
-          </div>
-        </div>
+    </div>
+
+    <!-- Sağ: Kullanıcı ve Çıkış Tek Kapsül Kartı -->
+    <div class="user-pill d-flex align-items-center gap-2 ps-2 pe-3 py-1 rounded-pill shadow-sm" 
+         style="background-color: var(--rems-olive-dark, #2A3324); border: 1px solid rgba(198, 240, 81, 0.25);"
+         *ngIf="auth.currentUser as user">
+      
+      
+
+      <!-- Kullanıcı Avatarı -->
+      <div class="user-avatar" style="background-color: var(--rems-accent, #C6F051); color: var(--rems-dark-forest, #1E241A); font-weight: 800;">
+        {{ user.adSoyad.charAt(0).toUpperCase() }}
       </div>
 
-      <button type="button" class="btn btn-sm btn-outline-light border-opacity-25 text-white-50 px-3" (click)="cikisYap()">
-        Çıkış Yap
+      <!-- Kullanıcı Bilgileri -->
+      <div class="small leading-tight">
+        <div class="fw-bold text-white" style="font-size: 12px;">{{ user.adSoyad }}</div>
+        <span class="badge" style="background-color: rgba(198, 240, 81, 0.18); color: var(--rems-accent, #C6F051); font-size: 9.5px;">
+          {{ user.rol === 'Admin' ? 'Yönetici' : 'Üye' }}
+        </span>
+      </div>
+
+      <!-- Çıkış İkon Butonu -->
+      <button type="button" 
+              class="btn-logout-embedded d-flex align-items-center justify-content-center" 
+              (click)="cikisYap()" 
+              title="Güvenli Çıkış">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
       </button>
+
+
     </div>
 
   </div>
 </nav>
 
-<main>
+<!-- Ana Sayfa İçerik Alanı -->
+<main class="rems-main-viewport" style="padding: 24px 32px; background-color: var(--rems-bg); min-height: calc(100vh - 60px);">
   <router-outlet></router-outlet>
 </main>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 999999;">
+  <div *ngFor="let t of (toastService.toasts | async)" 
+       class="rems-toast shadow-lg mb-2 d-flex align-items-start gap-2 p-3"
+       [ngClass]="'rems-toast-' + t.tip">
+    
+    <div class="flex-grow-1">
+      <div class="fw-bold mb-1 toast-title" style="font-size: 13px;">{{ t.baslik }}</div>
+      <div class="small toast-message" style="font-size: 12px; line-height: 1.4;">{{ t.mesaj }}</div>
+    </div>
+    <button type="button" class="btn-close" style="font-size: 10px;" (click)="toastService.sil(t.id)"></button>
+  </div>
+</div>
+
+<!-- GLOBAL ONAY POP-UP DİYALOĞU (MERKEZİ CONFIRM MODAL) -->
+<div class="rems-modal-backdrop d-flex align-items-center justify-content-center" *ngIf="onayService.modal$ | async as modal">
+  <div class="rems-confirm-modal p-4 shadow-lg text-center">
+    
+    <!-- İkon Rozeti -->
+    <div class="mb-3 mx-auto" 
+         style="width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: #FFF0F0; color: #E63946;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"></polyline>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        <line x1="10" y1="11" x2="10" y2="17"></line>
+        <line x1="14" y1="11" x2="14" y2="17"></line>
+      </svg>
+    </div>
+
+    <!-- Başlık ve Açıklama -->
+    <h4 class="fw-bold mb-2" style="color: var(--rems-dark-forest); font-size: 20px;">{{ modal.baslik }}</h4>
+    <p class="text-secondary small mb-4" style="font-size: 13.5px; line-height: 1.5;">{{ modal.mesaj }}</p>
+
+    <!-- Aksiyon Butonları -->
+    <div class="d-flex gap-2 justify-content-center">
+      <button type="button" class="btn btn-secondary btn-sm px-4" (click)="onayService.cevapla(false)">
+        {{ modal.iptalMetni || 'Vazgeç' }}
+      </button>
+      <button type="button" class="btn btn-danger btn-sm px-4 fw-bold shadow-sm" (click)="onayService.cevapla(true)">
+        {{ modal.onayMetni || 'Evet, Sil' }}
+      </button>
+    </div>
+
+  </div>
+</div>

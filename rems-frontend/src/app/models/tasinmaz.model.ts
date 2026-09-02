@@ -11,6 +11,7 @@ export interface Tasinmaz {
   adres: string;
   tasinmazTipi: string;
   alanM2: number;
+  resimUrl?: string; 
   koordinatlar: number[][];
   secili?: boolean;
 }

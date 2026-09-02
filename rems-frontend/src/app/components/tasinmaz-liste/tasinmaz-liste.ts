@@ -8,10 +8,12 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {
   FormBuilder,
   FormGroup,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  FormsModule
 } from '@angular/forms';
 
 import { TasinmazListeService } from './tasinmaz-liste.service';
@@ -23,6 +25,8 @@ import { Kullanici } from '../../models/kullanici.model';
 import { LokasyonService } from '../../services/lokasyon.service';
 import { KullaniciService } from '../../services/kullanici.service';
 import { Auth } from '../../core/auth';
+import { OnayService } from '../../services/onay.service';
+import { ToastService } from '../../services/toast.service';
 
 // OpenLayers
 import Map from 'ol/Map';
@@ -34,7 +38,7 @@ import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
 import { fromLonLat } from 'ol/proj';
-import { Style, Fill, Stroke } from 'ol/style';
+import { Style, Fill, Stroke, Icon, Text } from 'ol/style';
 import Overlay from 'ol/Overlay';
 
 @Component({
@@ -42,7 +46,8 @@ import Overlay from 'ol/Overlay';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   templateUrl: './tasinmaz-liste.html',
   styleUrls: ['./tasinmaz-liste.scss']
@@ -61,7 +66,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   tumKullanicilar: Kullanici[] = []; // Admin için kullanıcı listesi
   seciliIdler = new Set<number>();
   tumSecili = false;
-  sayfalamaDizisi: number[] = [];
+  sayfalamaDizisi: (number | string)[] = [];
   private popupOverlay!: Overlay;
   secilenTasinmaz: Tasinmaz | null = null;
   secilenExcelDosyasi: File | null = null;
@@ -80,6 +85,61 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     return sayfa;
   }
 
+  readonly pinSvgKonut = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
+      <defs>
+        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+        </filter>
+      </defs>
+      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#2563eb" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
+      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
+      <path d="M18 10.5 L12 16 L13.8 16 L13.8 22.5 L16.5 22.5 L16.5 18.5 L19.5 18.5 L19.5 22.5 L22.2 22.5 L22.2 16 L24 16 Z" fill="#2563eb"/>
+    </svg>`
+  );
+  readonly pinSvgArsa = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
+      <defs>
+        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+        </filter>
+      </defs>
+      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#16a34a" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
+      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
+      <path d="M14 13 L22 13 L24 21 L12 21 Z" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M18 13 L18 21 M13 17 L23 17" stroke="#16a34a" stroke-width="1.2"/>
+    </svg>`
+  );
+  readonly pinSvgBina = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
+      <defs>
+        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+        </filter>
+      </defs>
+      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#ea580c" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
+      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
+      <path d="M13 11 L23 11 L23 23 L13 23 Z" fill="#ea580c"/>
+      <rect x="15" y="13" width="2" height="2" fill="#ffffff"/>
+      <rect x="19" y="13" width="2" height="2" fill="#ffffff"/>
+      <rect x="15" y="16" width="2" height="2" fill="#ffffff"/>
+      <rect x="19" y="16" width="2" height="2" fill="#ffffff"/>
+      <rect x="17" y="19.5" width="2" height="3.5" fill="#ffffff"/>
+    </svg>`
+  );
+  private readonly pinSvgDiger = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
+      <defs>
+        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+        </filter>
+      </defs>
+      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#64748b" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
+      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
+      <circle cx="18" cy="17" r="4" fill="#64748b"/>
+    </svg>`
+  );
+
   private map!: Map;
   private vectorSource!: VectorSource;
   private vectorLayer!: VectorLayer<VectorSource>;
@@ -91,8 +151,10 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private lokasyonService: LokasyonService,
     private kullaniciService: KullaniciService,
-    public auth: Auth, // 👈 Auth servisini public ekliyoruz ki HTML'de auth.isAdmin kullanabilelim
-    private ngZone: NgZone
+    public auth: Auth,
+    private ngZone: NgZone,
+    private onay: OnayService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -104,7 +166,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
       parselNo: [''],
       adres: [''],
       tasinmazTipi: [''],
-      kullaniciId: [''] // 👈 Kullanıcı Filtresi
+      kullaniciId: [''] // Kullanici Filtresi
     });
 
     this.illeriGetir();
@@ -144,6 +206,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   ilSecildi(event: any): void {
     const ilId = event.target.value;
     this.filtreForm.patchValue({
+      ilId: ilId,
       ilceId: '',
       mahalleId: ''
     });
@@ -218,27 +281,101 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  private haritayiBaslat(): void {
+  private getTasinmazStili(feature: any): Style[] {
+    const tasinmaz: Tasinmaz = feature.get('tasinmazBilgi');
+    const geom = feature.getGeometry();
+    const isSelected = !!this.secilenTasinmaz && this.secilenTasinmaz.id === tasinmaz?.id;
+    const zoom = this.map?.getView() ? (this.map.getView().getZoom() ?? 10) : 10;
+    const tip = (tasinmaz?.tasinmazTipi || '').trim().toLowerCase();
+    // 1. Taşınmaz türüne göre renk ve ikon seçimi
+    let strokeColor = '#2563eb';
+    let fillColor = 'rgba(37, 99, 235, 0.22)';
+    let iconSrc = this.pinSvgKonut;
+    if (tip === 'arsa') {
+      strokeColor = '#16a34a';
+      fillColor = 'rgba(22, 163, 74, 0.22)';
+      iconSrc = this.pinSvgArsa;
+    } else if (tip === 'bina') {
+      strokeColor = '#ea580c';
+      fillColor = 'rgba(234, 88, 12, 0.22)';
+      iconSrc = this.pinSvgBina;
+    } else if (tip !== 'konut') {
+      strokeColor = '#64748b';
+      fillColor = 'rgba(100, 116, 139, 0.22)';
+      iconSrc = this.pinSvgDiger;
+    }
+    // Seçilen taşınmaz vurgusu (Altın-amber rengi)
+    if (isSelected) {
+      strokeColor = '#d97706';
+      fillColor = 'rgba(217, 119, 6, 0.35)';
+    }
+    const styles: Style[] = [];
+    // 2. Poligon Sınır ve Dolgu Stili
+    const poligonStili = new Style({
+      fill: new Fill({ color: fillColor }),
+      stroke: new Stroke({
+        color: strokeColor,
+        width: isSelected ? 3.5 : (zoom >= 14 ? 2.5 : 1.8)
+      }),
+      zIndex: isSelected ? 100 : 10
+    });
+    styles.push(poligonStili);
+    // 3. Poligon Merkezine Tür İkonu ve Ölçeğe Göre Etiket
+    if (geom instanceof Polygon) {
+      const centerPoint = geom.getInteriorPoint();
+      // Zoom seviyesine göre pin boyutu (uzaktayken küçük, yakındayken normal)
+      let pinScale = 0.85;
+      if (zoom >= 15) {
+        pinScale = 1.0;
+      } else if (zoom >= 12) {
+        pinScale = 0.92;
+      }
+      if (isSelected) {
+        pinScale *= 1.15;
+      }
+      // Yakın zoom seviyesinde (zoom >= 14.5) ada/parsel etiketi
+      let textStyle: Text | undefined = undefined;
+      if (zoom >= 14.5 && tasinmaz) {
+        textStyle = new Text({
+          text: `Ada: ${tasinmaz.adaNo} / Parsel: ${tasinmaz.parselNo}`,
+          font: 'bold 11px "Segoe UI", Roboto, sans-serif',
+          fill: new Fill({ color: isSelected ? '#b45309' : '#0f172a' }),
+          stroke: new Stroke({ color: '#ffffff', width: 3.5 }),
+          offsetY: 24, // Pinin hemen altına yerleştirir
+          overflow: true
+        });
+      }
+      const iconStyle = new Style({
+        geometry: centerPoint,
+        image: new Icon({
+          src: iconSrc,
+          anchor: [0.5, 43 / 46],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'fraction',
+          scale: pinScale
+        }),
+        text: textStyle,
+        zIndex: isSelected ? 110 : 20
+      });
+      styles.push(iconStyle);
+    }
+    return styles;
+  }
+
+    private haritayiBaslat(): void {
     this.ngZone.runOutsideAngular(() => {
       this.vectorSource = new VectorSource();
       this.vectorLayer = new VectorLayer({
         source: this.vectorSource,
-        style: new Style({ 
-          fill: new Fill({
-            color: 'rgba(51, 136, 255, 0.5)'
-          }),
-          stroke: new Stroke({
-            color: 'blue',
-            width: 2
-          })
-        })
+        style: (feature) => this.getTasinmazStili(feature)
       });
+
       this.map = new Map({
         target: 'map',
         layers: [new TileLayer({ source: new OSM() }), this.vectorLayer],
         view: new View({
           center: fromLonLat([32.85411, 39.92077]),
-          zoom: 6
+          zoom: 6 // Türkiye genel görünümü
         })
       });
 
@@ -255,13 +392,24 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         this.map.addOverlay(this.popupOverlay);
       }
 
+      // Harita üzerinde bir pine veya parsele tıklandığında
       this.map.on('singleclick', (evt) => {
         const feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => f);
         if (feature) {
           const bilgi = feature.get('tasinmazBilgi');
           if (bilgi) {
             this.secilenTasinmaz = bilgi;
-            this.popupOverlay.setPosition(evt.coordinate);
+            // Seçim renginin (altın sarısı) parlaması için katmanı yenile
+            if (this.vectorLayer) {
+              this.vectorLayer.changed();
+            }
+            // Popup balonunu tam pinin/parselin merkezine yerleştir
+            const geom = feature.getGeometry();
+            if (geom instanceof Polygon) {
+              this.popupOverlay.setPosition(geom.getInteriorPoint().getCoordinates());
+            } else {
+              this.popupOverlay.setPosition(evt.coordinate);
+            }
             this.cdr.detectChanges();
           }
         } else {
@@ -269,6 +417,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         }
       });
 
+      // Fare pinin üzerine geldiğinde imleci el işareti (pointer) yap
       this.map.on('pointermove', (evt) => {
         const hit = this.map.hasFeatureAtPixel(evt.pixel);
         this.map.getViewport().style.cursor = hit ? 'pointer' : '';
@@ -281,27 +430,54 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
       this.popupOverlay.setPosition(undefined);
     }
     this.secilenTasinmaz = null;
+    // Seçim kalktığı için katmanı normal renklere geri döndür
+    if (this.vectorLayer) {
+      this.vectorLayer.changed();
+    }
     this.cdr.detectChanges();
   }
 
-  private haritadaTasinmazaGit(tasinmaz: Tasinmaz): void {
+  haritadaTasinmazaGit(tasinmaz: Tasinmaz): void {
     if (!this.map || !this.vectorSource) return;
     if (!tasinmaz.koordinatlar || tasinmaz.koordinatlar.length === 0) return;
 
-    const koordinatlar = tasinmaz.koordinatlar.map(k => fromLonLat([k[0], k[1]]));
-    const poligon = new Polygon([koordinatlar]);
-    const feature = new Feature({
-      geometry: poligon,
-      tasinmazBilgi: tasinmaz
-    });
+    this.secilenTasinmaz = tasinmaz;
 
-    this.vectorSource.clear();
-    this.vectorSource.addFeature(feature);
-    this.map.getView().fit(poligon.getExtent(), {
-      padding: [80, 80, 80, 80],
-      duration: 800,
-      maxZoom: 18
-    });
+    // Haritadaki feature'ı bul (veya yoksa ekle)
+    const features = this.vectorSource.getFeatures();
+    let hedefFeature = features.find(f => f.get('tasinmazBilgi')?.id === tasinmaz.id);
+
+    if (!hedefFeature) {
+      const koordinatlar = tasinmaz.koordinatlar.map(k => fromLonLat([k[0], k[1]]));
+      const poligon = new Polygon([koordinatlar]);
+      hedefFeature = new Feature({
+        geometry: poligon,
+        tasinmazBilgi: tasinmaz
+      });
+      this.vectorSource.addFeature(hedefFeature);
+    }
+
+    const geom = hedefFeature.getGeometry();
+    if (geom) {
+      // Haritayı yumuşak bir animasyonla parsele uçur
+      this.map.getView().fit(geom.getExtent(), {
+        padding: [90, 90, 90, 90],
+        duration: 600,
+        maxZoom: 17
+      });
+
+      // Popup'ı tam parselin merkezine aç
+      if (geom instanceof Polygon && this.popupOverlay) {
+        const center = geom.getInteriorPoint().getCoordinates();
+        this.popupOverlay.setPosition(center);
+      }
+    }
+
+    // Seçilen mülkü altın sarısıyla vurgula
+    if (this.vectorLayer) {
+      this.vectorLayer.changed();
+    }
+    this.cdr.detectChanges();
   }
 
   veriGetir(): void {
@@ -348,7 +524,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
           this.tasinmazlar = [];
         }
 
-        this.sayfalamaDizisi = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+        this.sayfalamaGuncelle();
         this.tasinmazlar.forEach(t => {
           t.secili = this.seciliIdler.has(t.id);
         });
@@ -369,7 +545,43 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  sayfaDegistir(yeniSayfa: number): void {
+  sayfalamaGuncelle(): void {
+    const total = this.totalPages;
+    const current = this.currentPage;
+
+    if (total <= 7) {
+      this.sayfalamaDizisi = Array.from({ length: total }, (_, i) => i + 1);
+      return;
+    }
+
+    const pages: (number | string)[] = [];
+    pages.push(1);
+
+    if (current <= 4) {
+      for (let i = 2; i <= 5; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(total);
+    } else if (current >= total - 3) {
+      pages.push('...');
+      for (let i = total - 4; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push('...');
+      pages.push(current - 1);
+      pages.push(current);
+      pages.push(current + 1);
+      pages.push('...');
+      pages.push(total);
+    }
+
+    this.sayfalamaDizisi = pages;
+  }
+
+  sayfaDegistir(yeniSayfa: number | string): void {
+    if (typeof yeniSayfa === 'string' || yeniSayfa === this.currentPage) return;
     if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages) {
       this.currentPage = yeniSayfa;
       this.veriGetir();
@@ -416,23 +628,30 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  secilenleriSil(): void {
+  async secilenleriSil(): Promise<void> {
     const secilenIdler = Array.from(this.seciliIdler);
     if (secilenIdler.length === 0) return;
 
-    const onay = confirm(`${secilenIdler.length} adet taşınmazı silmek istediğinize emin misiniz?`);
+    const onay = await this.onay.sor(
+      'Toplu Taşınmaz Silme',
+      `Seçilen ${secilenIdler.length} adet taşınmazı ve haritadaki sınırlarını kalıcı olarak silmek istediğinize emin misiniz?`,
+      'Evet, Hepsini Sil',
+      'Vazgeç'
+    );
     if (!onay) return;
 
     this.yukleniyor = true;
+    this.cdr.detectChanges();
     this.tasinmazListeService.tasinmazlariSil(secilenIdler).subscribe({
       next: () => {
+        this.toast.success(`${secilenIdler.length} adet taşınmaz başarıyla silindi.`);
         this.seciliIdler.clear();
         this.tumSecili = false;
         this.veriGetir();
       },
       error: (hata) => {
         console.error('Taşınmazlar silinirken hata oluştu:', hata);
-        alert('Taşınmazlar silinirken bir hata oluştu.');
+        this.toast.error('Taşınmazlar silinirken bir hata oluştu.');
         this.yukleniyor = false;
         this.cdr.detectChanges();
       }
@@ -447,31 +666,56 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/tasinmaz-duzenle', id]);
   }
 
-  sil(id: number): void {
-    const onay = confirm('Bu taşınmazı silmek istediğinize emin misiniz?');
+  async sil(id: number): Promise<void> {
+    const onay = await this.onay.sor(
+      'Taşınmazı Sil',
+      'Bu taşınmaz kaydı ve haritadaki sınırları kalıcı olarak silinecektir. Onaylıyor musunuz?',
+      'Evet, Sil',
+      'Vazgeç'
+    );
     if (!onay) return;
 
     this.yukleniyor = true;
+    this.cdr.detectChanges();
     this.tasinmazListeService.tasinmazSil(id).subscribe({
       next: () => {
+        this.toast.success('Taşınmaz kaydı başarıyla silindi.');
         this.seciliIdler.delete(id);
         this.tumSecili = this.tasinmazlar.length > 0 && this.tasinmazlar.every(t => this.seciliIdler.has(t.id));
         this.veriGetir();
       },
       error: (hata) => {
         console.error('Taşınmaz silinirken hata oluştu:', hata);
-        alert('Taşınmaz silinirken bir hata oluştu.');
+        this.toast.error('Taşınmaz silinirken bir hata oluştu.');
         this.yukleniyor = false;
         this.cdr.detectChanges();
       }
     });
   }
 
-  excelIndir(): void {
-    const filtreler = { ...this.filtreForm.value };
+  private aktifFiltreleriAl(): any {
+    const formFiltreleri = this.filtreForm.value;
+    const filtreler: any = {};
+
+    if (formFiltreleri.ilId && formFiltreleri.ilId !== '' && formFiltreleri.ilId !== 'null') filtreler.ilId = formFiltreleri.ilId;
+    if (formFiltreleri.ilceId && formFiltreleri.ilceId !== '' && formFiltreleri.ilceId !== 'null') filtreler.ilceId = formFiltreleri.ilceId;
+    if (formFiltreleri.mahalleId && formFiltreleri.mahalleId !== '' && formFiltreleri.mahalleId !== 'null') filtreler.mahalleId = formFiltreleri.mahalleId;
+    if (formFiltreleri.adaNo && formFiltreleri.adaNo.trim() !== '') filtreler.adaNo = formFiltreleri.adaNo.trim();
+    if (formFiltreleri.parselNo && formFiltreleri.parselNo.trim() !== '') filtreler.parselNo = formFiltreleri.parselNo.trim();
+    if (formFiltreleri.adres && formFiltreleri.adres.trim() !== '') filtreler.adres = formFiltreleri.adres.trim();
+    if (formFiltreleri.tasinmazTipi && formFiltreleri.tasinmazTipi !== '') filtreler.tasinmazTipi = formFiltreleri.tasinmazTipi;
+
     if (!this.auth.isAdmin && this.auth.currentUser) {
       filtreler.kullaniciId = this.auth.currentUser.id;
+    } else if (formFiltreleri.kullaniciId && formFiltreleri.kullaniciId !== '') {
+      filtreler.kullaniciId = formFiltreleri.kullaniciId;
     }
+
+    return filtreler;
+  }
+
+  excelIndir(): void {
+    const filtreler = this.aktifFiltreleriAl();
     this.tasinmazListeService.exportToExcel(filtreler).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -480,19 +724,17 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         link.download = `Tasinmazlar_${new Date().getTime()}.xlsx`;
         link.click();
         window.URL.revokeObjectURL(url);
+        this.toast.success('Excel raporu başarıyla indirildi.');
       },
       error: (err) => {
         console.error('Excel indirilirken hata oluştu:', err);
-        alert('Excel dosyası indirilirken bir hata oluştu.');
+        this.toast.error('Excel dosyası indirilirken bir hata oluştu.');
       }
     });
   }
 
   pdfIndir(): void {
-    const filtreler = { ...this.filtreForm.value };
-    if (!this.auth.isAdmin && this.auth.currentUser) {
-      filtreler.kullaniciId = this.auth.currentUser.id;
-    }
+    const filtreler = this.aktifFiltreleriAl();
     this.tasinmazListeService.exportToPdf(filtreler).subscribe({
       next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -501,49 +743,84 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         link.download = `Tasinmazlar_${new Date().getTime()}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
+        this.toast.success('PDF raporu başarıyla indirildi.');
       },
       error: (err) => {
         console.error('PDF indirilirken hata oluştu:', err);
-        alert('PDF dosyası indirilirken bir hata oluştu.');
+        this.toast.error('PDF dosyası indirilirken bir hata oluştu.');
       }
     });
   }
 
   excelModalAcik = false;
-  excelModalAc(): void { this.excelModalAcik = true; this.secilenExcelDosyasi = null; }
-  excelModalKapat(): void { this.excelModalAcik = false; this.secilenExcelDosyasi = null; }
+  importHataMesaji: string | null = null;
+  private importSubscription?: Subscription;
+
+  excelModalAc(): void { 
+    this.excelModalAcik = true; 
+    this.secilenExcelDosyasi = null;
+    this.importYukleniyor = false;
+    this.importHataMesaji = null;
+    this.cdr.detectChanges();
+  }
+
+  excelModalKapat(): void { 
+    if (this.importSubscription) {
+      this.importSubscription.unsubscribe();
+      this.importSubscription = undefined;
+    }
+    this.excelModalAcik = false; 
+    this.secilenExcelDosyasi = null;
+    this.importYukleniyor = false;
+    this.importHataMesaji = null;
+    this.cdr.detectChanges();
+  }
 
   excelDosyaSecildi(event: any): void {
-    const dosya = event.target.files[0];
+    this.importHataMesaji = null;
+    const dosya = event.target?.files?.[0];
     if (dosya) {
-      if (!dosya.name.endsWith('.xlsx')) {
-        alert('Lütfen sadece .xlsx uzantılı Excel dosyası seçin!');
+      if (!dosya.name.toLowerCase().endsWith('.xlsx')) {
+        this.toast.warning('Lütfen sadece .xlsx uzantılı Excel dosyası seçin!');
         event.target.value = '';
         this.secilenExcelDosyasi = null;
+        this.cdr.detectChanges();
         return;
       }
       this.secilenExcelDosyasi = dosya;
+      this.cdr.detectChanges();
+    } else {
+      this.secilenExcelDosyasi = null;
+      this.cdr.detectChanges();
     }
   }
 
   excelIceAktar(): void {
     if (!this.secilenExcelDosyasi) {
-      alert('Lütfen önce bir Excel dosyası seçin.');
+      this.toast.warning('Lütfen önce bir Excel dosyası seçin.');
       return;
     }
     this.importYukleniyor = true;
-    this.tasinmazListeService.importFromExcel(this.secilenExcelDosyasi).subscribe({
+    this.importHataMesaji = null;
+    this.cdr.detectChanges();
+
+    this.importSubscription = this.tasinmazListeService.importFromExcel(this.secilenExcelDosyasi).subscribe({
       next: (res: any) => {
-        alert(res.message || 'Taşınmazlar başarıyla içe aktarıldı!');
+        this.toast.success(res.message || 'Taşınmazlar başarıyla içe aktarıldı!');
         this.secilenExcelDosyasi = null;
         this.importYukleniyor = false;
+        this.importHataMesaji = null;
         this.excelModalAcik = false;
         this.veriGetir();
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('İçe aktarma hatası:', err);
-        alert(err.error?.message || 'İçe aktarma başarısız oldu.');
+        const mesaj = err.error?.message || err.message || 'İçe aktarma başarısız oldu.';
+        this.toast.error(mesaj);
+        this.importHataMesaji = mesaj;
         this.importYukleniyor = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -600,5 +877,9 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   }
   get binaSayisi(): number {
     return (this.tasinmazlar || []).filter(t => t.tasinmazTipi?.toLowerCase() === 'bina').length;
+  }
+
+  getResimUrl(url?: string): string {
+    return this.tasinmazListeService.getResimUrl(url);
   }
 }

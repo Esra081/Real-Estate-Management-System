@@ -4,6 +4,7 @@ import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
+  FormsModule,
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +17,7 @@ import { Il } from '../../models/il.model';
 import { Ilce } from '../../models/ilce.model';
 import { Mahalle } from '../../models/mahalle.model';
 import { Auth } from '../../core/auth';
+import { ToastService } from '../../services/toast.service';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -33,16 +35,22 @@ import Feature from 'ol/Feature';
 @Component({
   selector: 'app-tasinmaz',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './tasinmaz.html',
   styleUrls: ['./tasinmaz.scss']
 })
-export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterViewInit eklendi
+export class TasinmazFormComponent implements OnInit, AfterViewInit {
 
   tasinmazForm!: FormGroup;
   tasinmazId: number | null = null;
   duzenlemeModu = false;
   yukleniyor = false;
+
+  // SRS Fotoğraf Yükleme Değişkenleri
+  resimYuklemeTipi: 'dosya' | 'link' = 'dosya';
+  secilenDosya: File | null = null;
+  dosyaOnizlemeUrl: string | null = null;
+  dosyaHataMesaji: string = '';
 
   iller: Il[] = [];
   ilceler: Ilce[] = [];
@@ -55,7 +63,8 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
     private lokasyonService: LokasyonService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private auth: Auth
+    private auth: Auth,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -81,6 +90,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
       ilId: ['', Validators.required],
       ilceId: ['', Validators.required],
       mahalleId: ['', Validators.required],
+      resimUrl: [''],
       kullaniciId: [this.auth.currentUser?.id || ''],
       koordinatlar: [[], Validators.required]
     });
@@ -156,6 +166,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
       tasinmazTipi: veri.tasinmazTipi,
       alanM2: veri.alanM2,
       mahalleId: veri.mahalleId,
+      resimUrl: veri.resimUrl || '',
       kullaniciId: veri.kullaniciId,
       koordinatlar: veri.koordinatlar
     });
@@ -365,7 +376,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
     // Haritaya ekle
     this.vectorSource.addFeature(feature);
 
-    // Haritayı polygon'a odakla
     this.map.getView().fit(
       polygon.getExtent(),
       {
@@ -379,75 +389,140 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit { // AfterVi
       'Polygon haritaya çizildi.'
     );
   }
-  
 
-  kaydet(): void {
-    console.log("🚀 Kaydet butonuna basıldı!");
-    console.log("📋 Formun Geçerlilik Durumu (valid):", this.tasinmazForm.valid);
-
-    if (this.tasinmazForm.invalid) {
-      console.warn("❌ Form GEÇERSİZ! Eksik veya hatalı alanlar şunlar:");
-      Object.keys(this.tasinmazForm.controls).forEach(key => {
-        const control = this.tasinmazForm.get(key);
-        if (control?.invalid) {
-          console.log('  - Hatalı/Eksik Alan:', key, control.errors);
-        }
-      });
-      this.tasinmazForm.markAllAsTouched();
-      alert("Lütfen formdaki zorunlu alanları eksiksiz doldurun ve haritadan 4 nokta seçtiğinizden emin olun!");
+  onDosyaSec(event: any): void {
+    this.dosyaHataMesaji = '';
+    const file = event.target.files?.[0];
+    if (!file) {
+      this.secilenDosya = null;
+      this.dosyaOnizlemeUrl = null;
       return;
     }
 
-    console.log("✅ Form geçerli, API isteği hazırlanıyor...");
+    // SRS Kontrolü 1: Format Kuralı (JPEG ve PNG)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (!allowedTypes.includes(file.type) && ext !== 'jpg' && ext !== 'jpeg' && ext !== 'png') {
+      this.dosyaHataMesaji = 'Yalnızca JPEG (.jpg, .jpeg) ve PNG (.png) formatındaki dosyalar yüklenebilir.';
+      this.secilenDosya = null;
+      this.dosyaOnizlemeUrl = null;
+      event.target.value = '';
+      return;
+    }
+
+    // SRS Kontrolü 2: Boyut Kuralı (Maksimum 100 MB)
+    const maxBoyut = 100 * 1024 * 1024;
+    if (file.size > maxBoyut) {
+      this.dosyaHataMesaji = 'Dosya boyutu 100 MB sınırını aşamaz.';
+      this.secilenDosya = null;
+      this.dosyaOnizlemeUrl = null;
+      event.target.value = '';
+      return;
+    }
+
+    this.secilenDosya = file;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.dosyaOnizlemeUrl = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  getGosterilecekResim(): string {
+    if (this.resimYuklemeTipi === 'dosya' && this.dosyaOnizlemeUrl) {
+      return this.dosyaOnizlemeUrl;
+    }
+    const formUrl = this.tasinmazForm?.get('resimUrl')?.value;
+    if (formUrl) {
+      return this.tasinmazService.getResimUrl(formUrl);
+    }
+    return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
+  }
+
+  kaydet(): void {
+    if (this.tasinmazForm.invalid) {
+      this.tasinmazForm.markAllAsTouched();
+      this.toast.warning("Lütfen formdaki zorunlu alanları eksiksiz doldurun ve haritadan 4 nokta seçtiğinizden emin olun!");
+      return;
+    }
 
     const formVerisi = this.tasinmazForm.value;
     const aktifKullaniciId = this.auth.currentUser?.id || "00000000-0000-0000-0000-000000000001";
 
     const hazirTasinmazData = {
-      id: 0,
-      adaNo: formVerisi.adaNo,
-      parselNo: formVerisi.parselNo,
-      adres: formVerisi.adres,
+      id: this.duzenlemeModu && this.tasinmazId !== null ? this.tasinmazId : 0,
+      adaNo: formVerisi.adaNo ? String(formVerisi.adaNo).trim() : '',
+      parselNo: formVerisi.parselNo ? String(formVerisi.parselNo).trim() : '',
+      adres: formVerisi.adres ? String(formVerisi.adres).trim() : '',
       tasinmazTipi: formVerisi.tasinmazTipi,
-      alanM2: Number(formVerisi.alanM2),
-      mahalleId: Number(formVerisi.mahalleId), 
-      kullaniciId: (this.duzenlemeModu && formVerisi.kullaniciId && formVerisi.kullaniciId.length > 20) ? formVerisi.kullaniciId : aktifKullaniciId,
+      alanM2: Number(formVerisi.alanM2) || 0,
+      mahalleId: Number(formVerisi.mahalleId),
+      resimUrl: this.resimYuklemeTipi === 'link' ? (formVerisi.resimUrl ? String(formVerisi.resimUrl).trim() : '') : (this.tasinmazForm.get('resimUrl')?.value || ''),
+      kullaniciId: (this.duzenlemeModu && formVerisi.kullaniciId) ? formVerisi.kullaniciId : aktifKullaniciId,
       koordinatlar: formVerisi.koordinatlar
     };
 
-if (this.duzenlemeModu && this.tasinmazId !== null) {
+    if (this.duzenlemeModu && this.tasinmazId !== null) {
       // GÜNCELLEME İŞLEMİ
-      const guncellenecekTasinmaz: Tasinmaz = {
-        ...hazirTasinmazData, // ÖNCE hazır veriyi (id:0 dahil) seriyoruz
-        id: this.tasinmazId   // SONRA gerçek ID ile o sıfırı eziyoruz!
-      };
-
-      console.log("SUNUCUYA GİDEN GÜNCELLEME VERİSİ:", guncellenecekTasinmaz);
-
-      this.tasinmazService.tasinmazGuncelle(guncellenecekTasinmaz).subscribe({
-        next: () => {
-          alert('Taşınmaz başarıyla güncellendi.');
-          this.router.navigate(['/tasinmaz-liste']);
+      this.tasinmazService.tasinmazGuncelle(hazirTasinmazData).subscribe({
+        next: (res: any) => {
+          if (this.secilenDosya && this.tasinmazId) {
+            // Seçilen fotoğraf dosyasını yükle
+            this.tasinmazService.resimYukle(this.tasinmazId, this.secilenDosya).subscribe({
+              next: () => {
+                this.toast.success('Taşınmaz ve yeni fotoğrafı başarıyla güncellendi.');
+                this.router.navigate(['/tasinmaz-liste']);
+              },
+              error: (fotoErr) => {
+                console.error('Fotoğraf yükleme hatası:', fotoErr);
+                const msg = fotoErr.error?.message || 'Fotoğraf yüklenemedi.';
+                this.toast.warning(`Taşınmaz güncellendi ancak fotoğraf yüklenemedi: ${msg}`);
+                this.router.navigate(['/tasinmaz-liste']);
+              }
+            });
+          } else {
+            if (res && res.hasChanges === false) {
+              this.toast.info('Herhangi bir değişiklik yapılmadı.');
+            } else {
+              this.toast.success('Taşınmaz başarıyla güncellendi.');
+            }
+            this.router.navigate(['/tasinmaz-liste']);
+          }
         },
         error: (hata) => {
           console.error('Güncelleme hatası:', hata);
-          alert('Taşınmaz güncellenirken bir hata oluştu.');
+          const detay = hata.error?.message || (typeof hata.error === 'string' ? hata.error : 'Taşınmaz güncellenirken bir hata oluştu.');
+          this.toast.error(detay, 'Güncelleme Başarısız');
         }
       });
 
     } else {
       // EKLEME İŞLEMİ
-      console.log("SUNUCUYA GİDEN EKLEME VERİSİ:", hazirTasinmazData);
-
-      // Artık ham formVerisi'ni değil, hazırladığımız sayısal veriyi (hazirTasinmazData) gönderiyoruz
       this.tasinmazService.tasinmazEkle(hazirTasinmazData).subscribe({
-        next: () => {
-          alert('Taşınmaz başarıyla eklendi.');
-          this.router.navigate(['/tasinmaz-liste']);
+        next: (res: any) => {
+          const yeniId = res?.id;
+          if (this.secilenDosya && yeniId) {
+            // Yeni oluşturulan taşınmaza fotoğrafı yükle
+            this.tasinmazService.resimYukle(yeniId, this.secilenDosya).subscribe({
+              next: () => {
+                this.toast.success('Taşınmaz ve fotoğrafı başarıyla eklendi.');
+                this.router.navigate(['/tasinmaz-liste']);
+              },
+              error: (fotoErr) => {
+                console.error('Fotoğraf yükleme hatası:', fotoErr);
+                this.toast.warning('Taşınmaz eklendi ancak fotoğraf yüklenirken hata oluştu.');
+                this.router.navigate(['/tasinmaz-liste']);
+              }
+            });
+          } else {
+            this.toast.success('Taşınmaz başarıyla eklendi.');
+            this.router.navigate(['/tasinmaz-liste']);
+          }
         },
         error: (hata) => {
           console.error('Ekleme hatası:', hata);
-          alert('Taşınmaz eklenirken bir hata oluştu.');
+          const detay = hata.error?.message || (typeof hata.error === 'string' ? hata.error : 'Taşınmaz eklenirken bir hata oluştu.');
+          this.toast.error(detay, 'Ekleme Başarısız');
         }
       });
     }
@@ -519,7 +594,7 @@ if (this.duzenlemeModu && this.tasinmazId !== null) {
       this.tasinmazForm.get('koordinatlar')?.markAsTouched();
       this.tasinmazForm.get('koordinatlar')?.updateValueAndValidity();
       
-      console.log('📍 Haritadan Çizilen Koordinatlar:', veritabaniKoordinatlari);
+      console.log('Haritadan Cizilen Koordinatlar:', veritabaniKoordinatlari);
     });
 
     this.map.addInteraction(this.drawInteraction);

@@ -189,8 +189,9 @@ namespace REMS.API.Services
                 birlesimGeom = birlesimGeom.Union(poligonlar[i]);
             }
 
-            // 3. Koordinatları çıkar ve yeni birleşik m² alanını hesapla
+            // 3. Koordinatları çıkar ve yeni birleşik m2 alanını hesapla
             var koordinatlar = GeometryHelper.PoligondanKoordinatlariAl(birlesimGeom);
+            var cokluKoordinatlar = GeometryHelper.TumParcalariAl(birlesimGeom);
             var alanM2 = GeometryHelper.HesaplaM2(birlesimGeom);
 
             // 4. 2'li birleşim -> "D", 3'lü birleşim -> "E" etiketi alır
@@ -231,7 +232,8 @@ namespace REMS.API.Services
                 IslemTipi = string.Join(" ∪ ", etiketler),
                 SonucEtiketi = sonucEtiketi,
                 AlanM2 = alanM2,
-                Koordinatlar = koordinatlar
+                Koordinatlar = koordinatlar,
+                CokluKoordinatlar = cokluKoordinatlar
             };
         }
     }

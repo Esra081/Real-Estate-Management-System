@@ -39,7 +39,7 @@ namespace REMS.API.Services
         }
 
         // 2. LOG EXCEL ÇIKTISI
-        public byte[] ExportLogsToExcel(IEnumerable<LogListDto> loglar)
+        public byte[] ExportLogsToExcel(IEnumerable<LogListDto> loglar, string? filtreOzeti = null)
         {
             var headers = new[] { "ID", "Tarih", "Kullanıcı Adı", "E-Posta", "İşlem Tipi", "Durum", "IP Adresi", "Açıklama" };
 
@@ -53,7 +53,7 @@ namespace REMS.API.Services
                 ws.Cell(row, 6).Value = l.Durum ?? "";
                 ws.Cell(row, 7).Value = l.IpAdresi ?? "-";
                 ws.Cell(row, 8).Value = l.Aciklama ?? "";
-            });
+            }, "REMS GIS - SİSTEM DENETİM VE GÜVENLİK LOGLARI RAPORU", filtreOzeti);
         }
 
         // 3. TAŞINMAZ PDF ÇIKTISI
@@ -79,7 +79,7 @@ namespace REMS.API.Services
         }
 
         // 4. LOG PDF ÇIKTISI
-        public byte[] ExportLogsToPdf(IEnumerable<LogListDto> loglar)
+        public byte[] ExportLogsToPdf(IEnumerable<LogListDto> loglar, string? filtreOzeti = null)
         {
             string[] headers = { "ID", "Tarih", "Kullanıcı", "İşlem Tipi", "Durum", "IP Adresi", "Açıklama" };
             double[] colX = { 30, 60, 160, 270, 380, 450, 520 };
@@ -93,20 +93,52 @@ namespace REMS.API.Services
                 gfx.DrawString(item.Durum ?? "", font, XBrushes.Black, new XPoint(cols[4] + 2, currentY));
                 gfx.DrawString(item.IpAdresi ?? "-", font, XBrushes.Black, new XPoint(cols[5] + 2, currentY));
 
-                string aciklamaKisa = (item.Aciklama?.Length > 45) ? item.Aciklama.Substring(0, 42) + "..." : (item.Aciklama ?? "");
+                string aciklamaKisa = (item.Aciklama?.Length > 50) ? item.Aciklama.Substring(0, 47) + "..." : (item.Aciklama ?? "");
                 gfx.DrawString(aciklamaKisa, font, XBrushes.Black, new XPoint(cols[6] + 2, currentY));
-            });
+            }, filtreOzeti);
         }
 
-        // 🌟 MERKEZİ GENERIC EXCEL ÜRETİCİSİ (Tekrarları Yok Eden Motor)
-        private static byte[] GenerateExcel<T>(string sheetName, string[] headers, IEnumerable<T> items, Action<IXLWorksheet, int, T> mapRow)
+        // MERKEZİ GENERIC EXCEL ÜRETİCİSİ
+        private static byte[] GenerateExcel<T>(
+            string sheetName,
+            string[] headers,
+            IEnumerable<T> items,
+            Action<IXLWorksheet, int, T> mapRow,
+            string? reportTitle = null,
+            string? filtreOzeti = null)
         {
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add(sheetName);
 
+            int startRow = 1;
+
+            if (!string.IsNullOrWhiteSpace(reportTitle))
+            {
+                // 1. Satır: Rapor Ana Başlığı
+                var titleRange = worksheet.Range(1, 1, 1, headers.Length);
+                titleRange.Merge();
+                titleRange.Value = reportTitle;
+                titleRange.Style.Font.Bold = true;
+                titleRange.Style.Font.FontSize = 14;
+                titleRange.Style.Font.FontColor = XLColor.FromHtml("#1565C0");
+                titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+
+                // 2. Satır: Uygulanan Filtre Bilgisi ve Rapor Tarihi
+                var filterCell = worksheet.Cell(2, 1);
+                filterCell.Value = $"Uygulanan Filtre: {(string.IsNullOrWhiteSpace(filtreOzeti) ? "Tüm Kayıtlar" : filtreOzeti)} | Rapor Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm}";
+                filterCell.Style.Font.Italic = true;
+                filterCell.Style.Font.FontSize = 10;
+                filterCell.Style.Font.FontColor = XLColor.Gray;
+
+                worksheet.Range(2, 1, 2, headers.Length).Merge();
+
+                startRow = 4; // Tablo başlıkları 4. satırdan başlasın
+            }
+
+            // Tablo Başlıkları
             for (int i = 0; i < headers.Length; i++)
             {
-                var cell = worksheet.Cell(1, i + 1);
+                var cell = worksheet.Cell(startRow, i + 1);
                 cell.Value = headers[i];
                 cell.Style.Font.Bold = true;
                 cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#1976D2");
@@ -114,7 +146,7 @@ namespace REMS.API.Services
                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             }
 
-            int row = 2;
+            int row = startRow + 1;
             foreach (var item in items)
             {
                 mapRow(worksheet, row, item);
@@ -128,13 +160,14 @@ namespace REMS.API.Services
             return stream.ToArray();
         }
 
-        // 🌟 MERKEZİ GENERIC PDF ÜRETİCİSİ (Tekrarları Yok Eden Motor)
+        // MERKEZİ GENERIC PDF ÜRETİCİSİ
         private static byte[] GeneratePdf<T>(
             string title,
             string[] headers,
             double[] colX,
             IEnumerable<T> items,
-            Action<XGraphics, double, double[], XFont, T> drawRow)
+            Action<XGraphics, double, double[], XFont, T> drawRow,
+            string? filtreOzeti = null)
         {
             using var document = new PdfDocument();
             document.Info.Title = title;
@@ -143,15 +176,22 @@ namespace REMS.API.Services
             page.Orientation = PdfSharpCore.PageOrientation.Landscape;
 
             var gfx = XGraphics.FromPdfPage(page);
-            var titleFont = new XFont("Arial", 14, XFontStyle.Bold);
+            var titleFont = new XFont("Arial", 13, XFontStyle.Bold);
+            var subtitleFont = new XFont("Arial", 8, XFontStyle.Italic);
             var headerFont = new XFont("Arial", 9, XFontStyle.Bold);
             var regularFont = new XFont("Arial", 8, XFontStyle.Regular);
 
             // Başlık
-            gfx.DrawString(title, titleFont, XBrushes.DarkBlue, new XPoint(30, 40));
-            gfx.DrawString($"Rapor Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm}", regularFont, XBrushes.Gray, new XPoint(650, 40));
+            gfx.DrawString(title, titleFont, XBrushes.DarkBlue, new XPoint(30, 32));
+            gfx.DrawString($"Rapor Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm}", regularFont, XBrushes.Gray, new XPoint(650, 32));
 
-            double currentY = 70;
+            // Filtre Bilgisi Alt Başlığı
+            if (!string.IsNullOrWhiteSpace(filtreOzeti))
+            {
+                gfx.DrawString($"Uygulanan Filtre: {filtreOzeti}", subtitleFont, XBrushes.DarkSlateGray, new XPoint(30, 48));
+            }
+
+            double currentY = !string.IsNullOrWhiteSpace(filtreOzeti) ? 68 : 58;
             DrawHeaderBar(gfx, headers, colX, headerFont, currentY);
             currentY += 15;
 
@@ -163,7 +203,7 @@ namespace REMS.API.Services
                     page = document.AddPage();
                     page.Orientation = PdfSharpCore.PageOrientation.Landscape;
                     gfx = XGraphics.FromPdfPage(page);
-                    currentY = 50;
+                    currentY = 45;
                     DrawHeaderBar(gfx, headers, colX, headerFont, currentY);
                     currentY += 15;
                 }

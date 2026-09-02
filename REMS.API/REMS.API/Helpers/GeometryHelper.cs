@@ -82,7 +82,39 @@ namespace REMS.API.Helpers
             return sonuc;
         }
 
-        // 3. WGS84 Derece Koordinatlarından Gerçek Yüzey Alanını (m²) Hesaplar
+        // 2c. Geometrideki tüm parçaların koordinatlarını çıkarır (MultiPolygon)
+        public static List<List<List<double>>> TumParcalariAl(Geometry? geometri)
+        {
+            var sonuc = new List<List<List<double>>>();
+            if (geometri == null || geometri.IsEmpty) return sonuc;
+
+            // Tek parçalı standart poligon ise:
+            if (geometri is Polygon poly && poly.ExteriorRing != null)
+            {
+                var parca = poly.ExteriorRing.Coordinates
+                    .Select(c => new List<double> { c.X, c.Y })
+                    .ToList();
+                sonuc.Add(parca);
+            }
+            // Birbirine değmeyen çok parçalı (MultiPolygon) ise:
+            else if (geometri is MultiPolygon multi)
+            {
+                foreach (var p in multi.Geometries.OfType<Polygon>())
+                {
+                    if (p.ExteriorRing != null)
+                    {
+                        var parca = p.ExteriorRing.Coordinates
+                            .Select(c => new List<double> { c.X, c.Y })
+                            .ToList();
+                        sonuc.Add(parca);
+                    }
+                }
+            }
+
+            return sonuc;
+        }
+
+        // 3. WGS84 Derece Koordinatlarından Gerçek Yüzey Alanını (m2) Hesaplar
         public static decimal HesaplaM2(Geometry? geometri)
         {
             if (geometri == null || geometri.IsEmpty) return 0;

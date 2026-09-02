@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlanAnaliziService } from '../../services/alan-analizi.service';
 import { PoligonDto, AlanAnalizSonucDto } from '../../models/alan-analizi.model';
+import { ToastService } from '../../services/toast.service';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -36,13 +37,12 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
   // Sonuç ve UI durumları
   sonuc: AlanAnalizSonucDto | null = null;
   yukleniyor = false;
-  mesaj: string | null = null;
-  mesajTipi: 'success' | 'danger' | 'info' = 'info';
 
   constructor(
     private alanAnaliziService: AlanAnaliziService,
     private ngZone: NgZone,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {}
@@ -139,11 +139,14 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
   // 4. Auto-Select: Veritabanında Kayıtlı A, B, C'yi Getirme
   autoSelect(): void {
     this.yukleniyor = true;
+    this.cdr.detectChanges();
+
     this.alanAnaliziService.getAutoSelectGeometriler().subscribe({
       next: (geometriler) => {
         this.yukleniyor = false;
+
         if (!geometriler || geometriler.length === 0) {
-          this.mesajGoster('Veritabanında kayıtlı A, B veya C poligonu bulunamadı.', 'info');
+          this.mesajGoster('Veritabanında kayıtlı A, B veya C poligonu bulunamadı. Lütfen önce haritaya poligon çizip "Çizimleri Kaydet" butonuna basın.', 'info');
           return;
         }
 
@@ -156,18 +159,24 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
 
         this.haritayiOdakla();
         this.mesajGoster(`${geometriler.length} adet kayıtlı poligon yüklendi (Auto-Select).`, 'success');
-        this.cdr.detectChanges();
       },
       error: (err) => {
         this.yukleniyor = false;
-        this.mesajGoster('Kayıtlı geometriler yüklenirken hata oluştu.', 'danger');
+        const detay = err.error?.message || err.message || 'Sunucuya ulaşılamadı.';
+        this.mesajGoster(`Kayıtlı geometriler yüklenirken hata oluştu: ${detay}`, 'danger');
       }
     });
   }
 
   // 5. Kesişim Analizi (A ∩ B)
   kesisimHesapla(p1 = 'A', p2 = 'B'): void {
+    if (!this.poligonlar[p1] || !this.poligonlar[p2]) {
+      this.mesajGoster(`Kesişim analizi için ${p1} ve ${p2} poligonlarının her ikisinin de çizilmiş veya yüklenmiş olması gerekir.`, 'danger');
+      return;
+    }
+
     this.yukleniyor = true;
+    this.cdr.detectChanges();
     const aktifCizimler = Object.values(this.poligonlar);
 
     this.alanAnaliziService.kesisimHesapla({ p1, p2, geometriler: aktifCizimler }).subscribe({
@@ -176,25 +185,31 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
         this.sonuc = res;
 
         if (res.koordinatlar && res.koordinatlar.length > 0) {
+          this.etiketliFeatureSil('Kesişim');
           this.poligonuHaritayaEkle(res.koordinatlar, 'Kesişim');
           this.haritayiOdakla();
         }
 
         this.mesajGoster(res.mesaj, res.basarili ? 'success' : 'danger');
-        this.cdr.detectChanges();
       },
       error: (err) => {
         this.yukleniyor = false;
         this.sonuc = null;
         this.mesajGoster(err.error?.mesaj || 'Kesişim hesaplanırken hata oluştu veya kesişim yok.', 'danger');
-        this.cdr.detectChanges();
       }
     });
   }
 
   // 6. Birleşim Analizi (A ∪ B -> D veya A ∪ B ∪ C -> E)
   birlesimHesapla(etiketler: string[]): void {
+    const eksikler = etiketler.filter(e => !this.poligonlar[e]);
+    if (eksikler.length > 0) {
+      this.mesajGoster(`Birleşim analizi için ${etiketler.join(', ')} poligonlarının tümü hazır olmalıdır. Eksik: ${eksikler.join(', ')}`, 'danger');
+      return;
+    }
+
     this.yukleniyor = true;
+    this.cdr.detectChanges();
     const aktifCizimler = Object.values(this.poligonlar);
 
     this.alanAnaliziService.birlesimHesapla({ etiketler, geometriler: aktifCizimler }).subscribe({
@@ -202,21 +217,39 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
         this.yukleniyor = false;
         this.sonuc = res;
 
-        if (res.koordinatlar && res.koordinatlar.length > 0) {
-          this.poligonuHaritayaEkle(res.koordinatlar, res.sonucEtiketi || 'Birleşim');
-          this.haritayiOdakla();
+        const sonucEtiketi = res.sonucEtiketi || 'Birleşim';
+
+        // 1. Birleşen eski poligonları (örn: A ve B) haritadan kaldırıyoruz:
+        etiketler.forEach(e => {
+          this.etiketliFeatureSil(e);
+        });
+
+        this.etiketliFeatureSil(sonucEtiketi); // varsa eski birleşmi sil
+
+        // 2. Çoklu parça (MultiPolygon) varsa TÜM PARÇALARI mor 'D' veya 'E' olarak çiz:
+        if (res.cokluKoordinatlar && res.cokluKoordinatlar.length > 0) {
+          res.cokluKoordinatlar.forEach(parca => {
+            this.poligonuHaritayaEkle(parca, sonucEtiketi);
+          });
+        } else if (res.koordinatlar && res.koordinatlar.length > 0) {
+          this.poligonuHaritayaEkle(res.koordinatlar, sonucEtiketi);
         }
 
+        this.haritayiOdakla();
         this.mesajGoster(res.mesaj, res.basarili ? 'success' : 'danger');
-        this.cdr.detectChanges();
       },
       error: (err) => {
         this.yukleniyor = false;
         this.sonuc = null;
         this.mesajGoster(err.error?.mesaj || 'Birleşim hesaplanırken hata oluştu.', 'danger');
-        this.cdr.detectChanges();
       }
     });
+  }
+
+  // Belirli bir etikete (örn: 'A') sahip eski harita çizimini temizler
+  private etiketliFeatureSil(etiket: string): void {
+    const silinecekler = this.vectorSource.getFeatures().filter(f => f.get('etiket') === etiket);
+    silinecekler.forEach(f => this.vectorSource.removeFeature(f));
   }
 
   // Haritaya Poligon Çizme ve Odaklanma Yardımcıları
@@ -233,7 +266,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     this.vectorSource.clear();
     this.poligonlar = {};
     this.sonuc = null;
-    this.mesaj = null;
   }
 
   private haritayiOdakla(): void {
@@ -280,7 +312,13 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
   }
 
   private mesajGoster(msg: string, tip: 'success' | 'danger' | 'info'): void {
-    this.mesaj = msg;
-    this.mesajTipi = tip;
+    if (tip === 'success') {
+      this.toast.success(msg);
+    } else if (tip === 'danger') {
+      this.toast.error(msg);
+    } else {
+      this.toast.info(msg);
+    }
+    this.cdr.detectChanges();
   }
 }

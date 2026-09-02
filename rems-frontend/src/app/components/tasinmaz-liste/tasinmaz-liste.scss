@@ -1,19 +1,87 @@
-// HARİTA POPUP (BİLGİ BALONU) STİLLERİ
-.ol-popup {
-  position: absolute;
-  background-color: #ffffff !important; // 👈 Düz beyaz arka plan (harita alta geçmesin diye)
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); // 👈 Haritadan ayıran net gölge
-  padding: 14px 18px;
-  border-radius: 10px;
-  border: 1px solid #ced4da;
-  bottom: 15px;
-  left: -50px;
-  min-width: 270px;
-  max-width: 320px;
-  z-index: 1000;
-  color: #212529; // Koyu ve net okunabilir yazı rengi
+// =========================================================
+// REMS MODERN PROPTECH KART & HARİTA STİLLERİ
+// =========================================================
 
-  // Balonun altındaki küçük üçgen ok işareti (pointer)
+.property-card {
+  border: 1px solid var(--rems-border, #e2e8f0) !important;
+  border-radius: 14px;
+  cursor: pointer;
+  height: 155px;
+  max-height: 155px;
+  overflow: hidden;
+  transition: all 0.22s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12) !important;
+    border-color: var(--rems-accent, #0284c7) !important;
+  }
+
+  &.card-selected {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25) !important;
+  }
+
+  .row {
+    height: 100%;
+  }
+}
+
+.property-img-col {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px 0 0 14px;
+
+  .property-card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+}
+
+.popup-img-wrapper {
+  width: 100%;
+  height: 110px !important;
+  max-height: 110px !important;
+  overflow: hidden !important;
+  border-radius: 8px;
+  img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+}
+
+// Sağ Sabit (Sticky) Harita Alanı
+.sticky-map-card {
+  position: sticky;
+  top: 75px;
+  height: calc(100vh - 120px);
+  min-height: 580px;
+  border: 1px solid var(--rems-border, #e2e8f0) !important;
+}
+
+// Harita Üzerindeki Modern GIS Popup Baloncuğu
+.gis-property-popup {
+  position: absolute;
+  background-color: #ffffff !important;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.25) !important;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  bottom: 15px;
+  left: -130px;
+  width: 260px;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+
   &:after, &:before {
     top: 100%;
     border: solid transparent;
@@ -26,15 +94,84 @@
 
   &:after {
     border-top-color: #ffffff;
-    border-width: 10px;
-    left: 48px;
-    margin-left: -10px;
+    border-width: 9px;
+    left: 50%;
+    margin-left: -9px;
   }
 
   &:before {
-    border-top-color: #ced4da;
-    border-width: 11px;
-    left: 48px;
-    margin-left: -11px;
+    border-top-color: #cbd5e1;
+    border-width: 10px;
+    left: 50%;
+    margin-left: -10px;
+  }
+}
+
+// =========================================================
+// HARİTA LEJANTI (LEGEND) STİLLERİ
+// =========================================================
+.gis-map-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease-in-out;
+  pointer-events: auto;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+  }
+
+  .legend-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
+
+    .legend-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2563eb;
+      display: inline-block;
+    }
+  }
+
+  .legend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legend-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #334155;
+    font-weight: 600;
+
+    .legend-pin-img {
+      width: 18px;
+      height: 23px;
+      object-fit: contain;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+    }
+
+    .legend-name {
+      line-height: 1;
+    }
   }
 }

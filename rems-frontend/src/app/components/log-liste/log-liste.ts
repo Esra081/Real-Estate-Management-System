@@ -23,7 +23,7 @@ export class LogListeComponent implements OnInit {
   pageSize = 15;
   totalPages = 0;
   totalCount = 0;
-  sayfalamaDizisi: number[] = [];
+  sayfalamaDizisi: (number | string)[] = [];
 
   // Filtreler & Dropdown Verileri
   filtreForm!: FormGroup;
@@ -97,7 +97,7 @@ export class LogListeComponent implements OnInit {
           this.totalCount = res.totalCount || 0;
           this.totalPages = res.totalPages || 1;
           this.currentPage = res.currentPage || 1;
-          this.sayfalamaDizisi = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+          this.sayfalamaGuncelle();
           this.yukleniyor = false;
           this.cdr.detectChanges();
         });
@@ -114,6 +114,41 @@ export class LogListeComponent implements OnInit {
         });
       }
     });
+  }
+
+  sayfalamaGuncelle(): void {
+    const total = this.totalPages;
+    const current = this.currentPage;
+
+    if (total <= 7) {
+      this.sayfalamaDizisi = Array.from({ length: total }, (_, i) => i + 1);
+      return;
+    }
+
+    const pages: (number | string)[] = [];
+    pages.push(1);
+
+    if (current <= 4) {
+      for (let i = 2; i <= 5; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(total);
+    } else if (current >= total - 3) {
+      pages.push('...');
+      for (let i = total - 4; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push('...');
+      pages.push(current - 1);
+      pages.push(current);
+      pages.push(current + 1);
+      pages.push('...');
+      pages.push(total);
+    }
+
+    this.sayfalamaDizisi = pages;
   }
 
   filtrele(): void {
@@ -134,14 +169,22 @@ export class LogListeComponent implements OnInit {
     this.veriGetir();
   }
 
-  sayfaDegistir(yeniSayfa: number): void {
+  sayfaDegistir(yeniSayfa: number | string): void {
+    if (typeof yeniSayfa === 'string' || yeniSayfa === this.currentPage) return;
     if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages) {
       this.currentPage = yeniSayfa;
       this.veriGetir();
     }
   }
 
+  excelIndiriliyor = false;
+  pdfIndiriliyor = false;
+
   excelIndir(): void {
+    if (this.excelIndiriliyor) return;
+    this.excelIndiriliyor = true;
+    this.cdr.detectChanges();
+
     const f = this.filtreForm.value;
     const filtreParam: Partial<LogFiltre> = {
       kullaniciId: f.kullaniciId || undefined,
@@ -154,21 +197,35 @@ export class LogListeComponent implements OnInit {
 
     this.logService.exportToExcel(filtreParam).subscribe({
       next: (blob: Blob) => {
+        this.ngZone.run(() => {
+          this.excelIndiriliyor = false;
+          this.cdr.detectChanges();
+        });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `Sistem_Loglari_${new Date().getTime()}.xlsx`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       },
       error: (err: any) => {
+        this.ngZone.run(() => {
+          this.excelIndiriliyor = false;
+          this.cdr.detectChanges();
+        });
         console.error('Excel indirme hatası:', err);
-        alert('Excel dosyası indirilirken bir hata oluştu veya backend servisi henüz hazır değil.');
+        alert('Dışa aktarma başarısız oldu.');
       }
     });
   }
 
   pdfIndir(): void {
+    if (this.pdfIndiriliyor) return;
+    this.pdfIndiriliyor = true;
+    this.cdr.detectChanges();
+
     const f = this.filtreForm.value;
     const filtreParam: Partial<LogFiltre> = {
       kullaniciId: f.kullaniciId || undefined,
@@ -181,16 +238,26 @@ export class LogListeComponent implements OnInit {
 
     this.logService.exportToPdf(filtreParam).subscribe({
       next: (blob: Blob) => {
+        this.ngZone.run(() => {
+          this.pdfIndiriliyor = false;
+          this.cdr.detectChanges();
+        });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `Sistem_Loglari_${new Date().getTime()}.pdf`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       },
       error: (err: any) => {
+        this.ngZone.run(() => {
+          this.pdfIndiriliyor = false;
+          this.cdr.detectChanges();
+        });
         console.error('PDF indirme hatası:', err);
-        alert('PDF dosyası indirilirken bir hata oluştu veya backend servisi henüz hazır değil.');
+        alert('Dışa aktarma başarısız oldu.');
       }
     });
   }

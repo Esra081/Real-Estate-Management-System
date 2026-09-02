@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { KullaniciService } from '../../services/kullanici.service';
 import { Kullanici } from '../../models/kullanici.model';
+import { OnayService } from '../../services/onay.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-kullanici-liste',
@@ -25,7 +27,9 @@ export class KullaniciListeComponent implements OnInit {
   constructor(
     private kullaniciService: KullaniciService,
     private fb: FormBuilder,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private onay: OnayService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -74,21 +78,21 @@ export class KullaniciListeComponent implements OnInit {
 
   kullaniciEkle(): void {
     if (this.ekleForm.invalid) {
-      alert('Lütfen tüm zorunlu alanları ve şifre kuralını (8-12 karakter, harf+sayı+özel karakter) doğru doldurun.');
+      this.toast.warning('Lütfen tüm zorunlu alanları ve şifre kuralını (8-12 karakter, harf+sayı+özel karakter) doğru doldurun.');
       return;
     }
 
     this.kaydediliyor = true;
     this.kullaniciService.kullaniciEkle(this.ekleForm.value).subscribe({
       next: (res) => {
-        alert(res.message || 'Kullanıcı başarıyla eklendi.');
+        this.toast.success(res.message || 'Kullanıcı başarıyla eklendi.');
         this.kaydediliyor = false;
         this.modalKapat();
         this.veriGetir();
       },
       error: (err) => {
         console.error('Ekleme hatası:', err);
-        alert(err.error?.message || 'Kullanıcı eklenirken bir hata oluştu.');
+        this.toast.error(err.error?.message || 'Kullanıcı eklenirken bir hata oluştu.');
         this.kaydediliyor = false;
       }
     });
@@ -96,7 +100,7 @@ export class KullaniciListeComponent implements OnInit {
 
   kullaniciGuncelle(): void {
     if (this.guncelleForm.invalid) {
-      alert('Lütfen geçerli bilgiler girin.');
+      this.toast.warning('Lütfen geçerli bilgiler girin.');
       return;
     }
 
@@ -104,21 +108,27 @@ export class KullaniciListeComponent implements OnInit {
     const formVal = this.guncelleForm.value;
     this.kullaniciService.kullaniciGuncelle(formVal.id, formVal).subscribe({
       next: (res) => {
-        alert(res.message || 'Kullanıcı başarıyla güncellendi.');
+        this.toast.success(res.message || 'Kullanıcı başarıyla güncellendi.');
         this.kaydediliyor = false;
         this.modalKapat();
         this.veriGetir();
       },
       error: (err) => {
         console.error('Güncelleme hatası:', err);
-        alert(err.error?.message || 'Güncelleme sırasında bir hata oluştu.');
+        this.toast.error(err.error?.message || 'Güncelleme sırasında bir hata oluştu.');
         this.kaydediliyor = false;
       }
     });
   }
 
-  kullaniciSil(k: Kullanici): void {
-    const onay = confirm(`"${k.adSoyad}" isimli kullanıcıyı silmek istediğinize emin misiniz?\n\nDİKKAT: Bu kullanıcıya ait tüm taşınmazlar da kalıcı olarak silinecektir!`);
+  async kullaniciSil(k: Kullanici): Promise<void> {
+    const onay = await this.onay.sor(
+      'Kullanıcıyı Sil',
+      `"${k.adSoyad}" isimli kullanıcıyı silmek istediğinize emin misiniz? Bu kullanıcıya ait tüm taşınmaz kayıtları da kalıcı olarak silinecektir!`,
+      'Evet, Kullanıcıyı Sil',
+      'Vazgeç',
+      'danger'
+    );
     if (!onay) return;
 
     this.yukleniyor = true;
@@ -126,12 +136,12 @@ export class KullaniciListeComponent implements OnInit {
 
     this.kullaniciService.kullaniciSil(k.id).subscribe({
       next: (res) => {
-        alert(res.message || 'Kullanıcı ve taşınmazları silindi.');
+        this.toast.success(res.message || 'Kullanıcı ve taşınmazları silindi.');
         this.veriGetir();
       },
       error: (err) => {
         console.error('Silme hatası:', err);
-        alert(err.error?.message || 'Silme işlemi sırasında hata oluştu.');
+        this.toast.error(err.error?.message || 'Silme işlemi sırasında hata oluştu.');
         this.yukleniyor = false;
         this.cdr.detectChanges();
       }

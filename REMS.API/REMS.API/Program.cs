@@ -101,6 +101,8 @@ var app = builder.Build();
 
 app.UseCors("AllowAngular"); // Bu satır genelde app.UseHttpsRedirection(); veya app.UseRouting(); satırlarının hemen yanına/altına yazılır.
 
+app.UseStaticFiles(); // SRS Gereksinimi: wwwroot/uploads klasöründeki fotoğrafların tarayıcıdan doğrudan erişilmesini sağlar
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -115,5 +117,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Otomatik Veritabanı Şema Senkronizasyonu (resim_url kolonu yoksa ekler)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<REMS.API.Data.RemsDbContext>();
+    try
+    {
+        await db.Database.ExecuteSqlRawAsync("ALTER TABLE IF EXISTS \"Tasinmazlar\" ADD COLUMN IF NOT EXISTS resim_url text;");
+        await db.Database.ExecuteSqlRawAsync("ALTER TABLE IF EXISTS \"tasinmazlar\" ADD COLUMN IF NOT EXISTS resim_url text;");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DB Migration Notice: {ex.Message}");
+    }
+}
 
 await app.RunAsync();

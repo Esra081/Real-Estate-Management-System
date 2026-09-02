@@ -1,58 +1,69 @@
-<div class="container mt-5" style="max-width: 400px;">
-  <div class="card shadow p-4">
-    <h3 class="text-center mb-4 text-primary">REMS Giriş</h3>
-
-    <div *ngIf="hataMesaji" class="alert alert-danger">
-      {{ hataMesaji }}
+<div class="d-flex align-items-center justify-content-center min-vh-100 p-3" style="background: linear-gradient(135deg, #091e28 0%, #0d2836 60%, #153e52 100%);">
+  <div class="card shadow-lg p-4 p-md-5 bg-white border-0" style="max-width: 440px; width: 100%; border-radius: 16px;">
+    
+    <!-- BRANDING LOGO -->
+    <div class="text-center mb-4">
+      <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2 shadow-sm" 
+           style="width: 50px; height: 50px; background: linear-gradient(135deg, #c59b6d 0%, #a97e4f 100%); color: #091e28; font-family: var(--font-serif); font-size: 24px; font-weight: 800;">
+        R
+      </div>
+      <h3 class="rems-title mb-1 fw-bold" style="font-size: 26px; color: var(--rems-navy-800); letter-spacing: 0.5px;">
+        REMS <span class="badge badge-sand align-middle fs-6" style="font-size: 11px !important;">GIS</span>
+      </h3>
+      <p class="text-secondary small mb-0" style="font-size: 12px;">Gayrimenkul & Mekansal Bilgi Sistemi</p>
     </div>
 
-    <div class="d-flex bg-light p-1 rounded-pill mb-4 border">
-      <button type="button" class="btn btn-sm w-50 rounded-pill fw-semibold"
-              [ngClass]="aktifSekme === 'login' ? 'btn-primary shadow-sm text-white' : 'text-secondary border-0'"
+
+    <!-- SEKME SEÇİCİ (GİRİŞ / KAYIT) -->
+    <div class="d-flex p-1 rounded-pill mb-4 border" style="background-color: var(--rems-bg-subtle, #f0ebe1);">
+      <button type="button" class="btn btn-sm w-50 rounded-pill fw-bold"
+              [ngClass]="aktifSekme === 'login' ? 'btn-primary shadow-sm text-white' : 'text-secondary border-0 bg-transparent'"
               (click)="sekmeDegistir('login')">Giriş Yap</button>
-      <button type="button" class="btn btn-sm w-50 rounded-pill fw-semibold"
-              [ngClass]="aktifSekme === 'register' ? 'btn-primary shadow-sm text-white' : 'text-secondary border-0'"
+      <button type="button" class="btn btn-sm w-50 rounded-pill fw-bold"
+              [ngClass]="aktifSekme === 'register' ? 'btn-primary shadow-sm text-white' : 'text-secondary border-0 bg-transparent'"
               (click)="sekmeDegistir('register')">Kayıt Ol</button>
     </div>
 
-    <div *ngIf="basariMesaji" class="alert alert-success py-2 small mb-3">
-      {{ basariMesaji }}
-    </div>
-
+    <!-- GİRİŞ FORMU -->
     <form *ngIf="aktifSekme === 'login'" (ngSubmit)="onLogin()">
       <div class="mb-3">
-        <label class="form-label">E-posta Adresi</label>
-        <input type="email" class="form-control" [(ngModel)]="email" name="email" required>
+        <label class="form-label small fw-bold text-secondary">E-Posta Adresi</label>
+        <input type="email" class="form-control" [(ngModel)]="email" name="email" placeholder="admin@rems.com" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Şifre</label>
-        <input type="password" class="form-control" [(ngModel)]="sifre" name="sifre" required>
+        <label class="form-label small fw-bold text-secondary">Şifre</label>
+        <input type="password" class="form-control" [(ngModel)]="sifre" name="sifre" placeholder="••••••••" required>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+      <button type="submit" class="btn btn-gold w-100 py-2 fw-bold shadow-sm" [disabled]="yukleniyor">
+        <span *ngIf="yukleniyor" class="spinner-border spinner-border-sm me-1"></span>
+        Giriş Yap
+      </button>
     </form>
 
+    <!-- KAYIT FORMU -->
     <form *ngIf="aktifSekme === 'register'" (ngSubmit)="onRegister()">
       <div class="mb-2">
         <label class="form-label small fw-bold text-secondary">Ad Soyad</label>
-        <input type="text" class="form-control form-control-sm bg-light" [(ngModel)]="registerAdSoyad" name="registerAdSoyad" placeholder="Adınız ve Soyadınız" required>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="registerAdSoyad" name="registerAdSoyad" placeholder="Adınız ve Soyadınız" required>
       </div>
       <div class="mb-2">
         <label class="form-label small fw-bold text-secondary">E-posta Adresi</label>
-        <input type="email" class="form-control form-control-sm bg-light" [(ngModel)]="registerEmail" name="registerEmail" placeholder="ornek@rems.com" required>
+        <input type="email" class="form-control form-control-sm" [(ngModel)]="registerEmail" name="registerEmail" placeholder="ornek@rems.com" required>
       </div>
       <div class="mb-3">
         <label class="form-label small fw-bold text-secondary">Şifre Belirleyin</label>
-        <input type="password" class="form-control form-control-sm bg-light" [(ngModel)]="registerSifre" name="registerSifre" placeholder="8-12 karakterli şifre" required>
-        <div class="form-text text-muted" style="font-size: 10px;">
-          * Şifre 8-12 karakter olup en az 1 harf, 1 rakam ve 1 özel karakter içermelidir (Örn: Sifre123!).
+        <input type="password" class="form-control form-control-sm" [(ngModel)]="registerSifre" name="registerSifre" placeholder="8-12 karakterli şifre" required>
+        <div class="form-text text-muted" style="font-size: 10.5px;">
+          * Şifre 8-12 karakter olup en az 1 harf, 1 rakam ve 1 özel karakter içermelidir.
         </div>
       </div>
-      <button type="submit" class="btn btn-success w-100 py-2 fw-semibold text-white" [disabled]="yukleniyor">
+      <button type="submit" class="btn btn-gold w-100 py-2 fw-bold text-white shadow-sm" [disabled]="yukleniyor">
         <span *ngIf="yukleniyor" class="spinner-border spinner-border-sm me-1"></span>
-        Kayıt Ol
+        Kayıt Ol ve Giriş Yap
       </button>
     </form>
+
   </div>
 </div>

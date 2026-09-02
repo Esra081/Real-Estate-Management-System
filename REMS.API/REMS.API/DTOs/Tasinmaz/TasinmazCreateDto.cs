@@ -21,6 +21,9 @@ namespace REMS.API.DTOs.Property
         // Opsiyonel Alan (M2)
         public decimal? AlanM2 { get; set; }
 
+        // Görsel / Fotoğraf URL (veya Dosya Yolu)
+        public string? ResimUrl { get; set; }
+
         // PostGIS Poligonu için 4 nokta (X, Y koordinat dizisi)
         public List<List<double>> Koordinatlar { get; set; }
     }

@@ -16,6 +16,7 @@ export interface LogFiltre {
   durum?: string;
   baslangicTarihi?: string;
   bitisTarihi?: string;
+  ipAdresi?: string;
   aramaMetni?: string;
   pageNumber: number;
   pageSize: number;

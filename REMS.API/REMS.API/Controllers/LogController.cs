@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs.Log;
 using REMS.API.Interfaces;
@@ -11,7 +11,7 @@ namespace REMS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")] // 👈 Sadece Admin rolüne sahip kullanıcılar logları görebilir
+    [Authorize(Roles = "Admin")] // Sadece Admin rolüne sahip kullanıcılar logları görebilir
     public class LogController : ControllerBase
     {
         private readonly ILogService _logService;
@@ -42,43 +42,54 @@ namespace REMS.API.Controllers
         [HttpGet("export/excel")]
         public async Task<IActionResult> ExportToExcel([FromQuery] LogFilterDto filter)
         {
-            // Sayfalama sınırını kaldırıp filtrelenen tüm kayıtları çekiyoruz:
-            filter.PageSize = int.MaxValue;
-            filter.PageNumber = 1;
-            var pagedResult = await _logService.GetLogsAsync(filter);
-            var excelBytes = _exportService.ExportLogsToExcel(pagedResult.Data);
-            // İndirme işlemini de logluyoruz:
-            await _logService.LogAsync("Excel Dışa Aktarma", "Sistem logları Excel dosyası olarak indirildi.", "Basarili");
-            // Dosyayı kullanıcıya fırlatıyoruz:
-            return File(
-                excelBytes,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"Sistem_Loglari_{DateTime.Now:yyyyMMdd_HHmm}.xlsx"
-            );
+            try
+            {
+                filter.PageSize = int.MaxValue;
+                filter.PageNumber = 1;
+                var pagedResult = await _logService.GetLogsAsync(filter);
+                string filtreOzeti = FiltreOzetiniUret(filter);
+                var excelBytes = _exportService.ExportLogsToExcel(pagedResult.Data, filtreOzeti);
 
+                await _logService.LogAsync("Excel Dışa Aktarma", $"Sistem logları Excel dosyası olarak indirildi. (Filtre: {filtreOzeti})", "Basarili");
 
-        }        // GET: api/Log/export/pdf (Logları PDF Raporu Olarak İndirme)
+                return File(
+                    excelBytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"Sistem_Loglari_{DateTime.Now:yyyyMMdd_HHmm}.xlsx"
+                );
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogAsync("Excel Dışa Aktarma", $"Loglar Excel'e aktarılırken hata oluştu: {ex.Message}", "Basarisiz");
+                return StatusCode(500, new { message = "Dışa aktarma başarısız oldu." });
+            }
+        }
+
+        // GET: api/Log/export/pdf (Logları PDF Raporu Olarak İndirme)
         [HttpGet("export/pdf")]
         public async Task<IActionResult> ExportToPdf([FromQuery] LogFilterDto filter)
         {
-            // 1. Sayfalama sınırını kaldırıp filtrelenen TÜM kayıtları çekiyoruz:
-            filter.PageSize = int.MaxValue;
-            filter.PageNumber = 1;
+            try
+            {
+                filter.PageSize = int.MaxValue;
+                filter.PageNumber = 1;
+                var pagedResult = await _logService.GetLogsAsync(filter);
+                string filtreOzeti = FiltreOzetiniUret(filter);
+                var pdfBytes = _exportService.ExportLogsToPdf(pagedResult.Data, filtreOzeti);
 
-            var pagedResult = await _logService.GetLogsAsync(filter);
+                await _logService.LogAsync("PDF Dışa Aktarma", $"Sistem logları PDF raporu olarak indirildi. (Filtre: {filtreOzeti})", "Basarili");
 
-            // 2. ExportService'deki PDF üretme motorunu çalıştırıyoruz:
-            var pdfBytes = _exportService.ExportLogsToPdf(pagedResult.Data);
-
-            // 3. Bu indirme hareketini de sisteme logluyoruz:
-            await _logService.LogAsync("PDF Dışa Aktarma", "Sistem logları PDF raporu olarak indirildi.", "Basarili");
-
-            // 4. Tarayıcıya 'application/pdf' formatında teslim ediyoruz:
-            return File(
-                pdfBytes,
-                "application/pdf",
-                $"Sistem_Loglari_{DateTime.Now:yyyyMMdd_HHmm}.pdf"
-            );
+                return File(
+                    pdfBytes,
+                    "application/pdf",
+                    $"Sistem_Loglari_{DateTime.Now:yyyyMMdd_HHmm}.pdf"
+                );
+            }
+            catch (Exception ex)
+            {
+                await _logService.LogAsync("PDF Dışa Aktarma", $"Loglar PDF'e aktarılırken hata oluştu: {ex.Message}", "Basarisiz");
+                return StatusCode(500, new { message = "Dışa aktarma başarısız oldu." });
+            }
         }
 
 
@@ -103,6 +114,32 @@ namespace REMS.API.Controllers
             };
 
             return Ok(tipler);
+        }
+
+        private static string FiltreOzetiniUret(LogFilterDto filter)
+        {
+            var kriterler = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(filter.IslemTipi))
+                kriterler.Add($"İşlem Tipi: {filter.IslemTipi}");
+
+            if (!string.IsNullOrWhiteSpace(filter.Durum))
+                kriterler.Add($"Durum: {filter.Durum}");
+
+            if (filter.BaslangicTarihi.HasValue && filter.BitisTarihi.HasValue)
+                kriterler.Add($"Tarih: {filter.BaslangicTarihi:dd.MM.yyyy} - {filter.BitisTarihi:dd.MM.yyyy}");
+            else if (filter.BaslangicTarihi.HasValue)
+                kriterler.Add($"Başlangıç: {filter.BaslangicTarihi:dd.MM.yyyy}");
+            else if (filter.BitisTarihi.HasValue)
+                kriterler.Add($"Bitiş: {filter.BitisTarihi:dd.MM.yyyy}");
+
+            if (!string.IsNullOrWhiteSpace(filter.IpAdresi))
+                kriterler.Add($"IP: {filter.IpAdresi}");
+
+            if (!string.IsNullOrWhiteSpace(filter.AramaMetni))
+                kriterler.Add($"Arama: '{filter.AramaMetni}'");
+
+            return kriterler.Count > 0 ? string.Join(" | ", kriterler) : "Tüm Kayıtlar (Filtresiz)";
         }
     }
 }

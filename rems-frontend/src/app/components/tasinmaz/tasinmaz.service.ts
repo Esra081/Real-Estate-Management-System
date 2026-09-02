@@ -28,4 +28,21 @@ export class TasinmazService {
   tasinmazSil(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  resimYukle(id: number, dosya: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', dosya);
+    return this.http.post(`${this.apiUrl}/${id}/resim-yukle`, formData);
+  }
+
+  getResimUrl(url?: string): string {
+    if (!url) {
+      return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
+    }
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    const baseUrl = environment.apiUrl.replace('/api', '');
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  }
 }

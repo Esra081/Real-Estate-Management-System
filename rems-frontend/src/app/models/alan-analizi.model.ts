@@ -13,6 +13,7 @@ export interface AlanAnalizSonucDto {
   sonucEtiketi?: string; // "D", "E" veya "Kesişim"
   alanM2: number;
   koordinatlar: number[][];
+  cokluKoordinatlar?: number[][][]; 
 }
 
 // 3. Kesişim İsteği (Backend'e giden veri)

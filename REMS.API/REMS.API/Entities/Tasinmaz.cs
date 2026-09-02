@@ -29,6 +29,9 @@ namespace REMS.API.Entities
         [Column("alan_m2")]
         public decimal? AlanM2 { get; set; }
 
+        [Column("resim_url")]
+        public string? ResimUrl { get; set; }
+
         [JsonIgnore]
         [Column("sinir")]
         public Polygon? Sinir { get; set; }

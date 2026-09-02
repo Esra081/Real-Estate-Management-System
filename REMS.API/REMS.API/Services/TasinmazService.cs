@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -8,6 +9,7 @@ using REMS.API.DTOs.Property;
 using REMS.API.Entities;
 using REMS.API.Interfaces;
 using REMS.API.Helpers;
+using System.IO;
 
 namespace REMS.API.Services
 {
@@ -21,7 +23,7 @@ namespace REMS.API.Services
         }
 
         // 1. METOT: Taşınmaz Ekleme
-        public async Task<bool> AddPropertyAsync(TasinmazCreateDto model)
+        public async Task<int> AddPropertyAsync(TasinmazCreateDto model)
         {
             bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
                 t.MahalleId == model.MahalleId &&
@@ -47,18 +49,19 @@ namespace REMS.API.Services
                     Adres = model.Adres,
                     TasinmazTipi = model.TasinmazTipi,
                     AlanM2 = model.AlanM2 ?? 0,
+                    ResimUrl = string.IsNullOrWhiteSpace(model.ResimUrl) ? GetDefaultImageUrl(model.TasinmazTipi) : model.ResimUrl,
                     Sinir = polygon
                 };
 
                 await _context.Tasinmazlar.AddAsync(yeniTasinmaz);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return true;
+                return yeniTasinmaz.Id;
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
-                return false;
+                throw;
             }
         }
 
@@ -89,33 +92,116 @@ namespace REMS.API.Services
         }
 
         // 4. METOT: Güncelleme
-        public async Task<bool> UpdatePropertyAsync(TasinmazUpdateDto model)
+        // 4. METOT: Akıllı Güncelleme ve Fark (Diff) Tespiti
+        public async Task<DTOs.Tasinmaz.UpdateResultDto> UpdatePropertyAsync(TasinmazUpdateDto model)
         {
             var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == model.Id);
-            if (tasinmaz == null) return false;
-
-            bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
-                t.Id != model.Id &&
-                t.MahalleId == model.MahalleId &&
-                t.AdaNo.ToLower() == model.AdaNo.Trim().ToLower() &&
-                t.ParselNo.ToLower() == model.ParselNo.Trim().ToLower());
-
-            if (mukerrerVarMi)
+            if (tasinmaz == null)
             {
-                throw new InvalidOperationException($"Seçilen mahallede {model.AdaNo}/{model.ParselNo} Ada/Parsel numarasına sahip başka bir taşınmaz zaten kayıtlıdır.");
+                return new DTOs.Tasinmaz.UpdateResultDto
+                {
+                    Success = false,
+                    HasChanges = false,
+                    Message = "Güncellenecek taşınmaz bulunamadı."
+                };
             }
 
+            // Mükerrer Kontrolü: Yalnızca Mahalle, Ada veya Parsel değiştirildiyse kontrol edilir
+            bool adaDegisti = !string.Equals(tasinmaz.AdaNo?.Trim(), model.AdaNo?.Trim(), StringComparison.OrdinalIgnoreCase);
+            bool parselDegisti = !string.Equals(tasinmaz.ParselNo?.Trim(), model.ParselNo?.Trim(), StringComparison.OrdinalIgnoreCase);
+            bool mahalleDegisti = model.MahalleId > 0 && tasinmaz.MahalleId != model.MahalleId;
+
+            if (adaDegisti || parselDegisti || mahalleDegisti)
+            {
+                var hedefMahalleId = model.MahalleId > 0 ? model.MahalleId : tasinmaz.MahalleId;
+                var hedefAdaNo = (model.AdaNo ?? tasinmaz.AdaNo ?? "").Trim().ToLower();
+                var hedefParselNo = (model.ParselNo ?? tasinmaz.ParselNo ?? "").Trim().ToLower();
+
+                bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
+                    t.Id != model.Id &&
+                    t.MahalleId == hedefMahalleId &&
+                    t.AdaNo.ToLower() == hedefAdaNo &&
+                    t.ParselNo.ToLower() == hedefParselNo);
+
+                if (mukerrerVarMi)
+                {
+                    throw new InvalidOperationException($"Seçilen mahallede {model.AdaNo ?? tasinmaz.AdaNo}/{model.ParselNo ?? tasinmaz.ParselNo} Ada/Parsel numarasına sahip başka bir taşınmaz zaten kayıtlıdır.");
+                }
+            }
+
+            // ALAN BAZLI FARKLARI TESPİT ET (DIFF LİSTESİ)
+            var degisiklikler = new List<string>();
+
+            if (!string.Equals(tasinmaz.AdaNo?.Trim(), model.AdaNo?.Trim(), StringComparison.OrdinalIgnoreCase))
+                degisiklikler.Add($"Ada: '{tasinmaz.AdaNo}' -> '{model.AdaNo}'");
+
+            if (!string.Equals(tasinmaz.ParselNo?.Trim(), model.ParselNo?.Trim(), StringComparison.OrdinalIgnoreCase))
+                degisiklikler.Add($"Parsel: '{tasinmaz.ParselNo}' -> '{model.ParselNo}'");
+
+            if (model.MahalleId > 0 && tasinmaz.MahalleId != model.MahalleId)
+                degisiklikler.Add("Mahalle Değişti");
+
+            if (!string.Equals(tasinmaz.Adres?.Trim(), model.Adres?.Trim(), StringComparison.OrdinalIgnoreCase))
+                degisiklikler.Add($"Adres: '{tasinmaz.Adres}' -> '{model.Adres}'");
+
+            if (!string.Equals(tasinmaz.TasinmazTipi?.Trim(), model.TasinmazTipi?.Trim(), StringComparison.OrdinalIgnoreCase))
+                degisiklikler.Add($"Tip: '{tasinmaz.TasinmazTipi}' -> '{model.TasinmazTipi}'");
+
+            if (model.AlanM2.HasValue && Math.Abs((tasinmaz.AlanM2 ?? 0) - model.AlanM2.Value) > 0.001m)
+                degisiklikler.Add($"Alan: '{tasinmaz.AlanM2}' -> '{model.AlanM2.Value}' m²");
+
+            var dbResim = (tasinmaz.ResimUrl ?? "").Trim();
+            var yeniResim = (model.ResimUrl ?? "").Trim();
+            var defaultResim = GetDefaultImageUrl(tasinmaz.TasinmazTipi).Trim();
+
+            bool resimAyni = string.Equals(dbResim, yeniResim, StringComparison.OrdinalIgnoreCase) ||
+                             (string.IsNullOrEmpty(dbResim) && string.Equals(yeniResim, defaultResim, StringComparison.OrdinalIgnoreCase)) ||
+                             (string.IsNullOrEmpty(yeniResim) && string.Equals(dbResim, defaultResim, StringComparison.OrdinalIgnoreCase));
+
+            if (!resimAyni && !string.IsNullOrEmpty(yeniResim))
+            {
+                degisiklikler.Add("Fotoğraf güncellendi");
+            }
+
+            // 1. DURUM: HİÇBİR DEĞİŞİKLİK YOKSA VERİTABANINA DOKUNMA!
+            if (degisiklikler.Count == 0)
+            {
+                return new DTOs.Tasinmaz.UpdateResultDto
+                {
+                    Success = true,
+                    HasChanges = false,
+                    Message = "Herhangi bir değişiklik yapılmadı."
+                };
+            }
+
+            // 2. DURUM: DEĞİŞİKLİKLERİ UYGULA VE KAYDET
             tasinmaz.KullaniciId = model.KullaniciId?.ToString();
             tasinmaz.MahalleId = model.MahalleId;
-            tasinmaz.AdaNo = model.AdaNo;
-            tasinmaz.ParselNo = model.ParselNo;
-            tasinmaz.Adres = model.Adres;
-            tasinmaz.TasinmazTipi = model.TasinmazTipi;
+            tasinmaz.AdaNo = model.AdaNo?.Trim();
+            tasinmaz.ParselNo = model.ParselNo?.Trim();
+            tasinmaz.Adres = model.Adres?.Trim();
+            tasinmaz.TasinmazTipi = model.TasinmazTipi?.Trim();
             tasinmaz.AlanM2 = model.AlanM2;
-            tasinmaz.Sinir = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
+
+            if (!string.IsNullOrWhiteSpace(model.ResimUrl))
+            {
+                tasinmaz.ResimUrl = model.ResimUrl.Trim();
+            }
+
+            if (model.Koordinatlar != null && model.Koordinatlar.Count >= 3)
+            {
+                tasinmaz.Sinir = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
+            }
 
             await _context.SaveChangesAsync();
-            return true;
+
+            return new DTOs.Tasinmaz.UpdateResultDto
+            {
+                Success = true,
+                HasChanges = true,
+                DiffSummary = string.Join(", ", degisiklikler),
+                Message = "Taşınmaz başarıyla güncellendi."
+            };
         }
 
         // 5. METOT: Silme
@@ -176,7 +262,7 @@ namespace REMS.API.Services
                     query = query.Where(t => t.TasinmazTipi == filter.TasinmazTipi);
 
                 if (!string.IsNullOrWhiteSpace(filter.KullaniciId))
-                    query = query.Where(t => t.KullaniciId == filter.KullaniciId);
+                    query = query.Where(t => t.KullaniciId != null && t.KullaniciId.ToLower() == filter.KullaniciId.ToLower());
 
                 int totalCount = await query.CountAsync();
                 decimal totalAreaM2 = await query.SumAsync(t => t.AlanM2 ?? 0);
@@ -197,6 +283,7 @@ namespace REMS.API.Services
                     : "Kayıt Yok";
 
                 var tasinmazlar = await query
+                    .OrderByDescending(t => t.Id)
                     .Skip((filter.PageNumber - 1) * filter.PageSize)
                     .Take(filter.PageSize)
                     .ToListAsync();
@@ -247,7 +334,71 @@ namespace REMS.API.Services
                 Adres = item.Adres,
                 TasinmazTipi = item.TasinmazTipi,
                 AlanM2 = item.AlanM2,
+                ResimUrl = string.IsNullOrWhiteSpace(item.ResimUrl) ? GetDefaultImageUrl(item.TasinmazTipi) : item.ResimUrl,
                 Koordinatlar = GeometryHelper.PoligondanDiziKoordinatAl(item.Sinir)
+            };
+        }
+
+        // 8. METOT: Taşınmaza Fotoğraf Yükleme (SRS: JPEG/PNG, max 100 MB, yerel klasöre kayıt)
+        public async Task<string> ResimYukleAsync(int tasinmazId, IFormFile dosya)
+        {
+            var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == tasinmazId);
+            if (tasinmaz == null)
+            {
+                throw new InvalidOperationException($"ID'si {tasinmazId} olan taşınmaz bulunamadı.");
+            }
+
+            if (dosya == null || dosya.Length == 0)
+            {
+                throw new InvalidOperationException("Lütfen yüklenecek bir fotoğraf dosyası seçiniz.");
+            }
+
+            // SRS Kuralı: Maksimum 100 MB dosya boyutu kontrolü
+            const long maxBoyut = 100 * 1024 * 1024; // 100 MB
+            if (dosya.Length > maxBoyut)
+            {
+                throw new InvalidOperationException("Fotoğraf dosya boyutu 100 MB sınırını aşamaz.");
+            }
+
+            // SRS Kuralı: Sadece JPEG ve PNG formatları
+            var uzanti = Path.GetExtension(dosya.FileName).ToLowerInvariant();
+            var izinVerilenUzantilar = new[] { ".jpg", ".jpeg", ".png" };
+            if (!izinVerilenUzantilar.Contains(uzanti))
+            {
+                throw new InvalidOperationException("Yalnızca JPEG (.jpg, .jpeg) ve PNG (.png) formatındaki dosyalar yüklenebilir.");
+            }
+
+            // Sunucu üzerinde wwwroot/uploads klasörünü hazırla
+            var uploadsKlasorYolu = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsKlasorYolu))
+            {
+                Directory.CreateDirectory(uploadsKlasorYolu);
+            }
+
+            // Çakışmayı önlemek için benzersiz dosya adı oluştur
+            var benzersizDosyaAdi = $"tasinmaz_{tasinmazId}_{Guid.NewGuid():N}{uzanti}";
+            var tamFizikselYol = Path.Combine(uploadsKlasorYolu, benzersizDosyaAdi);
+
+            using (var stream = new FileStream(tamFizikselYol, FileMode.Create))
+            {
+                await dosya.CopyToAsync(stream);
+            }
+
+            // Veritabanına göreli erişim yolunu kaydet
+            var dosyaErisimYolu = $"/uploads/{benzersizDosyaAdi}";
+            tasinmaz.ResimUrl = dosyaErisimYolu;
+            await _context.SaveChangesAsync();
+
+            return dosyaErisimYolu;
+        }
+
+        private static string GetDefaultImageUrl(string? tip)
+        {
+            return (tip?.Trim().ToLower()) switch
+            {
+                "arsa" => "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
+                "bina" => "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80",
+                _ => "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
             };
         }
     }

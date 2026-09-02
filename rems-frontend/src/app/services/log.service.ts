@@ -50,6 +50,7 @@ export class LogService {
     if (filtre.durum) params = params.append('durum', filtre.durum);
     if (filtre.baslangicTarihi) params = params.append('baslangicTarihi', filtre.baslangicTarihi);
     if (filtre.bitisTarihi) params = params.append('bitisTarihi', filtre.bitisTarihi);
+    if (filtre.ipAdresi) params = params.append('ipAdresi', filtre.ipAdresi);
     if (filtre.aramaMetni) params = params.append('aramaMetni', filtre.aramaMetni);
 
     return params;

@@ -42,7 +42,7 @@ namespace REMS.API.Services
                 string? userId = kullaniciId ?? httpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 string? userEmail = kullaniciEmail ?? httpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
 
-                // 👈 EĞER ID HENÜZ YOKSA AMA EMAIL VARSA (Giriş/Kayıt anında), Veritabanından Kullanıcının ID'sini otomatik bul:
+                // EĞER ID HENÜZ YOKSA AMA EMAIL VARSA (Giriş/Kayıt anında), Veritabanından Kullanıcının ID'sini otomatik bul:
                 if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userEmail))
                 {
                     var user = await _context.Kullanicilar.AsNoTracking().FirstOrDefaultAsync(k => k.Email.ToLower() == userEmail.ToLower().Trim());
@@ -98,23 +98,31 @@ namespace REMS.API.Services
             // BAŞLANGIÇ TARİHİ FİLTRESİ
             if (filter.BaslangicTarihi.HasValue)
             {
-                var baslangicUtc = DateTime.SpecifyKind(filter.BaslangicTarihi.Value, DateTimeKind.Utc);
+                var baslangicUtc = DateTime.SpecifyKind(filter.BaslangicTarihi.Value.Date, DateTimeKind.Utc);
                 query = query.Where(l => l.Tarih >= baslangicUtc);
             }
 
-            // BİTİŞ TARİHİ FİLTRESİ
+            // BİTİŞ TARİHİ FİLTRESİ (Günün sonuna kadar: 23:59:59)
             if (filter.BitisTarihi.HasValue)
             {
-                var bitisUtc = DateTime.SpecifyKind(filter.BitisTarihi.Value, DateTimeKind.Utc);
+                var bitisUtc = DateTime.SpecifyKind(filter.BitisTarihi.Value.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc);
                 query = query.Where(l => l.Tarih <= bitisUtc);
             }
 
-            // SERBEST ARAMA (Açıklama veya Email içinde)
+            // IP ADRESİ FİLTRESİ
+            if (!string.IsNullOrWhiteSpace(filter.IpAdresi))
+            {
+                var ip = filter.IpAdresi.Trim().ToLower();
+                query = query.Where(l => l.IpAdresi != null && l.IpAdresi.ToLower().Contains(ip));
+            }
+
+            // SERBEST ARAMA (Açıklama, Email veya IP içinde)
             if (!string.IsNullOrWhiteSpace(filter.AramaMetni))
             {
-                var arama = filter.AramaMetni.ToLower();
+                var arama = filter.AramaMetni.Trim().ToLower();
                 query = query.Where(l => l.Aciklama.ToLower().Contains(arama) ||
-                                         (l.KullaniciEmail != null && l.KullaniciEmail.ToLower().Contains(arama)));
+                                         (l.KullaniciEmail != null && l.KullaniciEmail.ToLower().Contains(arama)) ||
+                                         (l.IpAdresi != null && l.IpAdresi.ToLower().Contains(arama)));
             }
 
             // TOPLAM KAYIT SAYISI

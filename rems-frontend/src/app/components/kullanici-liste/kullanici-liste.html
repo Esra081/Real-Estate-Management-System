@@ -1,51 +1,53 @@
-<div class="container-fluid px-4 py-3">
+<div class="container-fluid p-0">
+
+  <!-- BAŞLIK VE YENİ KULLANICI BUTONU -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="rems-title mb-0 fw-bold" style="font-size: 32px; color: var(--rems-navy-text, #1a2e35); letter-spacing: -0.4px;">
+        Kullanıcı Yönetim Paneli
+      </h2>
+      <p class="text-secondary small mb-0 mt-1" style="font-size: 12.5px;">
+        Sistem kullanıcılarını yönetin, yeni yetkili tanımlayın ve mülk sahibi hesaplarını kontrol edin.
+      </p>
+    </div>
+
+    <button type="button" class="btn btn-primary fw-bold px-3 shadow-sm" (click)="ekleModalAc()">
+      + Yeni Kullanıcı Ekle
+    </button>
+  </div>
 
   <!-- KPI SAYAÇ KARTLARI -->
   <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #e0f2fe 0%, #eff6ff 100%); border: 1px solid #bfdbfe !important;">
-        <span class="small fw-bold text-uppercase" style="color: #1e40af; font-size: 11px;">Toplam Kullanıcı</span>
-        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ toplamKullanici }} <span class="fs-6 fw-normal text-secondary">Kişi</span></h2>
-        <span class="small fw-medium" style="color: #2563eb;">Kayıtlı Tüm Hesaplar</span>
+      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">TOPLAM KULLANICI</span>
+        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ toplamKullanici }} <span class="fs-6 fw-normal text-secondary">Kişi</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Kayıtlı Tüm Hesaplar</span>
       </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%); border: 1px solid #e9d5ff !important;">
-        <span class="small fw-bold text-uppercase" style="color: #6b21a8; font-size: 11px;">Yöneticiler</span>
-        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ adminSayisi }} <span class="fs-6 fw-normal text-secondary">Admin</span></h2>
-        <span class="small fw-medium" style="color: #7e22ce;">Tam Yetkili Yöneticiler</span>
+      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">YÖNETİCİLER</span>
+        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ adminSayisi }} <span class="fs-6 fw-normal text-secondary">Admin</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Tam Yetkili Yöneticiler</span>
       </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%); border: 1px solid #bbf7d0 !important;">
-        <span class="small fw-bold text-uppercase" style="color: #166534; font-size: 11px;">Standart Üyeler</span>
-        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ standartKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Kullanıcı</span></h2>
-        <span class="small fw-medium" style="color: #15803d;">Mülk Sahibi Hesaplar</span>
+      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">STANDART ÜYELER</span>
+        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ standartKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Kullanıcı</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Mülk Sahibi Hesaplar</span>
       </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0" style="background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border: 1px solid #fde68a !important;">
-        <span class="small fw-bold text-uppercase" style="color: #92400e; font-size: 11px;">Aktif Hesaplar</span>
-        <h2 class="fw-bold mb-1" style="color: #0f172a;">{{ aktifKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Aktif</span></h2>
-        <span class="small fw-medium" style="color: #b45309;">Giriş İzni Olan Hesaplar</span>
+      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">AKTİF HESAPLAR</span>
+        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ aktifKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Aktif</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Giriş İzni Olan Hesaplar</span>
       </div>
-    </div>
-  </div>
-
-  <!-- BAŞLIK VE YENİ KULLANICI BUTONU -->
-  <div class="card border-0 shadow-sm mb-3 bg-white p-3">
-    <div class="d-flex justify-content-between align-items-center">
-      <div>
-        <h4 class="fw-bold mb-1 text-dark">Kullanıcı Yönetim Paneli</h4>
-        <p class="text-muted small mb-0">Sistem kullanıcılarını yönetin, yeni yetkili tanımlayın ve erişimleri kontrol edin.</p>
-      </div>
-
-      <button type="button" class="btn btn-primary fw-semibold px-3 shadow-sm" (click)="ekleModalAc()">
-        + Yeni Kullanıcı Ekle
-      </button>
     </div>
   </div>
 
@@ -111,40 +113,75 @@
   </div>
 
   <!-- YENİ KULLANICI EKLE MODAL -->
-  <div class="modal d-block" *ngIf="ekleModalAcik" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal d-block" *ngIf="ekleModalAcik" tabindex="-1" style="background: rgba(30, 36, 26, 0.65); backdrop-filter: blur(4px); z-index: 1055;">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-        <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">
-          <h6 class="modal-title fw-bold">Yeni Kullanıcı Tanımla</h6>
-          <button type="button" class="btn-close btn-close-white" (click)="modalKapat()"></button>
-        </div>
-        <form [formGroup]="ekleForm" (ngSubmit)="kullaniciEkle()">
-          <div class="modal-body p-4">
-            <div class="mb-3">
-              <label class="form-label small fw-bold">Ad Soyad:</label>
-              <input type="text" class="form-control form-control-sm" formControlName="adSoyad" placeholder="Örn: Ahmet Yılmaz">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; border: 1px solid var(--rems-border);">
+        
+        <!-- Modal Başlığı (REMS Koyu Orman Yeşili) -->
+        <div class="modal-header py-3 px-4 text-white d-flex align-items-center justify-content-between" style="background-color: var(--rems-dark-forest, #1E241A); border-bottom: 1px solid var(--rems-olive-dark, #2A3324);">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(198, 240, 81, 0.18); color: var(--rems-accent, #C6F051); display: flex; align-items: center; justify-content: center;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <line x1="19" y1="8" x2="19" y2="14"></line>
+                <line x1="22" y1="11" x2="16" y2="11"></line>
+              </svg>
             </div>
-            <div class="mb-3">
-              <label class="form-label small fw-bold">E-Posta Adresi:</label>
-              <input type="email" class="form-control form-control-sm" formControlName="email" placeholder="ornek@rems.com">
-            </div>
-            <div class="mb-3">
-              <label class="form-label small fw-bold">Şifre:</label>
-              <input type="password" class="form-control form-control-sm" formControlName="sifre" placeholder="8-12 karakter">
-              <div class="text-muted" style="font-size: 11px;">Şifre en az 1 harf, 1 rakam ve 1 özel karakter (!@#$% vb.) içermelidir.</div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label small fw-bold">Rol:</label>
-              <select class="form-select form-select-sm" formControlName="rol">
-                <option value="Kullanici">Kullanıcı (Standart)</option>
-                <option value="Admin">Yönetici (Admin)</option>
-              </select>
+            <div>
+              <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 16px; letter-spacing: -0.2px;">Yeni Kullanıcı Tanımla</h6>
+              <small style="color: rgba(255,255,255,0.65); font-size: 11.5px;">Sisteme yeni yönetici veya kullanıcı hesabı ekleyin</small>
             </div>
           </div>
-          <div class="modal-footer border-top-0 pt-0">
-            <button type="button" class="btn btn-light btn-sm border" (click)="modalKapat()" [disabled]="kaydediliyor">Vazgeç</button>
-            <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" [disabled]="kaydediliyor || ekleForm.invalid">
-              Kaydet ve Oluştur
+          <button type="button" class="btn-close btn-close-white" (click)="modalKapat()"></button>
+        </div>
+
+        <form [formGroup]="ekleForm" (ngSubmit)="kullaniciEkle()">
+          <div class="modal-body p-4" style="background: #FFFFFF;">
+            
+            <div class="mb-3">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Ad Soyad <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" formControlName="adSoyad" placeholder="Örn: Ahmet Yılmaz" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                E-Posta Adresi <span class="text-danger">*</span>
+              </label>
+              <input type="email" class="form-control" formControlName="email" placeholder="ornek@rems.com" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Şifre <span class="text-danger">*</span>
+              </label>
+              <input type="password" class="form-control" formControlName="sifre" placeholder="••••••••" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
+              <div class="mt-2 p-2 rounded" style="background: #F4F6EE; border: 1px solid var(--rems-border); font-size: 11.5px; color: var(--rems-text-muted);">
+                 <strong>Güvenlik Kuralı:</strong> Şifre 8-12 karakter uzunluğunda, en az 1 harf, 1 rakam ve 1 özel karakter (!@#$% vb.) içermelidir.
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Sistem Rolü <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" formControlName="rol" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
+                <option value="Kullanici">Kullanıcı (Standart - Yalnızca kendi mülklerini görür)</option>
+                <option value="Admin">Yönetici - Admin (Tam yetkili, tüm mülk ve logları yönetir)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="modal-footer px-4 py-3 d-flex justify-content-end gap-2" style="background: #FAFBF7; border-top: 1px solid var(--rems-border);">
+            <button type="button" class="btn btn-secondary btn-sm px-4" (click)="modalKapat()" [disabled]="kaydediliyor" style="border-radius: 50px;">
+              Vazgeç
+            </button>
+            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" [disabled]="kaydediliyor || ekleForm.invalid" style="border-radius: 50px; background-color: var(--rems-accent, #C6F051) !important; color: var(--rems-dark-forest, #1E241A) !important;">
+              <span *ngIf="!kaydediliyor">Kaydet ve Oluştur</span>
+              <span *ngIf="kaydediliyor">Kaydediliyor...</span>
             </button>
           </div>
         </form>
@@ -153,43 +190,77 @@
   </div>
 
   <!-- KULLANICI GÜNCELLE MODAL -->
-  <div class="modal d-block" *ngIf="guncelleModalAcik" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal d-block" *ngIf="guncelleModalAcik" tabindex="-1" style="background: rgba(30, 36, 26, 0.65); backdrop-filter: blur(4px); z-index: 1055;">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
-        <div class="modal-header bg-primary text-white py-2" style="border-radius: 12px 12px 0 0;">
-          <h6 class="modal-title fw-bold">Kullanıcı Bilgilerini Güncelle</h6>
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden; border: 1px solid var(--rems-border);">
+        
+        <!-- Modal Başlığı (REMS Koyu Orman Yeşili) -->
+        <div class="modal-header py-3 px-4 text-white d-flex align-items-center justify-content-between" style="background-color: var(--rems-dark-forest, #1E241A); border-bottom: 1px solid var(--rems-olive-dark, #2A3324);">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(198, 240, 81, 0.18); color: var(--rems-accent, #C6F051); display: flex; align-items: center; justify-content: center;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </div>
+            <div>
+              <h6 class="modal-title fw-bold mb-0 text-white" style="font-size: 16px; letter-spacing: -0.2px;">Kullanıcı Bilgilerini Güncelle</h6>
+              <small style="color: rgba(255,255,255,0.65); font-size: 11.5px;">Yetki, durum ve hesap ayarlarını düzenleyin</small>
+            </div>
+          </div>
           <button type="button" class="btn-close btn-close-white" (click)="modalKapat()"></button>
         </div>
+
         <form [formGroup]="guncelleForm" (ngSubmit)="kullaniciGuncelle()">
-          <div class="modal-body p-4">
+          <div class="modal-body p-4" style="background: #FFFFFF;">
+            
             <div class="mb-3">
-              <label class="form-label small fw-bold">Ad Soyad:</label>
-              <input type="text" class="form-control form-control-sm" formControlName="adSoyad">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Ad Soyad <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control" formControlName="adSoyad" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
             </div>
+
             <div class="mb-3">
-              <label class="form-label small fw-bold">E-Posta Adresi:</label>
-              <input type="email" class="form-control form-control-sm" formControlName="email">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                E-Posta Adresi <span class="text-danger">*</span>
+              </label>
+              <input type="email" class="form-control" formControlName="email" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
             </div>
+
             <div class="mb-3">
-              <label class="form-label small fw-bold">Rol:</label>
-              <select class="form-select form-select-sm" formControlName="rol">
-                <option value="Kullanici">Kullanıcı</option>
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Sistem Rolü <span class="text-danger">*</span>
+              </label>
+              <select class="form-select" formControlName="rol" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
+                <option value="Kullanici">Kullanıcı (Standart)</option>
                 <option value="Admin">Yönetici (Admin)</option>
               </select>
             </div>
+
             <div class="mb-3">
-              <label class="form-label small fw-bold">Yeni Şifre (İsteğe Bağlı):</label>
-              <input type="password" class="form-control form-control-sm" formControlName="yeniSifre" placeholder="Değiştirmek istemiyorsanız boş bırakın">
+              <label class="form-label small fw-bold" style="color: var(--rems-text-main); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Yeni Şifre (İsteğe Bağlı):
+              </label>
+              <input type="password" class="form-control" formControlName="yeniSifre" placeholder="Değiştirmek istemiyorsanız boş bırakın" style="border-radius: 10px; border-color: #D5DCBE; font-size: 13.5px; padding: 9px 12px;">
             </div>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="aktifMiCheck" formControlName="aktifMi">
-              <label class="form-check-label small" for="aktifMiCheck">Hesap Aktif</label>
+
+            <div class="form-check p-3 rounded" style="background: #F4F6EE; border: 1px solid var(--rems-border);">
+              <input class="form-check-input ms-0 me-2" type="checkbox" id="aktifMiCheck" formControlName="aktifMi" style="cursor: pointer;">
+              <label class="form-check-label small fw-bold" for="aktifMiCheck" style="cursor: pointer; color: var(--rems-text-main);">
+                Hesap Aktif (Giriş İzni Açık)
+              </label>
             </div>
+
           </div>
-          <div class="modal-footer border-top-0 pt-0">
-            <button type="button" class="btn btn-light btn-sm border" (click)="modalKapat()" [disabled]="kaydediliyor">Vazgeç</button>
-            <button type="submit" class="btn btn-primary btn-sm px-3 fw-semibold" [disabled]="kaydediliyor">
-              Güncelle ve Kaydet
+
+          <div class="modal-footer px-4 py-3 d-flex justify-content-end gap-2" style="background: #FAFBF7; border-top: 1px solid var(--rems-border);">
+            <button type="button" class="btn btn-secondary btn-sm px-4" (click)="modalKapat()" [disabled]="kaydediliyor" style="border-radius: 50px;">
+              Vazgeç
+            </button>
+            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" [disabled]="kaydediliyor" style="border-radius: 50px; background-color: var(--rems-accent, #C6F051) !important; color: var(--rems-dark-forest, #1E241A) !important;">
+              <span *ngIf="!kaydediliyor">Güncelle ve Kaydet</span>
+              <span *ngIf="kaydediliyor">Güncelleniyor...</span>
             </button>
           </div>
         </form>

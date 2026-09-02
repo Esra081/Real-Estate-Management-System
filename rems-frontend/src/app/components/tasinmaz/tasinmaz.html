@@ -1,153 +1,194 @@
-<div class="container mt-4">
+<div class="container-fluid px-4 py-3">
 
-  <h2 class="text-primary mb-4">
-    {{ duzenlemeModu ? 'Taşınmaz Güncelle' : 'Yeni Taşınmaz Ekle' }}
-  </h2>
-
-  <form [formGroup]="tasinmazForm" (ngSubmit)="kaydet()">
-
-    <div class="mb-3">
-      <label>Ada No</label>
-      <input
-        type="text"
-        class="form-control"
-        formControlName="adaNo">
-        <div *ngIf="tasinmazForm.get('adaNo')?.invalid && tasinmazForm.get('adaNo')?.touched" class="text-danger small mt-1">
-          Ada No alanı zorunludur.
-        </div>
+  <!-- BAŞLIK -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="rems-title mb-0 fw-bold" style="font-size: 24px; color: var(--rems-navy-800);">
+        {{ duzenlemeModu ? 'Taşınmaz Kaydını Güncelle' : 'Yeni Taşınmaz Ekle' }}
+      </h3>
+      <p class="text-secondary small mb-0" style="font-size: 12px;">
+        Taşınmazın idari, mekansal ve görsel detaylarını girin. Harita üzerinden 4 köşe noktasını seçin.
+      </p>
     </div>
-
-    <div class="mb-3">
-      <label>Parsel No</label>
-      <input
-        type="text"
-        class="form-control"
-        formControlName="parselNo">
-        <div *ngIf="tasinmazForm.get('parselNo')?.hasError('required') && tasinmazForm.get('parselNo')?.touched" class="text-danger small mt-1">
-          Parsel No bilgisi zorunludur.
-        </div>
-    </div>
-
-    <!-- Harita Çizim Alanı -->
-    <div class="mb-3">
-      <label class="form-label fw-bold">Taşınmaz Sınırları (Haritadan 4 Nokta Seçin)</label>
-      
-      <!-- OpenLayers haritasının içine gömüleceği div -->
-      <div id="draw-map" style="height: 400px; width: 100%; border: 2px solid #ccc; border-radius: 5px; cursor: crosshair;"></div>
-      
-      <!-- Validasyon Uyarısı: Reactive Forms yapısına uygun olarak -->
-      <small class="text-danger mt-1 d-block" *ngIf="tasinmazForm.get('koordinatlar')?.invalid && tasinmazForm.get('koordinatlar')?.touched">
-        Lütfen harita üzerinden taşınmazın 4 köşesini işaretleyerek sınırları belirleyin.
-      </small>
-    </div>
-
-    <div class="row">
-    <!-- İl Seçim Alanı -->
-    <div class="col-md-4 mb-3">
-      <label for="ilSelect" class="form-label">İl <span class="text-danger">*</span></label>
-      <select 
-        id="ilSelect" 
-        class="form-select" 
-        formControlName="ilId" 
-        (change)="onIlChange($event)">
-        <option value="" disabled selected>İl Seçiniz</option>
-        <!-- TypeScript'ten gelen iller listesi döngüye giriyor -->
-        <option *ngFor="let il of iller" [value]="il.id">
-          {{ il.ad }}
-        </option>
-        <div *ngIf="tasinmazForm.get('ilId')?.invalid && tasinmazForm.get('ilId')?.touched" class="text-danger small mt-1">
-          Lütfen bir il seçiniz.
-        </div>
-      </select>
-    </div>
-
-    <!-- İlçe Seçim Alanı -->
-    <div class="col-md-4 mb-3">
-      <label for="ilceSelect" class="form-label">İlçe <span class="text-danger">*</span></label>
-      <select 
-        id="ilceSelect" 
-        class="form-select" 
-        formControlName="ilceId" 
-        (change)="onIlceChange($event)">
-        <option value="" disabled selected>Önce İl Seçiniz</option>
-        <!-- TypeScript'ten gelen ilçeler listesi döngüye giriyor -->
-        <option *ngFor="let ilce of ilceler" [value]="ilce.id">
-          {{ ilce.ad }}
-        </option>
-      <div *ngIf="tasinmazForm.get('ilceId')?.invalid && tasinmazForm.get('ilceId')?.touched" class="text-danger small mt-1">
-        Lütfen bir ilçe seçiniz.
-      </div>
-      </select>
-    </div>
-
-    <!-- Mahalle Seçim Alanı -->
-    <div class="col-md-4 mb-3">
-      <label for="mahalleSelect" class="form-label">Mahalle <span class="text-danger">*</span></label>
-      <select 
-        id="mahalleSelect" 
-        class="form-select" 
-        formControlName="mahalleId">
-        <option value="" disabled selected>Önce İlçe Seçiniz</option>
-        <!-- TypeScript'ten gelen mahalleler listesi döngüye giriyor -->
-        <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">
-          {{ mahalle.ad }}
-        </option>
-        <div *ngIf="tasinmazForm.get('mahalleId')?.invalid && tasinmazForm.get('mahalleId')?.touched" class="text-danger small mt-1">
-          Lütfen bir mahalle seçiniz.
-        </div>
-      </select>
-    </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="iptal()">
+      Listeye Dön
+    </button>
   </div>
 
-    <div class="mb-3">
-      <label>Adres</label>
-      <input
-        type="text"
-        class="form-control"
-        formControlName="adres">
-        <div *ngIf="tasinmazForm.get('adres')?.hasError('required') && tasinmazForm.get('adres')?.touched" class="text-danger small mt-1">
-          Adres bilgisi zorunludur.
-        </div>
-    </div>
+  <form [formGroup]="tasinmazForm" (ngSubmit)="kaydet()">
+    <div class="row g-3">
+      
+      <!-- SOL PANEL: BİLGİLER & RESİM YÖNETİMİ -->
+      <div class="col-12 col-lg-6">
+        <div class="card p-3 shadow-sm border-0 h-100 bg-white" style="border-radius: 12px;">
+          <div class="card-header bg-transparent border-bottom px-0 pt-0 pb-2 mb-3">
+            <span class="fw-bold text-uppercase" style="font-size: 11px; color: var(--rems-navy-700); letter-spacing: 0.6px;">
+              1. İdari ve Mülk Bilgileri
+            </span>
+          </div>
 
-    <div class="mb-3">
-      <label class="form-label">Taşınmaz Tipi</label>
-      <select class="form-select" formControlName="tasinmazTipi">
-        <option value="">Seçiniz...</option>
-        <option value="Arsa">Arsa</option>
-        <option value="Bina">Bina</option>
-        <option value="Konut">Konut</option>
-      </select>
-      <div *ngIf="tasinmazForm.get('tasinmazTipi')?.invalid && tasinmazForm.get('tasinmazTipi')?.touched" class="text-danger small mt-1">
-        Taşınmaz tipi seçimi zorunludur.
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label small fw-bold mb-1">Ada No <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm" formControlName="adaNo" placeholder="Örn: 101">
+              <div *ngIf="tasinmazForm.get('adaNo')?.invalid && tasinmazForm.get('adaNo')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                Ada No zorunludur.
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-bold mb-1">Parsel No <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm" formControlName="parselNo" placeholder="Örn: 5">
+              <div *ngIf="tasinmazForm.get('parselNo')?.invalid && tasinmazForm.get('parselNo')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                Parsel No zorunludur.
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <label class="form-label small fw-bold mb-1">Taşınmaz Tipi <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" formControlName="tasinmazTipi">
+                <option value="">Seçiniz...</option>
+                <option value="Konut">Konut (Daire/Villa)</option>
+                <option value="Arsa">Arsa / Tarla</option>
+                <option value="Bina">Bina / Plaza</option>
+              </select>
+              <div *ngIf="tasinmazForm.get('tasinmazTipi')?.invalid && tasinmazForm.get('tasinmazTipi')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                Taşınmaz tipi seçimi zorunludur.
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-bold mb-1">Yüzölçümü (m²) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control form-control-sm" formControlName="alanM2" placeholder="Örn: 450.5">
+              <div *ngIf="tasinmazForm.get('alanM2')?.invalid && tasinmazForm.get('alanM2')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                Geçerli bir alan girin.
+              </div>
+            </div>
+          </div>
+
+          <!-- LOKASYON KOMBOLARI -->
+          <div class="row g-2 mb-2">
+            <div class="col-4">
+              <label class="form-label small fw-bold mb-1">İl <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" formControlName="ilId" (change)="onIlChange($event)">
+                <option value="" disabled selected>İl Seçin</option>
+                <option *ngFor="let il of iller" [value]="il.id">{{ il.ad }}</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label class="form-label small fw-bold mb-1">İlçe <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" formControlName="ilceId" (change)="onIlceChange($event)">
+                <option value="" disabled selected>İlçe Seçin</option>
+                <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ad }}</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label class="form-label small fw-bold mb-1">Mahalle <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" formControlName="mahalleId">
+                <option value="" disabled selected>Mahalle Seçin</option>
+                <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.ad }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold mb-1">Açık Adres <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-sm" formControlName="adres" placeholder="Cadde, Sokak, No...">
+            <div *ngIf="tasinmazForm.get('adres')?.invalid && tasinmazForm.get('adres')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+              Adres bilgisi zorunludur.
+            </div>
+          </div>
+
+          <!-- RESİM ÖZELLİĞİ ALANI & CANLI ÖNİZLEME (SRS UYUMLU: JPEG/PNG ve Link) -->
+          <div class="p-2 rounded mb-3 border bg-light">
+            <label class="form-label small fw-bold mb-1 d-flex justify-content-between align-items-center">
+              <span>Taşınmaz Fotoğrafı</span>
+              <span class="text-secondary fw-normal" style="font-size: 10px;">Opsiyonel (Boşsa türe göre atanır)</span>
+            </label>
+
+            <!-- Seçenek Butonları -->
+            <div class="btn-group btn-group-sm w-100 mb-2" role="group">
+              <button type="button" class="btn btn-sm py-1" 
+                      [class.btn-primary]="resimYuklemeTipi === 'dosya'"
+                      [class.btn-outline-primary]="resimYuklemeTipi !== 'dosya'"
+                      (click)="resimYuklemeTipi = 'dosya'">
+                Dosya Seç (JPEG/PNG)
+              </button>
+              <button type="button" class="btn btn-sm py-1" 
+                      [class.btn-primary]="resimYuklemeTipi === 'link'"
+                      [class.btn-outline-primary]="resimYuklemeTipi !== 'link'"
+                      (click)="resimYuklemeTipi = 'link'">
+                Görsel Linki (URL)
+              </button>
+            </div>
+
+            <!-- 1. Seçenek: Bilgisayardan Dosya Seçme -->
+            <div *ngIf="resimYuklemeTipi === 'dosya'" class="mb-2">
+              <input type="file" class="form-control form-control-sm" accept=".jpg,.jpeg,.png" (change)="onDosyaSec($event)">
+              <div class="form-text text-muted small mt-1" style="font-size: 10px;">
+                SRS Kuralı: Yalnızca <strong>JPEG (.jpg, .jpeg)</strong> ve <strong>PNG (.png)</strong>, maks. <strong>100 MB</strong>.
+              </div>
+              <div *ngIf="dosyaHataMesaji" class="text-danger small mt-1" style="font-size: 10px;">
+                {{ dosyaHataMesaji }}
+              </div>
+            </div>
+
+            <!-- 2. Seçenek: URL Girme -->
+            <div *ngIf="resimYuklemeTipi === 'link'" class="input-group input-group-sm mb-2">
+              <input type="text" class="form-control" formControlName="resimUrl" placeholder="https://... fotoğraf linki yapıştırın">
+            </div>
+
+            <!-- Canlı Resim Önizlemesi -->
+            <div class="d-flex align-items-center gap-2 p-1 bg-white rounded border">
+              <img [src]="getGosterilecekResim()" 
+                   alt="Önizleme" 
+                   class="rounded" 
+                   style="width: 70px; height: 50px; object-fit: cover; border: 1px solid #e6dfd1;">
+              <div class="small text-secondary" style="font-size: 11px;">
+                <div class="fw-semibold text-dark">Canlı Fotoğraf Önizlemesi</div>
+                <div class="text-muted" style="font-size: 10px;">Harita popup'ında ve listede bu görsel yer alacaktır.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-auto pt-2 border-top">
+            <button type="submit" class="btn btn-gold btn-sm px-4 fw-bold shadow-sm">
+              {{ duzenlemeModu ? 'Değişiklikleri Güncelle' : 'Taşınmazı Kaydet' }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="iptal()">
+              Vazgeç
+            </button>
+          </div>
+
+        </div>
       </div>
-    </div>
 
-    <div class="mb-3">
-      <label>Alan</label>
-      <input
-        type="number"
-        class="form-control"
-        formControlName="alanM2">
-        <div *ngIf="tasinmazForm.get('alanM2')?.hasError('required') && tasinmazForm.get('alanM2')?.touched" class="text-danger small mt-1">
-          Alan bilgisi zorunludur.
+      <!-- SAĞ PANEL: HARİTADA 4 NOKTALI POLİGON ÇİZİMİ -->
+      <div class="col-12 col-lg-6">
+        <div class="card p-3 shadow-sm border-0 h-100 bg-white d-flex flex-column" style="border-radius: 12px; min-height: 480px;">
+          <div class="card-header bg-transparent border-bottom px-0 pt-0 pb-2 mb-2 d-flex justify-content-between align-items-center">
+            <span class="fw-bold text-uppercase" style="font-size: 11px; color: var(--rems-navy-700); letter-spacing: 0.6px;">
+              2. Taşınmaz Sınırları (Haritadan 4 Nokta)
+            </span>
+            <span class="badge badge-sand fw-normal" style="font-size: 10px;">SRS: Tam 4 Nokta Çizin</span>
+          </div>
+
+          <!-- OpenLayers Harita Container -->
+          <div class="flex-grow-1 position-relative rounded overflow-hidden border" style="min-height: 380px;">
+            <div id="draw-map" style="height: 100%; width: 100%; cursor: crosshair;"></div>
+          </div>
+
+          <div class="mt-2 small text-secondary" style="font-size: 11px;">
+            <strong>İpucu:</strong> Haritaya 4 kez tıklayarak parselin 4 köşesini belirleyin. Çizim otomatik tamamlanacaktır.
+          </div>
+
+          <small class="text-danger mt-1 d-block" *ngIf="tasinmazForm.get('koordinatlar')?.invalid && tasinmazForm.get('koordinatlar')?.touched">
+             Lütfen harita üzerinden taşınmazın 4 köşesini işaretleyin!
+          </small>
         </div>
-        <div *ngIf="tasinmazForm.get('alanM2')?.hasError('min') && tasinmazForm.get('alanM2')?.touched" class="text-danger small mt-1">
-          Alan 0'dan küçük olamaz.
-        </div>
+      </div>
+
     </div>
-
-    <button type="submit" class="btn btn-success">
-      {{ duzenlemeModu ? 'Güncelle' : 'Kaydet' }}
-    </button>
-
-    <button
-      type="button"
-      class="btn btn-secondary ms-2"
-      (click)="iptal()">
-      İptal
-    </button>
-
   </form>
 
 </div>

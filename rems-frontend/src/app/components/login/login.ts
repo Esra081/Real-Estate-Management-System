@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Auth } from '../../core/auth';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -14,35 +15,32 @@ import { Auth } from '../../core/auth';
 export class Login {
   email = '';
   sifre = '';
-  hataMesaji = '';
   aktifSekme: 'login' | 'register' = 'login';
   registerAdSoyad = '';
   registerEmail = '';
   registerSifre = '';
-  basariMesaji = '';
   yukleniyor = false;
 
   constructor(
     private authService: Auth,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toast: ToastService
   ) {}
 
   onLogin() {
-    this.hataMesaji = '';
-    this.basariMesaji = '';
     this.yukleniyor = true;
 
     this.authService.login(this.email, this.sifre).subscribe({
       next: (response) => {
         this.yukleniyor = false;
-        console.log('Giriş başarılı:', response);
+        this.toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
         this.router.navigate(['/tasinmaz-liste']);
       },
       error: (err) => {
         this.yukleniyor = false;
-        this.hataMesaji = err.error?.message || 'E-posta veya şifre hatalı!';
-        console.error('Giriş hatası:', err);
+        const hata = err.error?.message || 'E-posta veya şifre hatalı!';
+        this.toast.error(hata, 'Giriş Başarısız');
         this.cdr.detectChanges();
       }
     });
@@ -50,22 +48,18 @@ export class Login {
 
   sekmeDegistir(sekme: 'login' | 'register') {
     this.aktifSekme = sekme;
-    this.hataMesaji = '';
-    this.basariMesaji = '';
     this.cdr.detectChanges();
   }
   
   onRegister() {
-    this.hataMesaji = '';
-    this.basariMesaji = '';
     this.yukleniyor = true;
     this.cdr.detectChanges();
 
     this.authService.register(this.registerAdSoyad, this.registerEmail, this.registerSifre).subscribe({
       next: (res) => {
         this.yukleniyor = false;
-        const mesaj = res.message || 'Hesabınız başarıyla oluşturuldu! Şimdi şifrenizi girerek giriş yapabilirsiniz.';
-        this.basariMesaji = mesaj;
+        const mesaj = res.message || 'Hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.';
+        this.toast.success(mesaj, 'Kayıt Başarılı');
         this.email = this.registerEmail;
         this.sifre = '';
         this.registerAdSoyad = '';
@@ -73,12 +67,9 @@ export class Login {
         this.registerSifre = '';
         this.aktifSekme = 'login';
         this.cdr.detectChanges();
-        alert(mesaj);
       },
       error: (err) => {
         this.yukleniyor = false;
-        console.error('Kayıt Hatası Detayı:', err);
-
         let aciklama = 'Kayıt olurken bir hata oluştu.';
 
         if (err.error?.message) {
@@ -90,9 +81,8 @@ export class Login {
           aciklama = keys.map(k => err.error.errors[k].join(', ')).join(' | ');
         }
 
-        this.hataMesaji = aciklama;
+        this.toast.error(aciklama, 'Kayıt Başarısız');
         this.cdr.detectChanges();
-        alert('Kayıt Başarısız:\n\n' + aciklama);
       }
     });
   }

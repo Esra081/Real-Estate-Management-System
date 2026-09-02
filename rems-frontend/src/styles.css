@@ -1,31 +1,374 @@
-/* 1. Google Fontu (Inter - Modern Kurumsal Yazı Tipi) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
-/* 2. Global Sayfa Arka Planı ve Font Ayarı */
-body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #f8fafc; /* Göz yormayan ferah soğuk gri zemin */
-  color: #1e293b;
+/* REMS TERRA GIS & MODERN PROPTECH DESIGN SYSTEM */
+:root {
+  /* 1. Zemin ve Kart Renkleri */
+  --rems-bg: #F4F6EE;
+  --rems-card-bg: #FFFFFF;
+
+  /* 2. Koyu Zeminler (Navbar & Footer) */ 
+  --rems-dark-forest: #1E241A;
+  --rems-olive-dark: #2A3324;
+
+  /* 3. Vurgu Rengi */
+  --rems-accent: #C6F051;
+  --rems-accent-hover: #B4E33D;
+  --rems-accent-text: #1E241A;
+
+  /* 4. Metin Renkleri */
+  --rems-text-main: #3A4036;
+  --rems-text-muted: #6B7366;
+  --rems-border: #E5E9DC;
+
+  /* 5. Tipografi */
+  --font-main: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* 6. Gölgeler (Elevation / Derinlik) */
+  --rems-shadow-card: 0 4px 20px rgba(30, 36, 26, 0.05);
+  --rems-shadow-hover: 0 8px 24px rgba(30, 36, 26, 0.09);
+}
+
+/* Genel Sayfa Gövdesi */
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
+  background-color: var(--rems-bg);
+  color: var(--rems-text-main);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* 3. Kartlar için Modern Yumuşak Gölgeler ve Kavisler */
+/* Başlıklar */
+h1, h2, h3, h4, h5, h6, .rems-title {
+  font-family: var(--font-main);
+  font-weight: 700;
+  color: var(--rems-text-main);
+  letter-spacing: -0.02em;
+}
+
+/* 1. KART YAPISI (DERİNLİK VE YUMUŞAK KÖŞELER) */
+.rems-card {
+  background-color: var(--rems-card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--rems-border);
+  box-shadow: var(--rems-shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rems-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--rems-shadow-hover);
+}
+
+/* Standart Bootstrap kartlarını da kapsayalım */
 .card {
-  border-radius: 12px !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04) !important;
-  background-color: #ffffff;
+  background-color: var(--rems-card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--rems-border);
+  box-shadow: var(--rems-shadow-card);
 }
 
-/* 4. Butonlar için Modern Geçiş Efektleri */
+/* 2. BUTON HİYERARŞİSİ (KAPSÜL / PILL SHAPE) */
 .btn {
-  border-radius: 8px !important;
-  font-weight: 500 !important;
-  transition: all 0.2s ease-in-out !important;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.22s ease;
 }
 
-.btn:hover {
-  transform: translateY(-1px);
+/* Ana Aksiyon Butonu (Limon Yeşili) */
+.btn-primary, .btn-lime {
+  background-color: var(--rems-accent) !important;
+  border-color: var(--rems-accent) !important;
+  color: var(--rems-accent-text) !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+.btn-primary:hover, .btn-lime:hover {
+  background-color: var(--rems-accent-hover) !important;
+  color: var(--rems-accent-text) !important;
+  transform: scale(1.02);
+  box-shadow: 0 4px 14px rgba(198, 240, 81, 0.4) !important;
+}
+
+/* İkincil Butonlar (Zarif Şeffaf & Gri Çerçeve) */
+.btn-secondary, .btn-outline-secondary {
+  background-color: transparent !important;
+  color: var(--rems-text-main) !important;
+  border: 1px solid #D1D5DB !important;
+}
+
+.btn-secondary:hover, .btn-outline-secondary:hover {
+  background-color: rgba(198, 240, 81, 0.12) !important;
+  border-color: var(--rems-accent) !important;
+  color: var(--rems-dark-forest) !important;
+}
+
+/* Tehlikeli / Silme Eylemleri (Pastel Kırmızı) */
+.btn-danger, .btn-outline-danger {
+  background-color: #FFF0F0 !important;
+  color: #E63946 !important;
+  border: 1px solid #FFCDCD !important;
+  font-weight: 600;
+}
+
+.btn-danger:hover, .btn-outline-danger:hover {
+  background-color: #E63946 !important;
+  color: #FFFFFF !important;
+  border-color: #E63946 !important;
+}
+
+/* Excel Butonu */
+.btn-outline-success {
+  background-color: #F0FAF0 !important;
+  color: #2D6A4F !important;
+  border: 1px solid #C8E6C9 !important;
+}
+
+.btn-outline-success:hover {
+  background-color: #2D6A4F !important;
+  color: #FFFFFF !important;
+  border-color: #2D6A4F !important;
+}
+
+/* 3. TABLO TASARIMI (FERAH & NEFES ALAN SATIRLAR) */
+.rems-table, .table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rems-table th, .table thead th {
+  text-align: left;
+  padding: 14px 20px;
+  color: var(--rems-text-muted) !important;
+  background-color: #EDF1E4 !important;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--rems-border) !important;
+  border-top: none;
+}
+
+.rems-table td, .table tbody td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #F0F3E9;
+  border-top: none;
+  color: var(--rems-text-main);
+  vertical-align: middle;
+}
+
+.rems-table tbody tr:hover, .table tbody tr:hover {
+  background-color: rgba(198, 240, 81, 0.05) !important;
+}
+
+/* 4. ROZETLER (KAPSÜL BADGES) */
+.badge-success, .bg-success-subtle {
+  background-color: rgba(198, 240, 81, 0.22) !important;
+  color: #2E4B0B !important;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid rgba(198, 240, 81, 0.45) !important;
+}
+
+.badge-danger, .bg-danger-subtle {
+  background-color: #FFF0F0 !important;
+  color: #C53030 !important;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid #FED7D7 !important;
+}
+
+/* Form Elemanları */
+.form-control, .form-select {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  border: 1px solid var(--rems-border);
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--rems-text-main);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--rems-dark-forest);
+  box-shadow: 0 0 0 3px rgba(198, 240, 81, 0.35);
+}
+
+/* Sayfalama */
+.page-item.active .page-link {
+  background-color: var(--rems-dark-forest) !important;
+  border-color: var(--rems-dark-forest) !important;
+  color: var(--rems-accent) !important;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.page-link {
+  color: var(--rems-dark-forest);
+  border-color: var(--rems-border);
+  margin: 0 2px;
+  border-radius: 8px;
+}
+
+/* Navbar Linkleri */
+.nav-forest-link {
+  color: #C8D4BF !important;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all 0.18s ease;
+}
+
+.nav-forest-link:hover {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.active-forest-pill {
+  background-color: var(--rems-olive-dark, #2A3324) !important;
+  color: var(--rems-accent, #C6F051) !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(198, 240, 81, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Entegre Çıkış Butonu */
+.btn-logout-embedded {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: #A8B3A0;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.18s ease;
+}
+
+.btn-logout-embedded:hover {
+  background-color: rgba(220, 38, 38, 0.25);
+  color: #ff6b6b;
+  transform: scale(1.12);
+}
+
+/* GLOBAL TERRA TOAST POP-UP TASARIMI */
+.rems-toast {
+  min-width: 300px;
+  max-width: 400px;
+  border-radius: 14px;
+  animation: toastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Başarı Bildirimi (Koyu Orman Yeşili Zemin + Limon Yeşili Çizgi & Yazı) */
+.rems-toast-success {
+  background-color: #1E241A !important;
+  color: #FFFFFF !important;
+  border-left: 5px solid #C6F051 !important;
+}
+
+.rems-toast-success .toast-title {
+  color: #C6F051 !important;
+}
+
+.rems-toast-success .btn-close {
+  filter: invert(1);
+}
+
+/* Hata Bildirimi (Yumuşak Kırmızı Zemin + Canlı Kırmızı Çizgi) */
+.rems-toast-error {
+  background-color: #FFF5F5 !important;
+  color: #3A4036 !important;
+  border: 1px solid #FED7D7 !important;
+  border-left: 5px solid #E63946 !important;
+}
+
+.rems-toast-error .toast-title {
+  color: #C53030 !important;
+}
+
+/* Bilgi Bildirimi (Saf Beyaz + Koyu Çerçeve) */
+.rems-toast-info {
+  background-color: #FFFFFF !important;
+  color: #3A4036 !important;
+  border: 1px solid #E5E9DC !important;
+  border-left: 5px solid #1E241A !important;
+}
+
+.rems-toast-info .toast-title {
+  color: #1E241A !important;
+}
+
+/* Uyarı Bildirimi (Krem Zemin + Hardal Çizgi) */
+.rems-toast-warning {
+  background-color: #FFFAF0 !important;
+  color: #3A4036 !important;
+  border: 1px solid #FEEBC8 !important;
+  border-left: 5px solid #DD6B20 !important;
+}
+
+.rems-toast-warning .toast-title {
+  color: #C05621 !important;
+}
+
+/* =========================================================
+   GLOBAL ONAY MODALI (CONFIRM DIALOG) STİLLERİ
+   ========================================================= */
+.rems-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(30, 36, 26, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 999998;
+  animation: modalFadeIn 0.18s ease;
+}
+
+.rems-confirm-modal {
+  width: 90%;
+  max-width: 420px;
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid var(--rems-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+  animation: modalZoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
