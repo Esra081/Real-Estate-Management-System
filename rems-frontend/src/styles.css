@@ -190,6 +190,16 @@ h1, h2, h3, h4, h5, h6, .rems-title {
   border: 1px solid #FED7D7 !important;
 }
 
+.badge-forest {
+  background-color: #F1F5E9 !important;
+  color: #1A3008 !important;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid #D5E5C9 !important;
+}
+
 /* Form Elemanları */
 .form-control, .form-select {
   background-color: #FFFFFF;
