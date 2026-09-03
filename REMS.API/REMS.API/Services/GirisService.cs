@@ -28,7 +28,6 @@ namespace REMS.API.Services
             _hashService = hashService;
         }
 
-        // 1. GİRİŞ YAPMA (Sadece SHA-256 + Salt ile Güvenli Giriş)
         public async Task<string?> LoginAsync(LoginDto model)
         {
             if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Sifre))
@@ -38,7 +37,6 @@ namespace REMS.API.Services
 
             var emailClean = model.Email.ToLower().Trim();
 
-            // Kullanıcıyı bul
             var kullanici = await _context.Kullanicilar
                 .FirstOrDefaultAsync(k => k.Email.ToLower() == emailClean);
 
@@ -47,16 +45,13 @@ namespace REMS.API.Services
                 return null;
             }
 
-            //  SHA-256 + Salt Doğrulaması
             bool sifreDogruMu = _hashService.VerifyPassword(model.Sifre, kullanici.SifreHash, kullanici.SifreSalt ?? "");
 
-            // Şifre uyuşmuyorsa giriş reddedilir
             if (!sifreDogruMu)
             {
                 return null;
             }
 
-            //  JWT Token Üretimi
             var jwtKey = _configuration["Jwt:Key"] ?? "REMS_GIS_Secret_Key_Super_Secret_2026_Secure_Token_Authentication!";
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(jwtKey);
@@ -72,7 +67,7 @@ namespace REMS.API.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(120),
+                Expires = DateTime.UtcNow.AddHours(8),
                 Issuer = _configuration["Jwt:Issuer"] ?? "http://localhost:5000",
                 Audience = _configuration["Jwt:Audience"] ?? "http://localhost:5000",
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -82,7 +77,6 @@ namespace REMS.API.Services
             return tokenHandler.WriteToken(token);
         }
 
-        // 2. KAYIT OLMA (SHA-256 + Salt)
         public async Task<(bool Success, string Message)> RegisterAsync(RegisterDto request)
         {
             if (string.IsNullOrWhiteSpace(request.AdSoyad) || string.IsNullOrWhiteSpace(request.Email))
@@ -92,21 +86,18 @@ namespace REMS.API.Services
 
             var emailClean = request.Email.ToLower().Trim();
 
-            // E-posta benzersizlik kontrolü
             bool emailVarMi = await _context.Kullanicilar.AnyAsync(x => x.Email.ToLower() == emailClean);
             if (emailVarMi)
             {
                 return (false, "Bu e-posta adresi ile kayıtlı bir hesap zaten var.");
             }
 
-            // Şifre kuralı kontrolü (Ortak PasswordValidator kullanılır)
             var (sifreGecerli, sifreHata) = PasswordValidator.SifreGecerliMi(request.Sifre);
             if (!sifreGecerli)
             {
                 return (false, sifreHata);
             }
 
-            // Güvenli SHA-256 Hash + Salt
             string salt = _hashService.CreateSalt();
             string hash = _hashService.HashPassword(request.Sifre, salt);
 
@@ -117,7 +108,7 @@ namespace REMS.API.Services
                 Email = emailClean,
                 SifreHash = hash,
                 SifreSalt = salt,
-                Rol = "Kullanici", // Daima standart Kullanıcı rolü atanır
+                Rol = "Kullanici",
                 AktifMi = true,
                 OlusturmaTarihi = DateTime.UtcNow
             };

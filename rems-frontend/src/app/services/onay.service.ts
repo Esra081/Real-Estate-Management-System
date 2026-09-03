@@ -17,7 +17,6 @@ export class OnayService {
   private modalState$ = new BehaviorSubject<OnayData | null>(null);
   public modal$ = this.modalState$.asObservable();
 
-  // Onay Kutusu Açıcı
   sor(
     baslik: string,
     mesaj: string,
@@ -37,12 +36,11 @@ export class OnayService {
     });
   }
 
-  // Kullanıcı butona bastığında çağrılır
   cevapla(karar: boolean): void {
     const mevcut = this.modalState$.getValue();
     if (mevcut) {
       mevcut.resolve(karar);
-      this.modalState$.next(null); // Modalı kapatır
+      this.modalState$.next(null);
     }
   }
 }

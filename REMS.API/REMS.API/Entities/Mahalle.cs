@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace REMS.API.Entities
 {
@@ -6,8 +6,8 @@ namespace REMS.API.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string Ad { get; set; }
+        public string Ad { get; set; } = string.Empty;
         public int IlceId { get; set; }
-        public Ilce Ilce { get; set; }
+        public Ilce Ilce { get; set; } = null!;
     }
 }

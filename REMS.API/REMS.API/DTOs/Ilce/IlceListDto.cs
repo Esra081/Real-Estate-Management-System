@@ -1,6 +1,6 @@
-﻿namespace REMS.API.DTOs.Ilce
+namespace REMS.API.DTOs.Ilce
 {
-    public class IlceListDTO
+    public class IlceListDto
     {
         public int Id { get; set; }
         public string? Ad { get; set; }

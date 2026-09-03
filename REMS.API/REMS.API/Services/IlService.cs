@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using REMS.API.Data;
 using REMS.API.DTOs.Il;
-using REMS.API.Interfaces; // IIlService'i bulabilmesi için eklendi
+using REMS.API.Interfaces;
 
 namespace REMS.API.Services
 {
@@ -17,11 +17,11 @@ namespace REMS.API.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<IlListDTO>> GetAllAsync()
+        public async Task<IEnumerable<IlListDto>> GetAllAsync()
         {
             return await _context.Iller
                 .OrderBy(i => i.Id)
-                .Select(i => new IlListDTO { Id = i.Id, Ad = i.Ad })
+                .Select(i => new IlListDto { Id = i.Id, Ad = i.Ad })
                 .ToListAsync();
         }
     }

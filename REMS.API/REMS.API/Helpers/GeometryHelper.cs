@@ -11,7 +11,6 @@ namespace REMS.API.Helpers
         private static readonly GeometryFactory _geometryFactory =
             NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
-        // 1. Koordinat Listesinden (Frontend formatı) NTS Poligonu Üretir
         public static Polygon KoordinatlardanPoligonUret(IEnumerable<double[]> koordinatListesi)
         {
             var coordinates = koordinatListesi.Select(k => new Coordinate(k[0], k[1])).ToList();
@@ -19,7 +18,6 @@ namespace REMS.API.Helpers
             if (coordinates.Count < 3)
                 throw new ArgumentException("Bir poligon için en az 3 nokta gereklidir.");
 
-            // Poligonun başı ve sonu birleşmeli (Halka kapanmalı)
             if (!coordinates.First().Equals2D(coordinates.Last()))
             {
                 coordinates.Add(coordinates.First());
@@ -29,13 +27,11 @@ namespace REMS.API.Helpers
             return _geometryFactory.CreatePolygon(ring);
         }
 
-        // List<List<double>> desteği için aşırı yükleme (Overload)
         public static Polygon KoordinatlardanPoligonUret(List<List<double>> koordinatListesi)
         {
             return KoordinatlardanPoligonUret(koordinatListesi.Select(k => new double[] { k[0], k[1] }));
         }
 
-        // 2. Geometriden (Polygon / MultiPolygon) Koordinat Dizisini Çıkarır (List<List<double>>)
         public static List<List<double>> PoligondanKoordinatlariAl(Geometry? geometri)
         {
             var sonuc = new List<List<double>>();
@@ -44,7 +40,6 @@ namespace REMS.API.Helpers
             Polygon? poly = geometri as Polygon;
             if (poly == null && geometri is MultiPolygon multi && multi.Count > 0)
             {
-                // MultiPolygon ise en büyük parçayı alırız
                 poly = multi.Geometries.OfType<Polygon>().OrderByDescending(p => p.Area).FirstOrDefault();
             }
 
@@ -59,7 +54,6 @@ namespace REMS.API.Helpers
             return sonuc;
         }
 
-        // 2b. Geometriden List<double[]> formatında koordinat çıkarır (Tasinmaz modelleri için)
         public static List<double[]> PoligondanDiziKoordinatAl(Geometry? geometri)
         {
             var sonuc = new List<double[]>();
@@ -82,13 +76,11 @@ namespace REMS.API.Helpers
             return sonuc;
         }
 
-        // 2c. Geometrideki tüm parçaların koordinatlarını çıkarır (MultiPolygon)
         public static List<List<List<double>>> TumParcalariAl(Geometry? geometri)
         {
             var sonuc = new List<List<List<double>>>();
             if (geometri == null || geometri.IsEmpty) return sonuc;
 
-            // Tek parçalı standart poligon ise:
             if (geometri is Polygon poly && poly.ExteriorRing != null)
             {
                 var parca = poly.ExteriorRing.Coordinates
@@ -96,18 +88,14 @@ namespace REMS.API.Helpers
                     .ToList();
                 sonuc.Add(parca);
             }
-            // Birbirine değmeyen çok parçalı (MultiPolygon) ise:
             else if (geometri is MultiPolygon multi)
             {
-                foreach (var p in multi.Geometries.OfType<Polygon>())
+                foreach (var ring in multi.Geometries.OfType<Polygon>().Select(p => p.ExteriorRing).Where(r => r != null))
                 {
-                    if (p.ExteriorRing != null)
-                    {
-                        var parca = p.ExteriorRing.Coordinates
-                            .Select(c => new List<double> { c.X, c.Y })
-                            .ToList();
-                        sonuc.Add(parca);
-                    }
+                    var parca = ring.Coordinates
+                        .Select(c => new List<double> { c.X, c.Y })
+                        .ToList();
+                    sonuc.Add(parca);
                 }
             }
 
@@ -142,7 +130,7 @@ namespace REMS.API.Helpers
             var coords = ring.Coordinates;
             if (coords.Length < 3) return 0;
 
-            double radius = 6378137.0; // Dünya yarıçapı (metre)
+            double radius = 6378137.0;
             double total = 0;
 
             for (int i = 0; i < coords.Length - 1; i++)

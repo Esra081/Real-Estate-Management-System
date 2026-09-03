@@ -1,30 +1,26 @@
-// 1. Haritada çizilen veya veritabanından gelen tek bir poligon
 export interface PoligonDto {
-  etiket: string; // "A", "B", "C", "D", "E"
-  koordinatlar: number[][]; // [[lon, lat], [lon, lat], ...]
+  etiket: string;
+  koordinatlar: number[][];
   alanM2?: number;
 }
 
-// 2. Kesişim veya Birleşim sonucu Backend'den dönen cevap paketi
 export interface AlanAnalizSonucDto {
   basarili: boolean;
   mesaj: string;
-  islemTipi: string; // "A ∩ B", "A ∪ B"
-  sonucEtiketi?: string; // "D", "E" veya "Kesişim"
+  islemTipi: string;
+  sonucEtiketi?: string;
   alanM2: number;
   koordinatlar: number[][];
   cokluKoordinatlar?: number[][][]; 
 }
 
-// 3. Kesişim İsteği (Backend'e giden veri)
 export interface KesisimIstekDto {
-  p1: string; // "A"
-  p2: string; // "B"
+  p1: string;
+  p2: string;
   geometriler?: PoligonDto[];
 }
 
-// 4. Birleşim İsteği (Backend'e giden veri)
 export interface BirlesimIstekDto {
-  etiketler: string[]; // ["A", "B"] veya ["A", "B", "C"]
+  etiketler: string[];
   geometriler?: PoligonDto[];
 }

@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-
 import { TasinmazService } from './tasinmaz.service';
 import { Tasinmaz } from '../../models/tasinmaz.model';
 import { LokasyonService } from '../../services/lokasyon.service';
@@ -30,8 +29,6 @@ import Polygon from 'ol/geom/Polygon';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import Feature from 'ol/Feature';
 
-
-
 @Component({
   selector: 'app-tasinmaz',
   standalone: true,
@@ -46,7 +43,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
   duzenlemeModu = false;
   yukleniyor = false;
 
-  // SRS Fotoğraf Yükleme Değişkenleri
   resimYuklemeTipi: 'dosya' | 'link' = 'dosya';
   secilenDosya: File | null = null;
   dosyaOnizlemeUrl: string | null = null;
@@ -56,7 +52,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
   ilceler: Ilce[] = [];
   mahalleler: Mahalle[] = [];
 
-  // Dependency Injection: LokasyonService ve diğer servisleri buraya ekliyoruz
   constructor(
     private formBuilder: FormBuilder,
     private tasinmazService: TasinmazService,
@@ -67,9 +62,15 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     private toast: ToastService
   ) {}
 
-  ngOnInit(): void {
+    ngOnInit(): void {
+    if (this.auth.isAdmin) {
+      this.toast.warning('Yöneticiler taşınmaz ekleme veya düzenleme yapamaz.');
+      this.router.navigate(['/tasinmaz-liste']);
+      return;
+    }
+
     this.formOlustur();
-    this.illerGetir(); // Artık hata vermeyecek, metodumuz aşağıda tanımlı
+    this.illerGetir();
 
     const id = this.activatedRoute.snapshot.paramMap.get('id');
 
@@ -96,11 +97,9 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // İlleri API'den çeken metot
   illerGetir(): void {
     this.lokasyonService.getIller().subscribe({
       next: (data: any) => {
-        // BURAYI EKLEDİK: Backend'den gelen verinin yapısını konsola yazdırıyoruz
         console.log('API DEN GELEN İL VERİSİ:', data); 
         
         this.iller = data;
@@ -110,7 +109,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // İl seçildiğinde tetiklenecek metot (İlçeleri getirir)
   onIlChange(event: any): void {
     const secilenIlId = event.target.value;
     
@@ -131,7 +129,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // İlçe seçildiğinde tetiklenecek metot (Mahalleleri getirir)
   onIlceChange(event: any): void {
     const secilenIlceId = event.target.value;
     
@@ -151,243 +148,86 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
   }
 
   tasinmazGetir(id: number): void {
-  this.yukleniyor = true;
+    this.yukleniyor = true;
 
-  this.tasinmazService.getTasinmazById(id).subscribe({
-  next: (veri: Tasinmaz) => {
-
-    console.log('DÜZENLENECEK TAŞINMAZ:', veri);
-
-    // Önce temel taşınmaz bilgilerini forma doldur
-    this.tasinmazForm.patchValue({
-      adaNo: veri.adaNo,
-      parselNo: veri.parselNo,
-      adres: veri.adres,
-      tasinmazTipi: veri.tasinmazTipi,
-      alanM2: veri.alanM2,
-      mahalleId: veri.mahalleId,
-      resimUrl: veri.resimUrl || '',
-      kullaniciId: veri.kullaniciId,
-      koordinatlar: veri.koordinatlar
-    });
-
-    // -----------------------------------
-    // İL / İLÇE / MAHALLE
-    // -----------------------------------
-
-    console.log('İL:', veri.ilAdi);
-    console.log('İLÇE:', veri.ilceAdi);
-    console.log('MAHALLE:', veri.mahalleAdi);
-    console.log('MAHALLE ID:', veri.mahalleId);
-
-    // 1. Önce bütün illeri getir
-    this.lokasyonService.getIller().subscribe({
-      next: (iller: Il[]) => {
-
-        this.iller = iller;
-
-        // Gelen il adına göre ili bul
-        const secilenIl = iller.find(
-          il => il.ad === veri.ilAdi
-        );
-
-        if (!secilenIl) {
-          console.error('İl bulunamadı:', veri.ilAdi);
-          return;
-        }
-
-        console.log('SEÇİLEN İL:', secilenIl);
-
-        // İl'i forma seç
+    this.tasinmazService.getTasinmazById(id).subscribe({
+      next: (veri: Tasinmaz) => {
         this.tasinmazForm.patchValue({
-          ilId: secilenIl.id
+          adaNo: veri.adaNo,
+          parselNo: veri.parselNo,
+          adres: veri.adres,
+          tasinmazTipi: veri.tasinmazTipi,
+          alanM2: veri.alanM2,
+          mahalleId: veri.mahalleId,
+          resimUrl: veri.resimUrl || '',
+          kullaniciId: veri.kullaniciId,
+          koordinatlar: veri.koordinatlar
         });
 
-        // 2. Seçilen ilin ilçelerini getir
-        this.lokasyonService.getIlceler(secilenIl.id).subscribe({
-          next: (ilceler: Ilce[]) => {
+        this.lokasyonService.getIller().subscribe({
+          next: (iller: Il[]) => {
+            this.iller = iller;
+            const secilenIl = iller.find(il => il.ad === veri.ilAdi);
+            if (!secilenIl) return;
 
-            this.ilceler = ilceler;
+            this.tasinmazForm.patchValue({ ilId: secilenIl.id });
 
-            // Gelen ilçe adına göre ilçeyi bul
-            const secilenIlce = ilceler.find(
-              ilce => ilce.ad === veri.ilceAdi
-            );
+            this.lokasyonService.getIlceler(secilenIl.id).subscribe({
+              next: (ilceler: Ilce[]) => {
+                this.ilceler = ilceler;
+                const secilenIlce = ilceler.find(ilce => ilce.ad === veri.ilceAdi);
+                if (!secilenIlce) return;
 
-            if (!secilenIlce) {
-              console.error('İlçe bulunamadı:', veri.ilceAdi);
-              return;
-            }
+                this.tasinmazForm.patchValue({ ilceId: secilenIlce.id });
 
-            console.log('SEÇİLEN İLÇE:', secilenIlce);
-
-            // İlçeyi forma seç
-            this.tasinmazForm.patchValue({
-              ilceId: secilenIlce.id
-            });
-
-            // 3. Seçilen ilçenin mahallelerini getir
-            this.lokasyonService.getMahalleler(secilenIlce.id).subscribe({
-              next: (mahalleler: Mahalle[]) => {
-
-                this.mahalleler = mahalleler;
-
-                console.log(
-                  'MAHALLELER:',
-                  mahalleler
-                );
-
-                // Taşınmazın mahalle ID'sini bul
-                const secilenMahalle = mahalleler.find(
-                  mahalle => mahalle.id === veri.mahalleId
-                );
-
-                if (!secilenMahalle) {
-                  console.error(
-                    'Mahalle bulunamadı. Mahalle ID:',
-                    veri.mahalleId
-                  );
-                  return;
-                }
-
-                console.log(
-                  'SEÇİLEN MAHALLE:',
-                  secilenMahalle
-                );
-
-                // Mahalleyi forma seç
-                this.tasinmazForm.patchValue({
-                  mahalleId: secilenMahalle.id
+                this.lokasyonService.getMahalleler(secilenIlce.id).subscribe({
+                  next: (mahalleler: Mahalle[]) => {
+                    this.mahalleler = mahalleler;
+                    const secilenMahalle = mahalleler.find(m => m.id === veri.mahalleId);
+                    if (secilenMahalle) {
+                      this.tasinmazForm.patchValue({ mahalleId: secilenMahalle.id });
+                    }
+                  }
                 });
-
-                console.log(
-                  'İL / İLÇE / MAHALLE OTOMATİK DOLDURULDU'
-                );
-              },
-
-              error: (hata: any) => {
-                console.error(
-                  'Mahalleler yüklenemedi:',
-                  hata
-                );
               }
             });
-          },
-
-          error: (hata: any) => {
-            console.error(
-              'İlçeler yüklenemedi:',
-              hata
-            );
           }
         });
+
+        if (veri.koordinatlar && veri.koordinatlar.length >= 3) {
+          if (!this.vectorSource) {
+            setTimeout(() => this.koordinatlariHaritayaCiz(veri.koordinatlar), 300);
+          } else {
+            this.koordinatlariHaritayaCiz(veri.koordinatlar);
+          }
+        }
       },
-
       error: (hata: any) => {
-        console.error(
-          'İller yüklenemedi:',
-          hata
-        );
-      }
-    });
-
-    // -----------------------------------
-    // KOORDİNATLARI HARİTAYA ÇİZ
-    // -----------------------------------
-
-    if (
-      veri.koordinatlar &&
-      veri.koordinatlar.length >= 3
-    ) {
-
-      console.log(
-        'API DEN GELEN KOORDİNATLAR:',
-        veri.koordinatlar
-      );
-
-      // Harita henüz oluşturulmadıysa biraz bekle
-      if (!this.vectorSource) {
-
-        setTimeout(() => {
-          this.koordinatlariHaritayaCiz(
-            veri.koordinatlar
-          );
-        }, 300);
-
-      } else {
-
-        this.koordinatlariHaritayaCiz(
-          veri.koordinatlar
-        );
-      }
-    }
-  },
-
-  error: (hata: any) => {
-    console.error(
-      'Taşınmaz bilgileri alınamadı:',
-      hata
-       );
+        console.error('Taşınmaz bilgileri alınamadı:', hata);
+        this.toast.error('Taşınmaz bilgileri yüklenemedi.');
       }
     });
   }
 
+  private koordinatlariHaritayaCiz(koordinatlar: number[][]): void {
+    if (!this.vectorSource || !this.map) return;
 
-  private koordinatlariHaritayaCiz(
-    koordinatlar: number[][]
-  ): void {
-
-    if (!this.vectorSource || !this.map) {
-      return;
-    }
-
-    console.log(
-      'HARİTAYA ÇİZİLECEK KOORDİNATLAR:',
-      koordinatlar
-    );
-
-    // Eski çizimi temizle
     this.vectorSource.clear();
 
-    // Backend:
-    // [longitude, latitude]
-    //
-    // OpenLayers:
-    // EPSG:3857
-
-    const transformedCoordinates = koordinatlar.map(
-      (koordinat) =>
-        fromLonLat([
-          koordinat[0],
-          koordinat[1]
-        ])
+    const transformedCoordinates = koordinatlar.map(koordinat =>
+      fromLonLat([koordinat[0], koordinat[1]])
     );
 
-    // Polygon oluştur
-    const polygon = new Polygon([
-      transformedCoordinates
-    ]);
+    const polygon = new Polygon([transformedCoordinates]);
+    const feature = new Feature({ geometry: polygon });
 
-    // Feature oluştur
-    const feature = new Feature({
-      geometry: polygon
-    });
-
-    // Haritaya ekle
     this.vectorSource.addFeature(feature);
 
-    this.map.getView().fit(
-      polygon.getExtent(),
-      {
-        padding: [50, 50, 50, 50],
-        duration: 500,
-        maxZoom: 18
-      }
-    );
-
-    console.log(
-      'Polygon haritaya çizildi.'
-    );
+    this.map.getView().fit(polygon.getExtent(), {
+      padding: [50, 50, 50, 50],
+      duration: 500,
+      maxZoom: 18
+    });
   }
 
   onDosyaSec(event: any): void {
@@ -399,7 +239,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // SRS Kontrolü 1: Format Kuralı (JPEG ve PNG)
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (!allowedTypes.includes(file.type) && ext !== 'jpg' && ext !== 'jpeg' && ext !== 'png') {
@@ -410,7 +249,6 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // SRS Kontrolü 2: Boyut Kuralı (Maksimum 100 MB)
     const maxBoyut = 100 * 1024 * 1024;
     if (file.size > maxBoyut) {
       this.dosyaHataMesaji = 'Dosya boyutu 100 MB sınırını aşamaz.';
@@ -463,11 +301,9 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     };
 
     if (this.duzenlemeModu && this.tasinmazId !== null) {
-      // GÜNCELLEME İŞLEMİ
       this.tasinmazService.tasinmazGuncelle(hazirTasinmazData).subscribe({
         next: (res: any) => {
           if (this.secilenDosya && this.tasinmazId) {
-            // Seçilen fotoğraf dosyasını yükle
             this.tasinmazService.resimYukle(this.tasinmazId, this.secilenDosya).subscribe({
               next: () => {
                 this.toast.success('Taşınmaz ve yeni fotoğrafı başarıyla güncellendi.');
@@ -497,12 +333,10 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
       });
 
     } else {
-      // EKLEME İŞLEMİ
       this.tasinmazService.tasinmazEkle(hazirTasinmazData).subscribe({
         next: (res: any) => {
           const yeniId = res?.id;
           if (this.secilenDosya && yeniId) {
-            // Yeni oluşturulan taşınmaza fotoğrafı yükle
             this.tasinmazService.resimYukle(yeniId, this.secilenDosya).subscribe({
               next: () => {
                 this.toast.success('Taşınmaz ve fotoğrafı başarıyla eklendi.');
@@ -532,13 +366,11 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/tasinmaz-liste']);
   }
 
-  // OpenLayers Harita Değişkenleri
   private map!: Map;
   private vectorSource!: VectorSource;
   private vectorLayer!: VectorLayer<VectorSource>;
   private drawInteraction!: Draw;
 
-  // HTML DOM tamamen yüklendiğinde haritayı başlatıyoruz
   ngAfterViewInit(): void {
     this.haritayiBaslat();
   }
@@ -550,15 +382,15 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     });
 
     this.map = new Map({
-      target: 'draw-map', // HTML'de açacağımız div'in id'si ile aynı olmalı
+      target: 'draw-map',
       layers: [
         new TileLayer({
-          source: new OSM() // SRS kuralı: OpenStreetMap altlığı
+          source: new OSM()
         }),
         this.vectorLayer
       ],
       view: new View({
-        center: fromLonLat([32.85411, 39.92077]), // Ankara merkez
+        center: fromLonLat([32.85411, 39.92077]),
         zoom: 13
       })
     });
@@ -570,12 +402,12 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     this.drawInteraction = new Draw({
       source: this.vectorSource,
       type: 'Polygon',
-      maxPoints: 5, // SRS kuralı: Tam olarak 4 köşe + 1 kapatma noktası[cite: 1]
+      maxPoints: 5,
       minPoints: 5
     });
 
     this.drawInteraction.on('drawend', (event) => {
-      this.vectorSource.clear(); // Tek bir taşınmaz alanı olması için eskisini siliyoruz
+      this.vectorSource.clear();
 
       const geometry = event.feature.getGeometry() as Polygon;
       const hamKoordinatlar = geometry.getCoordinates()[0];
@@ -586,15 +418,12 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
         return [lonLat[0], lonLat[1]]; 
       });
 
-      // Çizilen koordinatları Reactive Form içine aktarıyoruz
       this.tasinmazForm.patchValue({
         koordinatlar: veritabaniKoordinatlari
       });
 
       this.tasinmazForm.get('koordinatlar')?.markAsTouched();
       this.tasinmazForm.get('koordinatlar')?.updateValueAndValidity();
-      
-      console.log('Haritadan Cizilen Koordinatlar:', veritabaniKoordinatlari);
     });
 
     this.map.addInteraction(this.drawInteraction);

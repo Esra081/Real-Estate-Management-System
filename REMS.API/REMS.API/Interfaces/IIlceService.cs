@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using REMS.API.DTOs.Ilce; // DTO referansı eklendi
+using REMS.API.DTOs.Ilce;
 
 namespace REMS.API.Interfaces
 {
     public interface IIlceService
     {
-        Task<IEnumerable<IlceListDTO>> GetByIlIdAsync(int ilId);
+        Task<IEnumerable<IlceListDto>> GetByIlIdAsync(int ilId);
     }
 }

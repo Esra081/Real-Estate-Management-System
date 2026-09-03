@@ -1,6 +1,5 @@
 <div class="container-fluid p-0">
 
-  <!-- 1. ÜST BAŞLIK VE DIŞA AKTARMA BUTONLARI -->
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
       <span class="badge badge-success text-uppercase mb-2" style="letter-spacing: 0.8px; font-size: 10px;">
@@ -26,9 +25,7 @@
     </div>
   </div>
 
-  <!-- 2. KPI METRİK SAYAÇ KARTLARI -->
   <div class="row g-3 mb-4">
-    <!-- Kart 1: Toplam Log -->
     <div class="col-12 col-sm-6 col-xl-3">
       <div class="rems-card h-100 p-3">
         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -40,7 +37,6 @@
       </div>
     </div>
 
-    <!-- Kart 2: Başarılı İşlemler -->
     <div class="col-12 col-sm-6 col-xl-3">
       <div class="rems-card h-100 p-3">
         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -52,7 +48,6 @@
       </div>
     </div>
 
-    <!-- Kart 3: Hatalı / Başarısız -->
     <div class="col-12 col-sm-6 col-xl-3">
       <div class="rems-card h-100 p-3">
         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -64,7 +59,6 @@
       </div>
     </div>
 
-    <!-- Kart 4: Sayfa Durumu -->
     <div class="col-12 col-sm-6 col-xl-3">
       <div class="rems-card h-100 p-3">
         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -77,15 +71,12 @@
     </div>
   </div>
 
-  <!-- 3. BÜTÜNLEŞİK KART: FİLTRE VE LOG TABLOSU BİTİŞİK TEK KART -->
   <div class="rems-card overflow-hidden mb-4">
     
-    <!-- Filtre Üst Başlığı ve Formu -->
     <div class="p-3 bg-white border-bottom">
       <form [formGroup]="filtreForm" (ngSubmit)="filtrele()">
         <div class="row g-2 align-items-center">
           
-          <!-- Kullanıcı -->
           <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Kullanıcı</label>
             <select class="form-select form-select-sm" formControlName="kullaniciId">
@@ -94,7 +85,6 @@
             </select>
           </div>
 
-          <!-- İşlem Tipi -->
           <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">İşlem Tipi</label>
             <select class="form-select form-select-sm" formControlName="islemTipi">
@@ -103,7 +93,6 @@
             </select>
           </div>
 
-          <!-- Durum -->
           <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Durum</label>
             <select class="form-select form-select-sm" formControlName="durum">
@@ -113,19 +102,16 @@
             </select>
           </div>
 
-          <!-- Başlangıç Tarihi -->
           <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Başlangıç Tarihi</label>
             <input type="date" class="form-control form-control-sm" formControlName="baslangicTarihi">
           </div>
 
-          <!-- Bitiş Tarihi -->
           <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Bitiş Tarihi</label>
             <input type="date" class="form-control form-control-sm" formControlName="bitisTarihi">
           </div>
 
-          <!-- Butonlar (2 Kolon) -->
           <div class="col-12 col-lg-2 d-flex gap-2 align-self-end">
             <button type="submit" class="btn btn-primary btn-sm flex-fill fw-bold" style="padding: 6px 10px; font-size: 12.5px;">
               Filtrele
@@ -139,7 +125,6 @@
       </form>
     </div>
 
-    <!-- Tablo Alanı (Kartın İçinde Kesintisiz) -->
     <div class="table-responsive">
       <table class="table rems-table table-hover align-middle mb-0" style="font-size: 13px;">
         <thead>
@@ -153,7 +138,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Yükleniyor Durumu -->
           <tr *ngIf="yukleniyor">
             <td colspan="6" class="text-center py-5 text-muted">
               <div class="spinner-border spinner-border-sm text-primary me-2"></div>
@@ -161,14 +145,12 @@
             </td>
           </tr>
 
-          <!-- Kayıt Bulunamadı Durumu -->
           <tr *ngIf="!yukleniyor && loglar.length === 0">
             <td colspan="6" class="text-center py-5 text-muted">
               Kriterlere uygun herhangi bir log kaydı bulunamadı.
             </td>
           </tr>
 
-          <!-- Log Satırları -->
           <tr *ngFor="let l of loglar">
             <td class="ps-4 text-muted small font-monospace">
               {{ l.tarih | date:'dd.MM.yyyy HH:mm:ss' }}
@@ -207,7 +189,6 @@
       </table>
     </div>
 
-    <!-- Alt Sayfalama (Kartın Altına Bitişik Footer) -->
     <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-top bg-white" *ngIf="totalPages > 1">
       <div class="text-muted small">
         Toplam <strong>{{ totalCount }}</strong> log kaydından <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - <strong>{{ currentPage === totalPages ? totalCount : currentPage * pageSize }}</strong> arası gösteriliyor

@@ -11,7 +11,7 @@ namespace REMS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")] // Sadece Admin rolüne sahip kullanıcılar logları görebilir
+    [Authorize(Roles = "Admin")]
     public class LogController : ControllerBase
     {
         private readonly ILogService _logService;
@@ -23,7 +23,6 @@ namespace REMS.API.Controllers
             _exportService = exportService;
         }
 
-        // GET: api/Log?PageNumber=1&PageSize=20&IslemTipi=Giriş&Durum=Basarili
         [HttpGet]
         public async Task<IActionResult> GetLogs([FromQuery] LogFilterDto filter)
         {
@@ -38,7 +37,6 @@ namespace REMS.API.Controllers
             }
         }
 
-        // GET: api/Log/export/excel (Logları Excel Olarak İndirme)
         [HttpGet("export/excel")]
         public async Task<IActionResult> ExportToExcel([FromQuery] LogFilterDto filter)
         {
@@ -65,7 +63,6 @@ namespace REMS.API.Controllers
             }
         }
 
-        // GET: api/Log/export/pdf (Logları PDF Raporu Olarak İndirme)
         [HttpGet("export/pdf")]
         public async Task<IActionResult> ExportToPdf([FromQuery] LogFilterDto filter)
         {
@@ -92,8 +89,6 @@ namespace REMS.API.Controllers
             }
         }
 
-
-        // GET: api/Log/islem-tipleri (Filtreleme dropdown'ı için sabit işlem tipleri)
         [HttpGet("islem-tipleri")]
         public IActionResult GetIslemTipleri()
         {

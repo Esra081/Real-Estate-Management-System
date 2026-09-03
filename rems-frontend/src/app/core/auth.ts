@@ -17,7 +17,6 @@ export class Auth {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  // 1. Giriş Yapma (Login)
   login(email: string, sifre: string) {
     return this.http.post<{ token: string; message: string }>(
       `${this.baseUrl}/login`,
@@ -29,18 +28,15 @@ export class Auth {
     );
   }
 
-  // 2. Çıkış Yapma (Logout)
   logout() {
     sessionStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 
-  // 3. Kullanıcı Giriş Yapmış mı?
   get isLoggedIn(): boolean {
     return !!sessionStorage.getItem('token');
   }
 
-  // 4. Token'ı çözüp giriş yapan kullanıcının bilgilerini dönen akıllı Getter
   get currentUser(): AktifKullanici | null {
    const token = sessionStorage.getItem('token');
     if (!token) return null;
@@ -67,7 +63,6 @@ export class Auth {
     }
   }
 
-  // 5. Giriş yapan kişi Admin mi?
   get isAdmin(): boolean {
     return this.currentUser?.rol === 'Admin';
   }

@@ -17,14 +17,14 @@ namespace REMS.API.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<IlceListDTO>> GetByIlIdAsync(int ilId)
+        public async Task<IEnumerable<IlceListDto>> GetByIlIdAsync(int ilId)
         {
-            return await _context.Ilceler
-                .AsNoTracking()
-                .Where(x => x.IlId == ilId)
-                .OrderBy(x => x.Ad)
-                .Select(i => new IlceListDTO { Id = i.Id, Ad = i.Ad, IlId = i.IlId })
+            var ilceler = await _context.Ilceler
+                .Where(i => i.IlId == ilId)
+                .OrderBy(i => i.Ad)
+                .Select(i => new IlceListDto { Id = i.Id, Ad = i.Ad, IlId = i.IlId })
                 .ToListAsync();
+            return ilceler;
         }
     }
 }

@@ -1,0 +1,165 @@
+C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API\Properties\launchSettings.json içindeki başlatma ayarları kullanılıyor...
+Derleniyor...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (16ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE IF EXISTS "Tasinmazlar" ADD COLUMN IF NOT EXISTS resim_url text;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      ALTER TABLE IF EXISTS "tasinmazlar" ADD COLUMN IF NOT EXISTS resim_url text;
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://localhost:7195
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5107
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\Esra\Desktop\Esra\Projects\OdakGIS_Staj\REMS\REMS.API\REMS.API
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET https://localhost:7195/api/il - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'REMS.API.Controllers.IlController.GetAll (REMS.API)'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT i."Id", i."Ad"
+      FROM "Iller" AS i
+      ORDER BY i."Id"
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'REMS.API.Controllers.IlController.GetAll (REMS.API)'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET https://localhost:7195/api/il - 200 - application/json;+charset=utf-8 198.8026ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET https://localhost:7195/api/Tasinmaz?kullaniciId=979f8850-169d-4f70-8de0-e6ab2c558e4e&pageNumber=1&pageSize=10 - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'REMS.API.Controllers.TasinmazController.GetTasinmazlar (REMS.API)'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (16ms) [Parameters=[@__filter_KullaniciId_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      WHERE t.kullanici_id = @__filter_KullaniciId_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__filter_KullaniciId_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT COALESCE(sum(COALESCE(t.alan_m2, 0.0)), 0.0)
+      FROM "Tasinmazlar" AS t
+      WHERE t.kullanici_id = @__filter_KullaniciId_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__filter_KullaniciId_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      WHERE t.kullanici_id = @__filter_KullaniciId_0 AND t.tasinmaz_tipi = 'Konut'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__filter_KullaniciId_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      WHERE t.kullanici_id = @__filter_KullaniciId_0 AND t.tasinmaz_tipi = 'Arsa'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__filter_KullaniciId_0='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      WHERE t.kullanici_id = @__filter_KullaniciId_0 AND t.tasinmaz_tipi = 'Bina'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__filter_KullaniciId_0='?', @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT i0."Ad" AS "IlAdi", count(*)::int AS "Count"
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      INNER JOIN "Iller" AS i0 ON i."IlId" = i0."Id"
+      WHERE t.kullanici_id = @__filter_KullaniciId_0
+      GROUP BY i0."Ad"
+      ORDER BY count(*)::int DESC
+      LIMIT @__p_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@__filter_KullaniciId_0='?', @__p_2='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT t0."Id", t0.ada_no, t0.adres, t0.alan_m2, t0.kullanici_id, t0.mahalle_id, t0.parsel_no, t0.resim_url, t0.sinir, t0.tasinmaz_tipi, m."Id", m."Ad", m."IlceId", i."Id", i."Ad", i."IlId", i0."Id", i0."Ad"
+      FROM (
+          SELECT t."Id", t.ada_no, t.adres, t.alan_m2, t.kullanici_id, t.mahalle_id, t.parsel_no, t.resim_url, t.sinir, t.tasinmaz_tipi
+          FROM "Tasinmazlar" AS t
+          WHERE t.kullanici_id = @__filter_KullaniciId_0
+          ORDER BY t."Id" DESC
+          LIMIT @__p_2 OFFSET @__p_1
+      ) AS t0
+      INNER JOIN "Mahalleler" AS m ON t0.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      INNER JOIN "Iller" AS i0 ON i."IlId" = i0."Id"
+      ORDER BY t0."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT k."Id", k."AdSoyad", k."AktifMi", k."Email", k."OlusturmaTarihi", k."Rol", k."SifreHash", k."SifreSalt"
+      FROM "Kullanicilar" AS k
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'REMS.API.Controllers.TasinmazController.GetTasinmazlar (REMS.API)'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET https://localhost:7195/api/Tasinmaz?kullaniciId=979f8850-169d-4f70-8de0-e6ab2c558e4e&pageNumber=1&pageSize=10 - 200 - application/json;+charset=utf-8 720.5445ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET https://localhost:7195/api/Tasinmaz?ilId=6&tasinmazTipi=Arsa&pageNumber=1&pageSize=10 - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'REMS.API.Controllers.TasinmazController.GetTasinmazlar (REMS.API)'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?'], CommandType='Text', CommandTimeout='30']
+      SELECT COALESCE(sum(COALESCE(t.alan_m2, 0.0)), 0.0)
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1 AND t.tasinmaz_tipi = 'Konut'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1 AND t.tasinmaz_tipi = 'Arsa'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?'], CommandType='Text', CommandTimeout='30']
+      SELECT count(*)::int
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1 AND t.tasinmaz_tipi = 'Bina'
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?', @__p_2='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT i0."Ad" AS "IlAdi", count(*)::int AS "Count"
+      FROM "Tasinmazlar" AS t
+      INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+      INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+      INNER JOIN "Iller" AS i0 ON i."IlId" = i0."Id"
+      WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1
+      GROUP BY i0."Ad"
+      ORDER BY count(*)::int DESC
+      LIMIT @__p_2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__filter_IlId_Value_0='?' (DbType = Int32), @__filter_TasinmazTipi_1='?', @__p_3='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT t0."Id", t0.ada_no, t0.adres, t0.alan_m2, t0.kullanici_id, t0.mahalle_id, t0.parsel_no, t0.resim_url, t0.sinir, t0.tasinmaz_tipi, t0."Id0", t0."Ad", t0."IlceId", t0."Id1", t0."Ad0", t0."IlId", i0."Id", i0."Ad"
+      FROM (
+          SELECT t."Id", t.ada_no, t.adres, t.alan_m2, t.kullanici_id, t.mahalle_id, t.parsel_no, t.resim_url, t.sinir, t.tasinmaz_tipi, m."Id" AS "Id0", m."Ad", m."IlceId", i."Id" AS "Id1", i."Ad" AS "Ad0", i."IlId"
+          FROM "Tasinmazlar" AS t
+          INNER JOIN "Mahalleler" AS m ON t.mahalle_id = m."Id"
+          INNER JOIN "Ilceler" AS i ON m."IlceId" = i."Id"
+          WHERE i."IlId" = @__filter_IlId_Value_0 AND t.tasinmaz_tipi = @__filter_TasinmazTipi_1
+          ORDER BY t."Id" DESC
+          LIMIT @__p_3 OFFSET @__p_2
+      ) AS t0
+      INNER JOIN "Iller" AS i0 ON t0."IlId" = i0."Id"
+      ORDER BY t0."Id" DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT k."Id", k."AdSoyad", k."AktifMi", k."Email", k."OlusturmaTarihi", k."Rol", k."SifreHash", k."SifreSalt"
+      FROM "Kullanicilar" AS k
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'REMS.API.Controllers.TasinmazController.GetTasinmazlar (REMS.API)'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET https://localhost:7195/api/Tasinmaz?ilId=6&tasinmazTipi=Arsa&pageNumber=1&pageSize=10 - 200 - application/json;+charset=utf-8 133.0322ms

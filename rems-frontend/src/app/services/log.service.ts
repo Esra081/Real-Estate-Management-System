@@ -10,18 +10,15 @@ export class LogService {
 
   constructor(private http: HttpClient) {}
 
-  // 1. Filtrelenmiş ve sayfalanmış logları çeker
   getLogs(filtre: LogFiltre): Observable<{ data: Log[]; totalCount: number; totalPages: number; currentPage: number }> {
     const params = this.filtreParametreleriniOlustur(filtre);
     return this.http.get<any>(this.apiUrl, { params });
   }
 
-  // 2. Filtre dropdown'ı için işlem tiplerini getirir (Giriş, Silme, Ekleme vb.)
   getIslemTipleri(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/islem-tipleri`);
   }
 
-  // 3. Logları Excel olarak indirme
   exportToExcel(filtre: Partial<LogFiltre>): Observable<Blob> {
     const params = this.filtreParametreleriniOlustur(filtre);
     return this.http.get(`${this.apiUrl}/export/excel`, {
@@ -30,7 +27,6 @@ export class LogService {
     });
   }
 
-  // 4. Logları PDF olarak indirme
   exportToPdf(filtre: Partial<LogFiltre>): Observable<Blob> {
     const params = this.filtreParametreleriniOlustur(filtre);
     return this.http.get(`${this.apiUrl}/export/pdf`, {

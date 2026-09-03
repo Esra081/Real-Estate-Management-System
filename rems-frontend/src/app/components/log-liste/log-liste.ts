@@ -6,7 +6,6 @@ import { KullaniciService } from '../../services/kullanici.service';
 import { Log, LogFiltre } from '../../models/log.model';
 import { Kullanici } from '../../models/kullanici.model';
 
-
 @Component({
   selector: 'app-log-liste',
   standalone: true,
@@ -18,14 +17,12 @@ export class LogListeComponent implements OnInit {
   loglar: Log[] = [];
   yukleniyor = true;
 
-  // Sayfalama
   currentPage = 1;
   pageSize = 15;
   totalPages = 0;
   totalCount = 0;
   sayfalamaDizisi: (number | string)[] = [];
 
-  // Filtreler & Dropdown Verileri
   filtreForm!: FormGroup;
   islemTipleri: string[] = [];
   kullanicilar: Kullanici[] = [];
@@ -56,7 +53,6 @@ export class LogListeComponent implements OnInit {
   }
 
   yardimciVerileriGetir(): void {
-    // İşlem tiplerini getir
     this.logService.getIslemTipleri().subscribe({
       next: (tipler) => {
         this.islemTipleri = tipler || [];
@@ -65,7 +61,6 @@ export class LogListeComponent implements OnInit {
       error: (err: any) => console.error('İşlem tipleri yüklenemedi:', err)
     });
 
-    // Filtre için kullanıcı listesini getir
     this.kullaniciService.getKullanicilar().subscribe({
       next: (users) => {
         this.kullanicilar = users || [];
@@ -262,7 +257,6 @@ export class LogListeComponent implements OnInit {
     });
   }
 
-  // İstatistik Sayaçları (Mevcut sayfadaki veya genel durum için)
   get basariliSayisi(): number {
     return this.loglar.filter(l => l.durum === 'Basarili').length;
   }

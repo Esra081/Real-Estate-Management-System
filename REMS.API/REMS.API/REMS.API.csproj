@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,13 +7,7 @@
     <UserSecretsId>163768d6-cde6-4912-86b5-ec8ed5e7d65c</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="DTOs\AlanAnalizi\AlanAnalizIstekDto.cs" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <None Include="DTOs\AlanAnalizi\AlanAnalizIstekDto.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.1" />

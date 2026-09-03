@@ -111,7 +111,7 @@ namespace REMS.API.Services
             if (kullanici == null)
                 return (false, "Güncellenecek kullanıcı bulunamadı.");
 
-            if (kullanici.Email.ToLower() != model.Email.ToLower().Trim())
+            if (!string.Equals(kullanici.Email, model.Email.Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 bool emailVarMi = await _context.Kullanicilar.AnyAsync(k => k.Email.ToLower() == model.Email.ToLower().Trim() && k.Id != model.Id);
                 if (emailVarMi)
@@ -152,7 +152,7 @@ namespace REMS.API.Services
                     .Where(t => t.KullaniciId == kIdStr)
                     .ToListAsync();
 
-                if (kullaniciTasinmazlari.Any())
+                if (kullaniciTasinmazlari.Count > 0)
                 {
                     _context.Tasinmazlar.RemoveRange(kullaniciTasinmazlari);
                 }
@@ -171,7 +171,7 @@ namespace REMS.API.Services
             }
         }
 
-        private (bool Gecerli, string Hata) SifreGecerliMi(string sifre)
+        private static (bool Gecerli, string Hata) SifreGecerliMi(string sifre)
         {
             return PasswordValidator.SifreGecerliMi(sifre);
         }

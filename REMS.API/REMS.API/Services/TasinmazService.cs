@@ -22,7 +22,6 @@ namespace REMS.API.Services
             _context = context;
         }
 
-        // 1. METOT: Taşınmaz Ekleme
         public async Task<int> AddPropertyAsync(TasinmazCreateDto model)
         {
             bool mukerrerVarMi = await _context.Tasinmazlar.AnyAsync(t =>
@@ -65,7 +64,6 @@ namespace REMS.API.Services
             }
         }
 
-        // 2. METOT: Taşınmazları İl, İlçe ve Mahalle Adlarıyla Birlikte DTO ile Listeleme
         public async Task<IEnumerable<TasinmazListDto>> GetAllPropertiesAsync()
         {
             var tasinmazlar = await _context.Tasinmazlar
@@ -77,7 +75,6 @@ namespace REMS.API.Services
             return tasinmazlar.Select(item => EntityToDto(item)).ToList();
         }
 
-        // 3. METOT: ID ile Kayıt Bulma
         public async Task<TasinmazListDto?> GetPropertyByIdAsync(int id)
         {
             var item = await _context.Tasinmazlar
@@ -91,8 +88,7 @@ namespace REMS.API.Services
             return EntityToDto(item);
         }
 
-        // 4. METOT: Güncelleme
-        // 4. METOT: Akıllı Güncelleme ve Fark (Diff) Tespiti
+        // Akıllı Güncelleme ve Fark (Diff) Tespiti
         public async Task<DTOs.Tasinmaz.UpdateResultDto> UpdatePropertyAsync(TasinmazUpdateDto model)
         {
             var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == model.Id);
@@ -204,7 +200,6 @@ namespace REMS.API.Services
             };
         }
 
-        // 5. METOT: Silme
         public async Task<bool> DeletePropertyAsync(int id)
         {
             var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == id);
@@ -215,7 +210,6 @@ namespace REMS.API.Services
             return true;
         }
 
-        // 6. METOT: Toplu Silme
         public async Task<bool> DeletePropertiesAsync(List<int> ids)
         {
             if (ids == null || ids.Count == 0) return false;
@@ -228,7 +222,6 @@ namespace REMS.API.Services
             return true;
         }
 
-        // 7. METOT: Filtrelenmiş ve Sayfalanmış Liste
         public async Task<TasinmazPagedResponseDto> GetFilteredTasinmazlarAsync(TasinmazFilterDto filter)
         {
             try
@@ -250,10 +243,35 @@ namespace REMS.API.Services
                     query = query.Where(t => t.MahalleId == filter.MahalleId.Value);
 
                 if (!string.IsNullOrWhiteSpace(filter.AdaNo))
-                    query = query.Where(t => t.AdaNo.Contains(filter.AdaNo));
+                {
+                    var cleanAda = filter.AdaNo.Trim();
+                    if (cleanAda.Contains('/') || cleanAda.Contains('-'))
+                    {
+                        var parts = cleanAda.Split(new[] { '/', '-' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length >= 2)
+                        {
+                            var adaPart = parts[0].Trim();
+                            var parselPart = parts[1].Trim();
+                            query = query.Where(t => t.AdaNo.Contains(adaPart) && t.ParselNo.Contains(parselPart));
+                        }
+                        else if (parts.Length == 1)
+                        {
+                            var tekParca = parts[0].Trim();
+                            query = query.Where(t => t.AdaNo.Contains(tekParca) || t.ParselNo.Contains(tekParca));
+                        }
+                    }
+                    else if (string.IsNullOrWhiteSpace(filter.ParselNo))
+                    {
+                        query = query.Where(t => t.AdaNo.Contains(cleanAda) || t.ParselNo.Contains(cleanAda));
+                    }
+                    else
+                    {
+                        query = query.Where(t => t.AdaNo.Contains(cleanAda));
+                    }
+                }
 
                 if (!string.IsNullOrWhiteSpace(filter.ParselNo))
-                    query = query.Where(t => t.ParselNo.Contains(filter.ParselNo));
+                    query = query.Where(t => t.ParselNo.Contains(filter.ParselNo.Trim()));
 
                 if (!string.IsNullOrWhiteSpace(filter.Adres))
                     query = query.Where(t => t.Adres.Contains(filter.Adres));
@@ -317,7 +335,6 @@ namespace REMS.API.Services
             }
         }
 
-        // ORTAK DTO DÖNÜŞTÜRÜCÜ (3 farklı yerdeki kod tekrarını tek metoda topladı)
         private static TasinmazListDto EntityToDto(Tasinmaz item, string? sahipAdi = null)
         {
             return new TasinmazListDto
@@ -339,7 +356,7 @@ namespace REMS.API.Services
             };
         }
 
-        // 8. METOT: Taşınmaza Fotoğraf Yükleme (SRS: JPEG/PNG, max 100 MB, yerel klasöre kayıt)
+        // SRS: Fotoğraf Yükleme (JPEG/PNG, max 100 MB, yerel klasöre kayıt)
         public async Task<string> ResimYukleAsync(int tasinmazId, IFormFile dosya)
         {
             var tasinmaz = await _context.Tasinmazlar.FirstOrDefaultAsync(x => x.Id == tasinmazId);
@@ -354,7 +371,7 @@ namespace REMS.API.Services
             }
 
             // SRS Kuralı: Maksimum 100 MB dosya boyutu kontrolü
-            const long maxBoyut = 100 * 1024 * 1024; // 100 MB
+            const long maxBoyut = 100 * 1024 * 1024;
             if (dosya.Length > maxBoyut)
             {
                 throw new InvalidOperationException("Fotoğraf dosya boyutu 100 MB sınırını aşamaz.");
@@ -368,14 +385,12 @@ namespace REMS.API.Services
                 throw new InvalidOperationException("Yalnızca JPEG (.jpg, .jpeg) ve PNG (.png) formatındaki dosyalar yüklenebilir.");
             }
 
-            // Sunucu üzerinde wwwroot/uploads klasörünü hazırla
             var uploadsKlasorYolu = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
             if (!Directory.Exists(uploadsKlasorYolu))
             {
                 Directory.CreateDirectory(uploadsKlasorYolu);
             }
 
-            // Çakışmayı önlemek için benzersiz dosya adı oluştur
             var benzersizDosyaAdi = $"tasinmaz_{tasinmazId}_{Guid.NewGuid():N}{uzanti}";
             var tamFizikselYol = Path.Combine(uploadsKlasorYolu, benzersizDosyaAdi);
 
@@ -384,7 +399,6 @@ namespace REMS.API.Services
                 await dosya.CopyToAsync(stream);
             }
 
-            // Veritabanına göreli erişim yolunu kaydet
             var dosyaErisimYolu = $"/uploads/{benzersizDosyaAdi}";
             tasinmaz.ResimUrl = dosyaErisimYolu;
             await _context.SaveChangesAsync();

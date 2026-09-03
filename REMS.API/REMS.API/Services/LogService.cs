@@ -24,7 +24,6 @@ namespace REMS.API.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // 1. Log Kaydetme Metodu (IP ve Kullanıcıyı otomatik yakalayabilir)
         public async Task LogAsync(
             string islemTipi,
             string aciklama,
@@ -37,12 +36,10 @@ namespace REMS.API.Services
             {
                 var httpContext = _httpContextAccessor.HttpContext;
 
-                // Dışarıdan verilmemişse HttpContext üzerinden otomatik alıyoruz
                 string ip = ipAdresi ?? httpContext?.Connection?.RemoteIpAddress?.ToString() ?? "Bilinmiyor";
                 string? userId = kullaniciId ?? httpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 string? userEmail = kullaniciEmail ?? httpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
 
-                // EĞER ID HENÜZ YOKSA AMA EMAIL VARSA (Giriş/Kayıt anında), Veritabanından Kullanıcının ID'sini otomatik bul:
                 if (string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userEmail))
                 {
                     var user = await _context.Kullanicilar.AsNoTracking().FirstOrDefaultAsync(k => k.Email.ToLower() == userEmail.ToLower().Trim());
@@ -66,57 +63,48 @@ namespace REMS.API.Services
                 await _context.Loglar.AddAsync(yeniLog);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log kaydederken hata oluşursa ana sistem akışının kesilmemesi için sessizce devam edilir
             }
         }
 
-        // 2. Filtrelenmiş ve Sayfalanmış Logları Getirme (Admin Paneli İçin)
         public async Task<PagedResponseDto<LogListDto>> GetLogsAsync(LogFilterDto filter)
         {
             var query = _context.Loglar.AsNoTracking().AsQueryable();
 
-            // KULLANICI FİLTRESİ
             if (!string.IsNullOrWhiteSpace(filter.KullaniciId))
             {
                 query = query.Where(l => l.KullaniciId == filter.KullaniciId);
             }
 
-            // İŞLEM TİPİ FİLTRESİ (Giriş, Taşınmaz Ekleme vb.)
             if (!string.IsNullOrWhiteSpace(filter.IslemTipi))
             {
                 query = query.Where(l => l.IslemTipi == filter.IslemTipi);
             }
 
-            // DURUM FİLTRESİ (Basarili, Basarisiz)
             if (!string.IsNullOrWhiteSpace(filter.Durum))
             {
                 query = query.Where(l => l.Durum == filter.Durum);
             }
 
-            // BAŞLANGIÇ TARİHİ FİLTRESİ
             if (filter.BaslangicTarihi.HasValue)
             {
                 var baslangicUtc = DateTime.SpecifyKind(filter.BaslangicTarihi.Value.Date, DateTimeKind.Utc);
                 query = query.Where(l => l.Tarih >= baslangicUtc);
             }
 
-            // BİTİŞ TARİHİ FİLTRESİ (Günün sonuna kadar: 23:59:59)
             if (filter.BitisTarihi.HasValue)
             {
                 var bitisUtc = DateTime.SpecifyKind(filter.BitisTarihi.Value.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc);
                 query = query.Where(l => l.Tarih <= bitisUtc);
             }
 
-            // IP ADRESİ FİLTRESİ
             if (!string.IsNullOrWhiteSpace(filter.IpAdresi))
             {
                 var ip = filter.IpAdresi.Trim().ToLower();
                 query = query.Where(l => l.IpAdresi != null && l.IpAdresi.ToLower().Contains(ip));
             }
 
-            // SERBEST ARAMA (Açıklama, Email veya IP içinde)
             if (!string.IsNullOrWhiteSpace(filter.AramaMetni))
             {
                 var arama = filter.AramaMetni.Trim().ToLower();
@@ -125,17 +113,14 @@ namespace REMS.API.Services
                                          (l.IpAdresi != null && l.IpAdresi.ToLower().Contains(arama)));
             }
 
-            // TOPLAM KAYIT SAYISI
             int totalCount = await query.CountAsync();
 
-            // EN YENİ LOG EN ÜSTTE OLACAK ŞEKİLDE SAYFALAMA
             var loglar = await query
                 .OrderByDescending(l => l.Tarih)
                 .Skip((filter.PageNumber - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .ToListAsync();
 
-            // Kullanıcı İsim Haritasını Hazırlıyoruz (ID -> Ad Soyad ve Email -> Ad Soyad eşleştirmesi)
             var kullanicilar = await _context.Kullanicilar.AsNoTracking().ToListAsync();
             var kullaniciMapById = kullanicilar.ToDictionary(k => k.Id.ToString().ToLower(), k => k.AdSoyad);
             var kullaniciMapByEmail = kullanicilar.ToDictionary(k => k.Email.ToLower(), k => k.AdSoyad);

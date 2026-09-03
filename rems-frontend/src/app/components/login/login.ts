@@ -20,6 +20,11 @@ export class Login {
   registerEmail = '';
   registerSifre = '';
   yukleniyor = false;
+  sifreGorunur = false;
+
+  sifreGosterGizle(): void {
+    this.sifreGorunur = !this.sifreGorunur;
+  }
 
   constructor(
     private authService: Auth,

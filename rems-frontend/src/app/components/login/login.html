@@ -1,67 +1,173 @@
-<div class="d-flex align-items-center justify-content-center min-vh-100 p-3" style="background: linear-gradient(135deg, #091e28 0%, #0d2836 60%, #153e52 100%);">
-  <div class="card shadow-lg p-4 p-md-5 bg-white border-0" style="max-width: 440px; width: 100%; border-radius: 16px;">
+<div class="rems-login-wrapper">
+  <div class="rems-auth-card">
     
-    <!-- BRANDING LOGO -->
     <div class="text-center mb-4">
-      <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-2 shadow-sm" 
-           style="width: 50px; height: 50px; background: linear-gradient(135deg, #c59b6d 0%, #a97e4f 100%); color: #091e28; font-family: var(--font-serif); font-size: 24px; font-weight: 800;">
-        R
+      <div class="auth-brand-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+          <line x1="9" y1="3" x2="9" y2="18"></line>
+          <line x1="15" y1="6" x2="15" y2="21"></line>
+        </svg>
       </div>
-      <h3 class="rems-title mb-1 fw-bold" style="font-size: 26px; color: var(--rems-navy-800); letter-spacing: 0.5px;">
-        REMS <span class="badge badge-sand align-middle fs-6" style="font-size: 11px !important;">GIS</span>
+      <h3 class="auth-brand-title">
+        REMS <span class="auth-brand-badge-gis">GIS</span>
       </h3>
-      <p class="text-secondary small mb-0" style="font-size: 12px;">Gayrimenkul & Mekansal Bilgi Sistemi</p>
+      <p class="auth-subtitle">Gayrimenkul & Mekansal Bilgi Sistemi</p>
     </div>
 
-
-    <!-- SEKME SEÇİCİ (GİRİŞ / KAYIT) -->
-    <div class="d-flex p-1 rounded-pill mb-4 border" style="background-color: var(--rems-bg-subtle, #f0ebe1);">
-      <button type="button" class="btn btn-sm w-50 rounded-pill fw-bold"
-              [ngClass]="aktifSekme === 'login' ? 'btn-primary shadow-sm text-white' : 'text-secondary border-0 bg-transparent'"
-              (click)="sekmeDegistir('login')">Giriş Yap</button>
-      <button type="button" class="btn btn-sm w-50 rounded-pill fw-bold"
-              [ngClass]="aktifSekme === 'register' ? 'btn-primary shadow-sm text-white' : 'text-secondary border-0 bg-transparent'"
-              (click)="sekmeDegistir('register')">Kayıt Ol</button>
-    </div>
-
-    <!-- GİRİŞ FORMU -->
-    <form *ngIf="aktifSekme === 'login'" (ngSubmit)="onLogin()">
-      <div class="mb-3">
-        <label class="form-label small fw-bold text-secondary">E-Posta Adresi</label>
-        <input type="email" class="form-control" [(ngModel)]="email" name="email" placeholder="admin@rems.com" required>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label small fw-bold text-secondary">Şifre</label>
-        <input type="password" class="form-control" [(ngModel)]="sifre" name="sifre" placeholder="••••••••" required>
-      </div>
-
-      <button type="submit" class="btn btn-gold w-100 py-2 fw-bold shadow-sm" [disabled]="yukleniyor">
-        <span *ngIf="yukleniyor" class="spinner-border spinner-border-sm me-1"></span>
+    <div class="auth-tab-pill-container">
+      <button type="button" 
+              class="auth-tab-btn"
+              [class.active]="aktifSekme === 'login'"
+              (click)="sekmeDegistir('login')">
         Giriş Yap
+      </button>
+      <button type="button" 
+              class="auth-tab-btn"
+              [class.active]="aktifSekme === 'register'"
+              (click)="sekmeDegistir('register')">
+        Kayıt Ol
+      </button>
+    </div>
+
+    <!-- Giriş Formu -->
+    <form *ngIf="aktifSekme === 'login'" (ngSubmit)="onLogin()">
+      <div class="auth-field-group">
+        <label class="auth-label">E-Posta Adresi</label>
+        <div class="auth-input-wrapper">
+          <span class="auth-input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </span>
+          <input type="email" 
+                 class="auth-input" 
+                 [(ngModel)]="email" 
+                 name="email" 
+                 placeholder="admin@rems.com" 
+                 required 
+                 autocomplete="email">
+        </div>
+      </div>
+
+      <div class="auth-field-group">
+        <label class="auth-label">Şifre</label>
+        <div class="auth-input-wrapper">
+          <span class="auth-input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </span>
+          <input [type]="sifreGorunur ? 'text' : 'password'" 
+                 class="auth-input" 
+                 [(ngModel)]="sifre" 
+                 name="sifre" 
+                 placeholder="••••••••" 
+                 required 
+                 autocomplete="current-password"
+                 style="padding-right: 40px;">
+          <button type="button" class="btn-toggle-eye" (click)="sifreGosterGizle()" title="Şifreyi Göster/Gizle">
+            <svg *ngIf="!sifreGorunur" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg *ngIf="sifreGorunur" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-auth-submit" [disabled]="yukleniyor">
+        <span *ngIf="yukleniyor" class="spinner-border spinner-border-sm"></span>
+        <span>{{ yukleniyor ? 'Giriş Yapılıyor...' : 'Giriş Yap' }}</span>
       </button>
     </form>
 
-    <!-- KAYIT FORMU -->
+    <!-- Kayıt Formu -->
     <form *ngIf="aktifSekme === 'register'" (ngSubmit)="onRegister()">
-      <div class="mb-2">
-        <label class="form-label small fw-bold text-secondary">Ad Soyad</label>
-        <input type="text" class="form-control form-control-sm" [(ngModel)]="registerAdSoyad" name="registerAdSoyad" placeholder="Adınız ve Soyadınız" required>
-      </div>
-      <div class="mb-2">
-        <label class="form-label small fw-bold text-secondary">E-posta Adresi</label>
-        <input type="email" class="form-control form-control-sm" [(ngModel)]="registerEmail" name="registerEmail" placeholder="ornek@rems.com" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label small fw-bold text-secondary">Şifre Belirleyin</label>
-        <input type="password" class="form-control form-control-sm" [(ngModel)]="registerSifre" name="registerSifre" placeholder="8-12 karakterli şifre" required>
-        <div class="form-text text-muted" style="font-size: 10.5px;">
-          * Şifre 8-12 karakter olup en az 1 harf, 1 rakam ve 1 özel karakter içermelidir.
+      <div class="auth-field-group">
+        <label class="auth-label">Ad Soyad</label>
+        <div class="auth-input-wrapper">
+          <span class="auth-input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </span>
+          <input type="text" 
+                 class="auth-input" 
+                 [(ngModel)]="registerAdSoyad" 
+                 name="registerAdSoyad" 
+                 placeholder="Adınız ve Soyadınız" 
+                 required 
+                 autocomplete="name">
         </div>
       </div>
-      <button type="submit" class="btn btn-gold w-100 py-2 fw-bold text-white shadow-sm" [disabled]="yukleniyor">
-        <span *ngIf="yukleniyor" class="spinner-border spinner-border-sm me-1"></span>
-        Kayıt Ol ve Giriş Yap
+
+      <div class="auth-field-group">
+        <label class="auth-label">E-Posta Adresi</label>
+        <div class="auth-input-wrapper">
+          <span class="auth-input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </span>
+          <input type="email" 
+                 class="auth-input" 
+                 [(ngModel)]="registerEmail" 
+                 name="registerEmail" 
+                 placeholder="ornek@rems.com" 
+                 required 
+                 autocomplete="email">
+        </div>
+      </div>
+
+      <div class="auth-field-group">
+        <label class="auth-label">Şifre Belirleyin</label>
+        <div class="auth-input-wrapper">
+          <span class="auth-input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </span>
+          <input [type]="sifreGorunur ? 'text' : 'password'" 
+                 class="auth-input" 
+                 [(ngModel)]="registerSifre" 
+                 name="registerSifre" 
+                 placeholder="8-12 karakterli şifre" 
+                 required 
+                 autocomplete="new-password"
+                 style="padding-right: 40px;">
+          <button type="button" class="btn-toggle-eye" (click)="sifreGosterGizle()" title="Şifreyi Göster/Gizle">
+            <svg *ngIf="!sifreGorunur" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg *ngIf="sifreGorunur" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="password-rule-box">
+          <div class="d-flex align-items-center gap-1 mb-1">
+            <span style="color: #16a34a; font-weight: bold;">•</span> 8–12 karakter uzunluğunda olmalıdır.
+          </div>
+          <div class="d-flex align-items-center gap-1">
+            <span style="color: #16a34a; font-weight: bold;">•</span> En az 1 harf, 1 rakam ve 1 özel karakter içermelidir.
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-auth-submit" [disabled]="yukleniyor">
+        <span *ngIf="yukleniyor" class="spinner-border spinner-border-sm"></span>
+        <span>{{ yukleniyor ? 'Kayıt Yapılıyor...' : 'Kayıt Ol ve Başla' }}</span>
       </button>
     </form>
 

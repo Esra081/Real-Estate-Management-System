@@ -17,7 +17,6 @@ builder.Services.AddDbContext<REMS.API.Data.RemsDbContext>(options =>
     options.UseNpgsql(fullConnectionString,
     o => o.UseNetTopologySuite()));
 
-// Angular'a (4200 portuna) izin veren CORS ayarımız
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -28,7 +27,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// JWT Kimlik Doğrulama Servisi
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "REMS_GIS_Secret_Key_Super_Secret_2026_Secure_Token_Authentication!";
 var key = Encoding.UTF8.GetBytes(jwtKey);
 
@@ -78,39 +76,30 @@ builder.Services.AddScoped<ILogService, LogService>();
 
 builder.Services.AddScoped<IAlanAnaliziService, AlanAnaliziService>();
 
-
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // 1. Sonsuz veya özel ondalıklı sayıların (koordinatlar gibi) JSON'a çevrilmesine izin veririz.
         options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
 
-        // 2. Ekstra Güvenlik: Veritabanı tabloları birbirine bağlıysa (ilişkiliyse) 
-        // JSON'a çevirirken sonsuz döngüye girmesini (Reference Loop) engelleriz.
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
-        // Türkçe karakterlerin JSON içinde bozulmasını (escape edilmesini) engeller
         options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
     });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseCors("AllowAngular"); // Bu satır genelde app.UseHttpsRedirection(); veya app.UseRouting(); satırlarının hemen yanına/altına yazılır.
+app.UseCors("AllowAngular");
 
-app.UseStaticFiles(); // SRS Gereksinimi: wwwroot/uploads klasöründeki fotoğrafların tarayıcıdan doğrudan erişilmesini sağlar
+app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
@@ -118,7 +107,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Otomatik Veritabanı Şema Senkronizasyonu (resim_url kolonu yoksa ekler)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<REMS.API.Data.RemsDbContext>();

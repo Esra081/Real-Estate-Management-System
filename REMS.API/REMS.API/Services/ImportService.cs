@@ -18,6 +18,8 @@ namespace REMS.API.Services
 {
     public class ImportService : IImportService
     {
+        private static readonly char[] NoktaAyiricilar = [';', '|'];
+        private static readonly char[] KoordAyiricilar = [',', ' '];
         private readonly RemsDbContext _context;
 
         public ImportService(RemsDbContext context)
@@ -42,7 +44,6 @@ namespace REMS.API.Services
                 if (worksheet == null)
                     return (false, "Excel dosyasında geçerli bir çalışma sayfası bulunamadı.", 0);
 
-                var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
                 var eklenecekTasinmazlar = new List<Tasinmaz>();
 
                 var firstRow = worksheet.FirstRowUsed();
@@ -79,13 +80,14 @@ namespace REMS.API.Services
                 int colAdres = GetCol(8, "Adres", "Address");
                 int colKoordinat = GetCol(9, "Koordinatlar", "Koordinat", "Coordinates");
 
-                // Satırları Gezme (1. satır başlık olduğu için 2. satırdan başlıyoruz)
-                var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
+                var rangeUsed = worksheet.RangeUsed();
+                if (rangeUsed == null)
+                    return (false, "Excel dosyasında veri satırı bulunamadı.", 0);
 
-                // Tüm illeri hızlı arama için hafızaya alıyoruz (Sadece 81 kayıt)
+                var rows = rangeUsed.RowsUsed().Skip(1);
+
                 var iller = await _context.Iller.AsNoTracking().ToListAsync();
 
-                // İlçe ve Mahalle önbelleği (Performans için)
                 var ilceCache = new Dictionary<int, List<Ilce>>();
                 var mahalleCache = new Dictionary<int, List<Mahalle>>();
 
@@ -103,13 +105,11 @@ namespace REMS.API.Services
                     string adres = (colAdres > 0 ? row.Cell(colAdres).GetString() : "").Trim();
                     string koordinatStr = (colKoordinat > 0 ? row.Cell(colKoordinat).GetString() : "").Trim();
 
-                    // Boş satır kontrolü
                     if (string.IsNullOrWhiteSpace(ilAdi) && string.IsNullOrWhiteSpace(adaNo) && string.IsNullOrWhiteSpace(koordinatStr))
                     {
                         continue;
                     }
 
-                    // Zorunlu alan kontrolü
                     if (string.IsNullOrWhiteSpace(ilAdi) || string.IsNullOrWhiteSpace(ilceAdi) ||
                         string.IsNullOrWhiteSpace(mahalleAdi) || string.IsNullOrWhiteSpace(adaNo) ||
                         string.IsNullOrWhiteSpace(parselNo) || string.IsNullOrWhiteSpace(koordinatStr))
@@ -117,7 +117,6 @@ namespace REMS.API.Services
                         return (false, $"Satır {satirNo}: Zorunlu alanlardan biri (İl, İlçe, Mahalle, Ada, Parsel, Koordinat) boş bırakılmış.", 0);
                     }
 
-                    // 1. İl Bulma (Büyük/Küçük harf duyarsız)
                     var eslesenIl = iller.FirstOrDefault(i => string.Equals(i.Ad, ilAdi, StringComparison.OrdinalIgnoreCase) ||
                                                               string.Equals(NormalizeText(i.Ad), NormalizeText(ilAdi), StringComparison.OrdinalIgnoreCase));
                     if (eslesenIl == null)
@@ -125,7 +124,6 @@ namespace REMS.API.Services
                         return (false, $"Satır {satirNo}: '{ilAdi}' ili sistemde bulunamadı.", 0);
                     }
 
-                    // 2. İlçeleri Getir ve Eşleştir
                     if (!ilceCache.TryGetValue(eslesenIl.Id, out var ilceler))
                     {
                         ilceler = await _context.Ilceler.AsNoTracking().Where(i => i.IlId == eslesenIl.Id).ToListAsync();
@@ -139,7 +137,6 @@ namespace REMS.API.Services
                         return (false, $"Satır {satirNo}: '{ilAdi}' iline bağlı '{ilceAdi}' ilçesi sistemde bulunamadı.", 0);
                     }
 
-                    // 3. Mahalleleri Getir ve Esnek Eşleştir (Mahallesi / Mah. / Köyü eklerini tolere eder)
                     if (!mahalleCache.TryGetValue(eslesenIlce.Id, out var mahalleler))
                     {
                         mahalleler = await _context.Mahalleler.AsNoTracking().Where(m => m.IlceId == eslesenIlce.Id).ToListAsync();
@@ -158,11 +155,10 @@ namespace REMS.API.Services
                         return (false, $"Satır {satirNo}: '{ilceAdi}' ilçesine bağlı '{mahalleAdi}' mahallesi sistemde bulunamadı.", 0);
                     }
 
-                    // 4. SRS Mükerrer Kontrolü (Aynı Mahalle + Ada + Parsel zaten var mı?)
                     bool veritabanindaVarMi = await _context.Tasinmazlar.AnyAsync(t =>
                         t.MahalleId == eslesenMahalle.Id &&
-                        t.AdaNo.ToLower() == adaNo.ToLower() &&
-                        t.ParselNo.ToLower() == parselNo.ToLower());
+                        t.AdaNo != null && t.AdaNo.ToLower() == adaNo.ToLower() &&
+                        t.ParselNo != null && t.ParselNo.ToLower() == parselNo.ToLower());
 
                     bool listedeVarMi = eklenecekTasinmazlar.Any(t =>
                         t.MahalleId == eslesenMahalle.Id &&
@@ -173,10 +169,9 @@ namespace REMS.API.Services
                     {
                         mukerrerSayisi++;
                         satirNo++;
-                        continue; // Mükerrer kaydı atla
+                        continue;
                     }
 
-                    // Alan (m2) Parse Etme
                     decimal alanM2 = 0;
                     if (!string.IsNullOrWhiteSpace(alanStr))
                     {
@@ -184,15 +179,14 @@ namespace REMS.API.Services
                         decimal.TryParse(alanStr, NumberStyles.Any, CultureInfo.InvariantCulture, out alanM2);
                     }
 
-                    // Koordinat Metnini Poligona Çevirme (Format: "32.85,39.90; 32.86,39.90; ...")
                     Polygon polygon;
                     try
                     {
-                        var noktaDizisi = koordinatStr.Split(new[] { ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
+                        var noktaDizisi = koordinatStr.Split(NoktaAyiricilar, StringSplitOptions.RemoveEmptyEntries);
                         var coordList = new List<double[]>();
                         foreach (var nokta in noktaDizisi)
                         {
-                            var parcalar = nokta.Trim().Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            var parcalar = nokta.Trim().Split(KoordAyiricilar, StringSplitOptions.RemoveEmptyEntries);
                             if (parcalar.Length >= 2)
                             {
                                 double lon = double.Parse(parcalar[0].Replace(",", "."), CultureInfo.InvariantCulture);
@@ -229,7 +223,7 @@ namespace REMS.API.Services
                     satirNo++;
                 }
 
-                if (!eklenecekTasinmazlar.Any())
+                if (eklenecekTasinmazlar.Count == 0)
                 {
                     if (mukerrerSayisi > 0)
                     {
@@ -238,7 +232,6 @@ namespace REMS.API.Services
                     return (false, "Excel dosyasında eklenecek geçerli bir veri satırı bulunamadı.", 0);
                 }
 
-                // Veritabanına Transaction ile Toplu Kayıt
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 await _context.Tasinmazlar.AddRangeAsync(eklenecekTasinmazlar);
                 await _context.SaveChangesAsync();

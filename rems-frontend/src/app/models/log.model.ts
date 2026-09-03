@@ -5,7 +5,7 @@ export interface Log {
   kullaniciAdi?: string;
   islemTipi: string;
   aciklama: string;
-  durum: string; // 'Basarili' | 'Basarisiz'
+  durum: string;
   ipAdresi?: string;
   tarih: string;
 }

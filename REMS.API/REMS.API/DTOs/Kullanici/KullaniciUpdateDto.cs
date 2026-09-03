@@ -2,7 +2,6 @@
 
 namespace REMS.API.DTOs.Kullanici
 {
-    // Kullanıcı güncelleme DTO'su
     public class KullaniciUpdateDto
     {
         public Guid Id { get; set; }

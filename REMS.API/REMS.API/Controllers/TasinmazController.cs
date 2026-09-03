@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs;
 using REMS.API.DTOs.Property;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace REMS.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TasinmazController : ControllerBase
@@ -49,6 +51,9 @@ namespace REMS.API.Controllers
         [HttpPost("ekle")]
         public async Task<IActionResult> AddProperty([FromBody] TasinmazCreateDto model)
         {
+            if (User.IsInRole("Admin"))
+                return StatusCode(403, new { message = "Yöneticiler doğrudan taşınmaz ekleyemez." });
+
             if (model == null || model.Koordinatlar.Count < 3)
                 return BadRequest(new { message = "Bir poligon için en az 3 nokta gereklidir." });
 
@@ -77,6 +82,9 @@ namespace REMS.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProperty(int id, [FromBody] TasinmazUpdateDto model)
         {
+            if (User.IsInRole("Admin"))
+                return StatusCode(403, new { message = "Yöneticiler taşınmaz güncelleyemez." });
+
             if (id != model.Id)
                 return BadRequest(new { message = "URL'deki ID ile modeldeki ID aynı olmalıdır." });
 
@@ -91,13 +99,11 @@ namespace REMS.API.Controllers
                 if (!sonuc.Success)
                     return NotFound(new { message = sonuc.Message });
 
-                // 1. DURUM: HİÇBİR ŞEY DEĞİŞMEDİYSE LOG ATMA, BİLGİ DÖN
                 if (!sonuc.HasChanges)
                 {
                     return Ok(new { message = "Herhangi bir değişiklik yapılmadı.", hasChanges = false });
                 }
 
-                // 2. DURUM: DEĞİŞİKLİK VARSA HANGİ ALANLARIN DEĞİŞTİĞİNİ DETAYLI LOGLA
                 string logAciklama = $"ID: {id} taşınmazı (Ada: {model.AdaNo}, Parsel: {model.ParselNo}) güncellendi. Değişiklikler: [{sonuc.DiffSummary}]";
                 await _logService.LogAsync("Taşınmaz Güncelleme", logAciklama, "Basarili", model.KullaniciId);
 
@@ -110,10 +116,12 @@ namespace REMS.API.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProperty(int id)
         {
+            if (User.IsInRole("Admin"))
+                return StatusCode(403, new { message = "Yöneticiler doğrudan taşınmaz silemez." });
+
             var sonuc = await _tasinmazService.DeletePropertyAsync(id);
             if (!sonuc)
                 return NotFound(new { message = "Silinecek kayıt bulunamadı." });
@@ -125,6 +133,9 @@ namespace REMS.API.Controllers
         [HttpPost("toplu-sil")]
         public async Task<IActionResult> DeleteProperties([FromBody] List<int> ids)
         {
+            if (User.IsInRole("Admin"))
+                return StatusCode(403, new { message = "Yöneticiler taşınmaz silemez." });
+
             if (ids == null || !ids.Any())
                 return BadRequest(new { message = "Silinecek taşınmaz ID listesi boş olamaz." });
 
@@ -178,10 +189,11 @@ namespace REMS.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Lütfen bir Excel (.xlsx) dosyası yükleyin." });
 
-            // 1. Kullanıcı ID'sini dinamik al (Varsa formdan, yoksa giriş yapmış kullanıcının token'ından):
+            if (User.IsInRole("Admin"))
+                return StatusCode(403, new { message = "Yöneticiler Excel ile taşınmaz ekleyemez." });
+
             string? hedefKullaniciId = !string.IsNullOrEmpty(kullaniciId) ? kullaniciId : User.GetUserId();
 
-            // 2. Eğer kullanıcı giriş yapmamışsa kesinlikle izin verme:
             if (string.IsNullOrEmpty(hedefKullaniciId))
                 return Unauthorized(new { message = "Kullanıcı oturumu bulunamadı. Lütfen giriş yapınız." });
 

@@ -120,7 +120,6 @@ export class TasinmazListeService {
     );
   }
 
-  // EXCEL VE PDF DIŞA AKTARMA (API İSTEKLERİ)
   exportToExcel(filtreler?: any): Observable<Blob> {
     const params = this.filtreParametreleriniOlustur(filtreler);
     return this.http.get(`${this.apiUrl}/export/excel`, {

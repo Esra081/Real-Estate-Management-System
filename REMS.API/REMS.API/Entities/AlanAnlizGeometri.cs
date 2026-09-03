@@ -16,16 +16,13 @@ namespace REMS.API.Entities
         [Column("kullanici_id")]
         public string? KullaniciId { get; set; }
 
-        // Poligon etiketi: "A", "B", "C", "D" (A∪B sonucu), "E" (A∪B∪C sonucu)
         [Column("etiket")]
         [MaxLength(10)]
         public string Etiket { get; set; } = string.Empty;
 
-        // Hesaplanmış yüzey alanı (m²)
         [Column("alan_m2")]
         public decimal? AlanM2 { get; set; }
 
-        // PostGIS Mekansal Geometrisi (Polygon / MultiPolygon)
         [JsonIgnore]
         [Column("geometri")]
         public Geometry? Geometri { get; set; }

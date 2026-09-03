@@ -1,8 +1,6 @@
-<!-- KURUMSAL ÜST BAR (KOYU ORMAN YEŞİLİ & LİMON YEŞİLİ VURGULU NAVBAR) -->
 <nav class="navbar navbar-expand-lg py-2 shadow-sm" style="background-color: var(--rems-dark-forest, #1E241A); border-bottom: 1px solid var(--rems-olive-dark, #2A3324);" *ngIf="auth.isLoggedIn && !router.url.includes('login')">
   <div class="container-fluid px-4">
     
-    <!-- Sol: Modern Logo -->
     <div class="navbar-brand d-flex align-items-center gap-2 me-4" style="cursor: default;">
       <div>
         <span class="fw-bold fs-5 text-white" style="letter-spacing: -0.5px;">REMS</span>
@@ -10,24 +8,20 @@
       </div>
     </div>
 
-    <!-- Orta: Sayfa Modül Linkleri -->
     <div class="navbar-nav me-auto d-flex flex-row align-items-center gap-1">
       
-      <!-- Taşınmazlar -->
       <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          routerLink="/tasinmaz-liste" 
          routerLinkActive="active-forest-pill">
          Taşınmazlar
       </a>
 
-      <!-- Alan Analizi -->
       <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          routerLink="/alan-analizi" 
          routerLinkActive="active-forest-pill">
          Mekansal Alan Analizi
       </a>
 
-      <!-- Kullanıcı Yönetimi (Admin) -->
       <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          *ngIf="auth.isAdmin"
          routerLink="/kullanici-yonetimi" 
@@ -35,7 +29,6 @@
          Kullanıcılar
       </a>
 
-      <!-- Sistem Logları (Admin) -->
       <a class="nav-link px-3 py-1 rounded-pill nav-forest-link" 
          *ngIf="auth.isAdmin"
          routerLink="/log-yonetimi" 
@@ -45,19 +38,15 @@
 
     </div>
 
-    <!-- Sağ: Kullanıcı ve Çıkış Tek Kapsül Kartı -->
     <div class="user-pill d-flex align-items-center gap-2 ps-2 pe-3 py-1 rounded-pill shadow-sm" 
          style="background-color: var(--rems-olive-dark, #2A3324); border: 1px solid rgba(198, 240, 81, 0.25);"
          *ngIf="auth.currentUser as user">
       
-      
-
-      <!-- Kullanıcı Avatarı -->
-      <div class="user-avatar" style="background-color: var(--rems-accent, #C6F051); color: var(--rems-dark-forest, #1E241A); font-weight: 800;">
+      <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center" 
+           style="width: 32px; height: 32px; min-width: 32px; border-radius: 50% !important; background-color: var(--rems-accent, #C6F051); color: var(--rems-dark-forest, #1E241A); font-weight: 800; font-size: 13px;">
         {{ user.adSoyad.charAt(0).toUpperCase() }}
       </div>
 
-      <!-- Kullanıcı Bilgileri -->
       <div class="small leading-tight">
         <div class="fw-bold text-white" style="font-size: 12px;">{{ user.adSoyad }}</div>
         <span class="badge" style="background-color: rgba(198, 240, 81, 0.18); color: var(--rems-accent, #C6F051); font-size: 9.5px;">
@@ -65,7 +54,6 @@
         </span>
       </div>
 
-      <!-- Çıkış İkon Butonu -->
       <button type="button" 
               class="btn-logout-embedded d-flex align-items-center justify-content-center" 
               (click)="cikisYap()" 
@@ -77,14 +65,12 @@
         </svg>
       </button>
 
-
     </div>
 
   </div>
 </nav>
 
-<!-- Ana Sayfa İçerik Alanı -->
-<main class="rems-main-viewport" style="padding: 24px 32px; background-color: var(--rems-bg); min-height: calc(100vh - 60px);">
+<main [ngClass]="router.url.includes('login') || !auth.isLoggedIn ? 'rems-login-viewport' : 'rems-main-viewport'">
   <router-outlet></router-outlet>
 </main>
 
@@ -101,11 +87,9 @@
   </div>
 </div>
 
-<!-- GLOBAL ONAY POP-UP DİYALOĞU (MERKEZİ CONFIRM MODAL) -->
 <div class="rems-modal-backdrop d-flex align-items-center justify-content-center" *ngIf="onayService.modal$ | async as modal">
   <div class="rems-confirm-modal p-4 shadow-lg text-center">
     
-    <!-- İkon Rozeti -->
     <div class="mb-3 mx-auto" 
          style="width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: #FFF0F0; color: #E63946;">
       <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -116,11 +100,9 @@
       </svg>
     </div>
 
-    <!-- Başlık ve Açıklama -->
     <h4 class="fw-bold mb-2" style="color: var(--rems-dark-forest); font-size: 20px;">{{ modal.baslik }}</h4>
     <p class="text-secondary small mb-4" style="font-size: 13.5px; line-height: 1.5;">{{ modal.mesaj }}</p>
 
-    <!-- Aksiyon Butonları -->
     <div class="d-flex gap-2 justify-content-center">
       <button type="button" class="btn btn-secondary btn-sm px-4" (click)="onayService.cevapla(false)">
         {{ modal.iptalMetni || 'Vazgeç' }}

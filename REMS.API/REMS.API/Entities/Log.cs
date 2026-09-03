@@ -31,7 +31,7 @@ namespace REMS.API.Entities
         [Column("durum")]
         [Required]
         [MaxLength(20)]
-        public string Durum { get; set; } = "Basarili"; // "Basarili" veya "Basarisiz"
+        public string Durum { get; set; } = "Basarili";
 
         [Column("ip_adresi")]
         [MaxLength(50)]

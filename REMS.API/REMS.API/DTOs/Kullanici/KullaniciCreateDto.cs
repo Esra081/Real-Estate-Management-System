@@ -1,6 +1,5 @@
 ﻿namespace REMS.API.DTOs.Kullanici
 {
-    // Yeni kullanıcı ekleme DTO'su
     public class KullaniciCreateDto
     {
         public string AdSoyad { get; set; } = string.Empty;

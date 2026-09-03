@@ -148,7 +148,6 @@ export class KullaniciListeComponent implements OnInit {
     });
   }
 
-  // Modal açma / kapama fonksiyonları:
   ekleModalAc(): void {
     this.ekleForm.reset({ rol: 'Kullanici' });
     this.ekleModalAcik = true;

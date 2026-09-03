@@ -1,6 +1,5 @@
 <div class="container-fluid p-0">
 
-  <!-- 1. ÜST BAŞLIK VE HIZLI AKSİYONLAR (MODERN TERRA BAŞLIK) -->
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
       <span class="badge badge-success text-uppercase mb-2" style="letter-spacing: 0.8px; font-size: 10px;">
@@ -15,31 +14,31 @@
     </div>
 
     <div class="d-flex align-items-center gap-2">
-      <button type="button" class="btn btn-danger btn-sm" (click)="secilenleriSil()" [disabled]="seciliIdler.size === 0">
+      <button *ngIf="!auth.isAdmin" type="button" class="btn btn-danger btn-sm" (click)="secilenleriSil()" [disabled]="seciliIdler.size === 0">
         Toplu Sil ({{ seciliIdler.size }})
       </button>
+
       <button type="button" class="btn btn-outline-success btn-sm" (click)="excelIndir()" title="Excel Olarak İndir">
         Excel İndir
       </button>
       <button type="button" class="btn btn-outline-secondary btn-sm" (click)="pdfIndir()" title="PDF Olarak İndir">
         PDF İndir
       </button>
-      <button type="button" class="btn btn-success btn-sm fw-semibold" (click)="excelModalAc()">
+
+      <button *ngIf="!auth.isAdmin" type="button" class="btn btn-success btn-sm fw-semibold" (click)="excelModalAc()">
         Excel İçe Aktar
       </button>
-      <button type="button" class="btn btn-primary btn-sm px-4 shadow-sm fw-bold" (click)="yeniTasinmaz()">
+      <button *ngIf="!auth.isAdmin" type="button" class="btn btn-primary btn-sm px-4 shadow-sm fw-bold" (click)="yeniTasinmaz()">
         Yeni Ekle
       </button>
     </div>
   </div>
 
-  <!-- 2. FİLTRELEME ÇUBUĞU (REMS-CARD STİLİ) -->
   <div class="rems-card p-3 mb-4">
     <form [formGroup]="filtreForm" (ngSubmit)="filtrele()">
       <div class="row g-2 align-items-center">
         
-        <!-- İl (2 Kolon) -->
-        <div class="col-6 col-lg-2">
+        <div [ngClass]="auth.isAdmin ? 'col-6 col-lg-2' : 'col-6 col-lg-2'">
           <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">İl</label>
           <select class="form-select form-select-sm" formControlName="ilId" (change)="ilSecildi($event)">
             <option value="">Tüm İller</option>
@@ -47,8 +46,7 @@
           </select>
         </div>
 
-        <!-- İlçe (2 Kolon) -->
-        <div class="col-6 col-lg-2">
+        <div [ngClass]="auth.isAdmin ? 'col-6 col-lg-2' : 'col-6 col-lg-2'">
           <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">İlçe</label>
           <select class="form-select form-select-sm" formControlName="ilceId" (change)="ilceSecildi($event)">
             <option value="">Tüm İlçeler</option>
@@ -56,8 +54,7 @@
           </select>
         </div>
 
-        <!-- Mahalle (2 Kolon) -->
-        <div class="col-6 col-lg-2">
+        <div [ngClass]="auth.isAdmin ? 'col-6 col-lg-2' : 'col-6 col-lg-2'">
           <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Mahalle</label>
           <select class="form-select form-select-sm" formControlName="mahalleId">
             <option value="">Tüm Mahalleler</option>
@@ -65,8 +62,7 @@
           </select>
         </div>
 
-        <!-- Tip / Kategori (2 Kolon) -->
-        <div class="col-6 col-lg-2">
+        <div [ngClass]="auth.isAdmin ? 'col-6 col-lg-2' : 'col-6 col-lg-2'">
           <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Kategori</label>
           <select class="form-select form-select-sm" formControlName="tasinmazTipi">
             <option value="">Tümü</option>
@@ -76,18 +72,26 @@
           </select>
         </div>
 
-        <!-- Ada / Parsel Arama (2 Kolon) -->
-        <div class="col-12 col-lg-2">
-          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Ada / Parsel No</label>
+        <div class="col-6 col-lg-2" *ngIf="auth.isAdmin">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Mülk Sahibi</label>
+          <select class="form-select form-select-sm" formControlName="kullaniciId">
+            <option value="">Tüm Kullanıcılar</option>
+            <option *ngFor="let u of tumKullanicilar" [value]="u.id">
+              {{ u.adSoyad }}
+            </option>
+          </select>
+        </div>
+
+        <div [ngClass]="auth.isAdmin ? 'col-6 col-lg-1' : 'col-12 col-lg-2'">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Ada / Parsel</label>
           <input type="text" class="form-control form-control-sm" formControlName="adaNo" placeholder="Örn: 101/5">
         </div>
 
-        <!-- Butonlar (2 Kolon - Rahat ve Taşmayan Alan) -->
-        <div class="col-12 col-lg-2 d-flex gap-2 align-self-end">
-          <button type="submit" class="btn btn-primary btn-sm flex-fill fw-bold" style="padding: 6px 10px; font-size: 12.5px;">
+        <div [ngClass]="auth.isAdmin ? 'col-12 col-lg-1' : 'col-12 col-lg-2'" class="d-flex gap-1 align-self-end">
+          <button type="submit" class="btn btn-primary btn-sm flex-fill fw-bold" style="padding: 6px 4px; font-size: 11.5px;" title="Filtrele">
             Filtrele
           </button>
-          <button type="button" class="btn btn-secondary btn-sm flex-fill" style="padding: 6px 10px; font-size: 12.5px;" (click)="filtreyiTemizle()">
+          <button type="button" class="btn btn-secondary btn-sm flex-fill" style="padding: 6px 4px; font-size: 11.5px;" (click)="filtreyiTemizle()" title="Temizle">
             Temizle
           </button>
         </div>
@@ -96,27 +100,21 @@
     </form>
   </div>
 
-  <!-- 3. ÇİFT KOLONLU DÜZEN: SOL KARTLAR | SAĞ STICKY HARİTAs -->
   <div class="row g-4">
     
-    <!-- =========================================================
-         SOL KOLON: MÜLK KARTLARI LİSTESİ
-         ========================================================= -->
+    <!-- SOL KOLON: MÜLK KARTLARI LİSTESİ -->
     <div class="col-12 col-xl-5 col-lg-5">
       
-      <!-- Yükleniyor Durumu -->
       <div *ngIf="yukleniyor" class="text-center py-5 bg-white rounded-3 border shadow-sm">
         <div class="spinner-border text-primary spinner-border-sm me-2"></div>
         <span class="text-muted small">Taşınmazlar yükleniyor...</span>
       </div>
 
-      <!-- Kayıt Bulunamadı -->
       <div *ngIf="!yukleniyor && tasinmazlar.length === 0" class="text-center py-5 bg-white rounded-3 border shadow-sm">
         <h6 class="fw-bold text-dark mb-1">Aramanıza uygun taşınmaz bulunamadı</h6>
         <p class="text-muted small mb-0">Filtreleri temizleyerek tekrar deneyebilirsiniz.</p>
       </div>
 
-      <!-- Mülk Kartları -->
       <div class="d-flex flex-column gap-3" *ngIf="!yukleniyor">
         
         <div class="card property-card border-0 bg-white shadow-sm overflow-hidden" 
@@ -126,7 +124,6 @@
           
           <div class="row g-0 align-items-stretch">
             
-            <!-- Mülk Fotoğrafı -->
             <div class="col-sm-4 position-relative property-img-col">
                 <img [src]="getResimUrl(t.resimUrl)" 
                     alt="Mülk Fotoğrafı" 
@@ -137,17 +134,14 @@
                   {{ t.tasinmazTipi }}
                 </span>
 
-              <!-- Seçim Checkbox'ı -->
-              <div class="position-absolute top-0 end-0 m-2" (click)="$event.stopPropagation()">
+              <div *ngIf="!auth.isAdmin" class="position-absolute top-0 end-0 m-2" (click)="$event.stopPropagation()">
                 <input type="checkbox" class="form-check-input shadow-sm" [checked]="t.secili" (change)="secimDegistir(t, $event)">
               </div>
             </div>
 
-            <!-- Mülk Bilgileri & Aksiyonlar -->
             <div class="col-sm-8 p-3 d-flex flex-column justify-content-between">
               
               <div>
-                <!-- Konum Pini & Mülk Sahibi -->
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="text-muted small d-flex align-items-center gap-1" style="font-size: 12px;">
                     {{ t.ilceAdi }}, {{ t.ilAdi }}
@@ -157,18 +151,15 @@
                   </span>
                 </div>
 
-                <!-- Ada / Parsel Başlığı -->
                 <h5 class="fw-bold text-dark mb-1" style="letter-spacing: -0.3px;">
                   Ada {{ t.adaNo }} / Parsel {{ t.parselNo }}
                 </h5>
 
-                <!-- Mahalle & Adres Detayı -->
                 <p class="text-muted small mb-2 text-truncate" style="font-size: 11.5px;" title="{{ t.adres }}">
                   {{ t.mahalleAdi }} • {{ t.adres }}
                 </p>
               </div>
 
-              <!-- Alt Çubuk: Alan (m²) ve İşlem Butonları -->
               <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-2">
                 <div class="d-flex align-items-baseline gap-1">
                   <span class="small text-muted" style="font-size: 11px;">Yüzölçümü:</span>
@@ -177,10 +168,10 @@
                 </div>
 
                 <div class="d-flex gap-1" (click)="$event.stopPropagation()">
-                  <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" (click)="duzenle(t.id)" title="Düzenle">
+                  <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-outline-primary py-1 px-2" (click)="duzenle(t.id)" title="Düzenle">
                     Düzenle
                   </button>
-                  <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" (click)="sil(t.id)" title="Sil">
+                  <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-outline-danger py-1 px-2" (click)="sil(t.id)" title="Sil">
                     Sil
                   </button>
                 </div>
@@ -194,7 +185,6 @@
 
       </div>
 
-      <!-- Sayfalama (Pagination) -->
       <div class="d-flex justify-content-between align-items-center mt-3 p-2 bg-white rounded-3 border shadow-sm" *ngIf="totalPages > 1">
         <span class="small text-muted" style="font-size: 12px;">
           Sayfa <strong>{{ currentPage }}</strong> / {{ totalPages }} (Toplam {{ totalCount }} kayıt)
@@ -221,17 +211,28 @@
 
     </div>
 
-    <!-- SAĞ KOLON: CANLI ETKİLEŞİMLİ GIS HARİTASI-->
     <div class="col-12 col-xl-7 col-lg-7">
       <div class="card border-0 shadow-sm bg-white overflow-hidden sticky-map-card" style="border-radius: 16px;">
         
-        <!-- Harita Kutusu -->
         <div id="map" class="w-100 h-100" style="min-height: 580px;"></div>
 
-        <!-- HARİTA LEJANTI -->
+        <div class="gis-layer-switcher shadow-sm">
+          <button type="button" 
+                  class="btn-layer" 
+                  [class.active]="aktifAltlik === 'standart'"
+                  (click)="altlikDegistir('standart')">
+             Standart
+          </button>
+          <button type="button" 
+                  class="btn-layer" 
+                  [class.active]="aktifAltlik === 'uydu'"
+                  (click)="altlikDegistir('uydu')">
+             Uydu
+          </button>
+        </div>
+
         <div class="gis-map-legend shadow-sm">
           <div class="legend-header">
-            <span class="legend-indicator"></span>
             <span>Taşınmaz Türleri</span>
           </div>
           <div class="legend-list">
@@ -247,18 +248,42 @@
               <img [src]="pinSvgBina" class="legend-pin-img" alt="Bina">
               <span class="legend-name">Bina</span>
             </div>
+            <div class="legend-entry" *ngIf="kesisimSayisi > 0">
+              <span style="display: inline-block; width: 14px; height: 14px; background: rgba(239, 68, 68, 0.45); border: 2px dashed #dc2626; border-radius: 3px;"></span>
+              <span class="legend-name text-danger fw-bold" style="font-size: 10.5px;">Çakışma ({{ kesisimSayisi }})</span>
+            </div>
           </div>
         </div>
 
-        <!-- HARİTA ÜZERİNDEKİ MÜLK ÖNİZLEME POPUP KARTI -->
-        <div id="popup" class="gis-property-popup shadow-lg" [style.visibility]="secilenTasinmaz ? 'visible' : 'hidden'">
+        <div id="popup" class="gis-property-popup shadow-lg" [style.visibility]="(secilenTasinmaz || secilenKesisim) ? 'visible' : 'hidden'">
           
+          <ng-container *ngIf="secilenKesisim">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-danger text-white px-2 py-1" style="font-size: 10px;">
+                ⚠️ Çakışma Uyarısı
+              </span>
+              <button type="button" class="btn-close" style="font-size: 9px;" (click)="popupKapat()"></button>
+            </div>
+
+            <h6 class="fw-bold mb-1 text-danger" style="font-size: 13.5px;">
+              Taşınmaz Sınırları Çakışıyor!
+            </h6>
+            <div class="text-secondary small mb-2" style="font-size: 11px; line-height: 1.45;">
+              <strong>Ada {{ secilenKesisim.tasinmaz1.adaNo }}/{{ secilenKesisim.tasinmaz1.parselNo }}</strong> ile 
+              <strong>Ada {{ secilenKesisim.tasinmaz2.adaNo }}/{{ secilenKesisim.tasinmaz2.parselNo }}</strong> üst üste gelmektedir.
+            </div>
+
+            <div class="p-2 rounded bg-danger bg-opacity-10 border border-danger border-opacity-25 d-flex justify-content-between align-items-center">
+              <span class="small text-danger fw-semibold" style="font-size: 11px;">Kesişim Alanı:</span>
+              <strong class="text-danger fs-6">{{ secilenKesisim.alanM2 | number:'1.0-0' }} m²</strong>
+            </div>
+          </ng-container>
+
           <ng-container *ngIf="secilenTasinmaz">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <button type="button" class="btn-close" style="font-size: 9px;" (click)="popupKapat()"></button>
             </div>
 
-            <!-- Mülk Fotoğrafı -->
             <div class="popup-img-wrapper mb-2 rounded overflow-hidden position-relative">
               <img [src]="getResimUrl(secilenTasinmaz.resimUrl)" 
                    alt="Mülk Görseli" 
@@ -269,7 +294,6 @@
               </span>
             </div>
 
-            <!-- Mülk Bilgileri -->
             <h6 class="fw-bold mb-1 text-dark" style="font-size: 14px;">
               Ada {{ secilenTasinmaz.adaNo }} / Parsel {{ secilenTasinmaz.parselNo }}
             </h6>
@@ -283,7 +307,7 @@
                 <strong class="text-dark" style="font-size: 13px;">{{ secilenTasinmaz.alanM2 | number:'1.0-2' }} m²</strong>
               </div>
 
-              <button type="button" class="btn btn-sm btn-primary py-1 px-3 fw-bold" style="font-size: 11.5px;" (click)="duzenle(secilenTasinmaz.id)">
+              <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-primary py-1 px-3 fw-bold" style="font-size: 11.5px;" (click)="duzenle(secilenTasinmaz.id)">
                 Detay & Düzenle
               </button>
             </div>
@@ -296,9 +320,7 @@
 
   </div>
 
-  <!-- =========================================================
-       EXCEL İÇE AKTARMA (IMPORT) MODAL DİYALOĞU
-       ========================================================= -->
+  <!-- EXCEL İÇE AKTARMA (IMPORT) MODAL DİYALOĞU -->
   <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.55); z-index: 1055;" *ngIf="excelModalAcik">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
@@ -329,12 +351,10 @@
                    [disabled]="importYukleniyor">
           </div>
 
-          <!-- Hata Mesajı Uyarısı -->
           <div *ngIf="importHataMesaji" class="alert alert-danger py-2 px-3 small d-flex align-items-center gap-2 mb-3" style="border-radius: 8px;">
             <span> <strong>Aktarım Durduruldu:</strong> {{ importHataMesaji }}</span>
           </div>
 
-          <!-- Yükleniyor Spinner Göstergesi -->
           <div *ngIf="importYukleniyor" class="alert alert-info py-2 px-3 small d-flex align-items-center gap-2 mb-0" style="border-radius: 8px;">
             <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
             <span>Taşınmazlar taranıyor ve veritabanına aktarılıyor, lütfen bekleyin...</span>
@@ -342,7 +362,6 @@
         </div>
 
         <div class="modal-footer bg-light py-2 px-4 border-top">
-          <!-- Her zaman tıklanabilir Vazgeç / İptal Et Butonu -->
           <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-semibold" (click)="excelModalKapat()">
             <span *ngIf="!importYukleniyor">Vazgeç</span>
             <span *ngIf="importYukleniyor" class="text-danger fw-bold">✕ İptal Et / Durdur</span>

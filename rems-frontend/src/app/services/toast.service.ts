@@ -16,22 +16,18 @@ export class ToastService {
   public toasts = this.toasts$.asObservable();
   private sayac = 0;
 
-  // Başarı Bildirimi
   success(mesaj: string, baslik: string = 'Başarılı'): void {
     this.ekle('success', baslik, mesaj);
   }
 
-  // Hata Bildirimi
   error(mesaj: string, baslik: string = 'Hata'): void {
     this.ekle('error', baslik, mesaj);
   }
 
-  // Bilgi Bildirimi
   info(mesaj: string, baslik: string = 'Bilgi'): void {
     this.ekle('info', baslik, mesaj);
   }
 
-  // Uyarı Bildirimi
   warning(mesaj: string, baslik: string = 'Uyarı'): void {
     this.ekle('warning', baslik, mesaj);
   }
@@ -43,13 +39,11 @@ export class ToastService {
     const mevcutListe = this.toasts$.getValue();
     this.toasts$.next([...mevcutListe, yeniToast]);
 
-    // 4 saniye sonra otomatik olarak ekrandan kaldır
     setTimeout(() => {
       this.sil(id);
     }, 4000);
   }
 
-  // Kullanıcı 'X' butonuna basarsa erkenden kaldır
   sil(id: number): void {
     const filtrelenmis = this.toasts$.getValue().filter(t => t.id !== id);
     this.toasts$.next(filtrelenmis);

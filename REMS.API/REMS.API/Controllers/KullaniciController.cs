@@ -1,11 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using REMS.API.DTOs.Kullanici;
 using REMS.API.Interfaces;
 
 namespace REMS.API.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class KullaniciController : ControllerBase

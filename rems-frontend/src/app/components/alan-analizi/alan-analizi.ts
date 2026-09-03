@@ -30,11 +30,9 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
   vectorLayer!: VectorLayer<VectorSource>;
   drawInteraction: Draw | null = null;
 
-  // Çizilen veya yüklenen poligonların hafızası
   aktifEtiket: 'A' | 'B' | 'C' | null = null;
   poligonlar: { [key: string]: PoligonDto } = {};
 
-  // Sonuç ve UI durumları
   sonuc: AlanAnalizSonucDto | null = null;
   yukleniyor = false;
 
@@ -51,7 +49,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     this.mapBaslat();
   }
 
-  // 1. OpenLayers Haritasını Başlatma
   mapBaslat(): void {
     this.vectorLayer = new VectorLayer({
       source: this.vectorSource,
@@ -65,13 +62,12 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
         this.vectorLayer
       ],
       view: new View({
-        center: fromLonLat([35.2433, 38.9637]), // Türkiye Merkezi
+        center: fromLonLat([35.2433, 38.9637]),
         zoom: 6
       })
     });
   }
 
-  // 2. Haritada Çizim Başlatma (A, B veya C için)
   cizimBaslat(etiket: 'A' | 'B' | 'C'): void {
     this.cizimIptal();
     this.aktifEtiket = etiket;
@@ -113,7 +109,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     this.aktifEtiket = null;
   }
 
-  // 3. Manuel Çizimleri Veritabanına Kaydetme
   cizimleriKaydet(): void {
     const liste = Object.values(this.poligonlar);
     if (liste.length === 0) {
@@ -136,7 +131,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // 4. Auto-Select: Veritabanında Kayıtlı A, B, C'yi Getirme
   autoSelect(): void {
     this.yukleniyor = true;
     this.cdr.detectChanges();
@@ -168,7 +162,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // 5. Kesişim Analizi (A ∩ B)
   kesisimHesapla(p1 = 'A', p2 = 'B'): void {
     if (!this.poligonlar[p1] || !this.poligonlar[p2]) {
       this.mesajGoster(`Kesişim analizi için ${p1} ve ${p2} poligonlarının her ikisinin de çizilmiş veya yüklenmiş olması gerekir.`, 'danger');
@@ -200,7 +193,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // 6. Birleşim Analizi (A ∪ B -> D veya A ∪ B ∪ C -> E)
   birlesimHesapla(etiketler: string[]): void {
     const eksikler = etiketler.filter(e => !this.poligonlar[e]);
     if (eksikler.length > 0) {
@@ -219,14 +211,12 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
 
         const sonucEtiketi = res.sonucEtiketi || 'Birleşim';
 
-        // 1. Birleşen eski poligonları (örn: A ve B) haritadan kaldırıyoruz:
         etiketler.forEach(e => {
           this.etiketliFeatureSil(e);
         });
 
-        this.etiketliFeatureSil(sonucEtiketi); // varsa eski birleşmi sil
+        this.etiketliFeatureSil(sonucEtiketi);
 
-        // 2. Çoklu parça (MultiPolygon) varsa TÜM PARÇALARI mor 'D' veya 'E' olarak çiz:
         if (res.cokluKoordinatlar && res.cokluKoordinatlar.length > 0) {
           res.cokluKoordinatlar.forEach(parca => {
             this.poligonuHaritayaEkle(parca, sonucEtiketi);
@@ -246,13 +236,11 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Belirli bir etikete (örn: 'A') sahip eski harita çizimini temizler
   private etiketliFeatureSil(etiket: string): void {
     const silinecekler = this.vectorSource.getFeatures().filter(f => f.get('etiket') === etiket);
     silinecekler.forEach(f => this.vectorSource.removeFeature(f));
   }
 
-  // Haritaya Poligon Çizme ve Odaklanma Yardımcıları
   private poligonuHaritayaEkle(koordinatlar: number[][], etiket: string): void {
     const transformed = koordinatlar.map(k => fromLonLat([k[0], k[1]]));
     const poly = new Polygon([transformed]);
@@ -275,7 +263,6 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Renk ve Stil Motoru
   private stilUret(feature: any): Style {
     const etiket = feature.get('etiket') || '';
     let fillColor = 'rgba(100, 116, 139, 0.4)';

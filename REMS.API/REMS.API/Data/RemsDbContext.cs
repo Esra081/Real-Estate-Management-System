@@ -23,13 +23,11 @@ namespace REMS.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // 1. İller (Kusursuz Türkçe)
             modelBuilder.Entity<Il>().HasData(
                 new Il { Id = 1, Ad = "Ankara" },
                 new Il { Id = 2, Ad = "İstanbul" }
             );
 
-            // 2. İlçeler 
             modelBuilder.Entity<Ilce>().HasData(
                 new Ilce { Id = 1, Ad = "Çankaya", IlId = 1 },
                 new Ilce { Id = 2, Ad = "Yenimahalle", IlId = 1 },
@@ -37,7 +35,6 @@ namespace REMS.API.Data
                 new Ilce { Id = 4, Ad = "Beşiktaş", IlId = 2 }
             );
 
-            // 3. Mahalleler
             modelBuilder.Entity<Mahalle>().HasData(
                 new Mahalle { Id = 1, Ad = "Kavaklıdere Mahallesi", IlceId = 1 },
                 new Mahalle { Id = 2, Ad = "Bahçelievler Mahallesi", IlceId = 1 },
