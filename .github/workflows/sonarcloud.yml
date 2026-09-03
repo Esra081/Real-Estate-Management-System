@@ -37,6 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          dotnet sonarscanner begin /k:"Esra081_Real-Estate-Management-System" /o:"esra081" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
+          dotnet sonarscanner begin /k:"Esra081_Real-Estate-Management-System" /o:"esra081" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="**/Migrations/**,**/rems-frontend/**"
+          dotnet build REMS.API/REMS.API/REMS.API.csproj
           dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
