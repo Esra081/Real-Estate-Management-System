@@ -1,0 +1,23 @@
+name: Semgrep Güvenlik ve Kalite Taraması
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  semgrep-scan:
+    name: Semgrep SAST & Supply Chain Analizi
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. GitHub'daki en güncel kodları sanal makineye indir
+      - name: Kodları Çek (Checkout)
+        uses: actions/checkout@v4
+
+      # 2. Resmi Semgrep GitHub Action'ını çalıştır
+      - name: Semgrep Taramasını Başlat
+        uses: semgrep/semgrep-action@v1
+        with:
+          publishToken: ${{ secrets.SEMGREP_APP_TOKEN }}
