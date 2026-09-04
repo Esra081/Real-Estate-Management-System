@@ -21,3 +21,67 @@
 .card {
   transition: box-shadow 0.2s ease-in-out;
 }
+
+:host ::ng-deep .ol-scale-line {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  border-radius: 10px !important;
+  padding: 5px 10px !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+
+  .ol-scale-line-inner {
+    border: 1.5px solid #1e293b !important;
+    border-top: none !important;
+    color: #1e293b !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.4px !important;
+    padding-bottom: 2px !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+}
+
+.gis-layer-switcher {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 50px;
+  padding: 3px;
+  display: flex;
+  gap: 3px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+
+  .btn-layer {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #475569;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      color: #0f172a;
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    &.active {
+      background: var(--rems-dark-forest, #1E241A);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+}

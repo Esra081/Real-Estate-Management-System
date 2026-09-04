@@ -102,14 +102,21 @@
             </select>
           </div>
 
-          <div class="col-6 col-lg-2">
+                    <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Başlangıç Tarihi</label>
-            <input type="date" class="form-control form-control-sm" formControlName="baslangicTarihi">
+            <input type="date" 
+                   class="form-control form-control-sm" 
+                   formControlName="baslangicTarihi" 
+                   [max]="bugunTarihi">
           </div>
 
           <div class="col-6 col-lg-2">
             <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Bitiş Tarihi</label>
-            <input type="date" class="form-control form-control-sm" formControlName="bitisTarihi">
+            <input type="date" 
+                   class="form-control form-control-sm" 
+                   formControlName="bitisTarihi" 
+                   [min]="filtreForm.value.baslangicTarihi" 
+                   [max]="bugunTarihi">
           </div>
 
           <div class="col-12 col-lg-2 d-flex gap-2 align-self-end">

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core'; 
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -59,7 +59,8 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private auth: Auth,
-    private toast: ToastService
+    private toast: ToastService,
+    private cdr: ChangeDetectorRef
   ) {}
 
     ngOnInit(): void {
@@ -262,6 +263,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.dosyaOnizlemeUrl = e.target.result;
+      this.cdr.detectChanges(); // <-- Angular'a ekranı anında güncellemesini söylüyoruz
     };
     reader.readAsDataURL(file);
   }

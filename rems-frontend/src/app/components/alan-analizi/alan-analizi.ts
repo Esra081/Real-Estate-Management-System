@@ -16,6 +16,8 @@ import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Style, Fill, Stroke, Text } from 'ol/style';
+import ScaleLine from 'ol/control/ScaleLine';
+import XYZ from 'ol/source/XYZ';
 
 @Component({
   selector: 'app-alan-analizi',
@@ -28,6 +30,9 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
   map!: Map;
   vectorSource = new VectorSource();
   vectorLayer!: VectorLayer<VectorSource>;
+  private osmLayer!: TileLayer<OSM>;
+  private uyduLayer!: TileLayer<XYZ>;
+  aktifAltlik: 'standart' | 'uydu' = 'standart';
   drawInteraction: Draw | null = null;
 
   aktifEtiket: 'A' | 'B' | 'C' | null = null;
@@ -49,16 +54,30 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
     this.mapBaslat();
   }
 
-  mapBaslat(): void {
+    mapBaslat(): void {
     this.vectorLayer = new VectorLayer({
       source: this.vectorSource,
       style: (feature) => this.stilUret(feature)
     });
 
+    this.osmLayer = new TileLayer({
+      source: new OSM(),
+      visible: true
+    });
+
+    this.uyduLayer = new TileLayer({
+      source: new XYZ({
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        maxZoom: 19
+      }),
+      visible: false
+    });
+
     this.map = new Map({
       target: 'alanAnaliziMap',
       layers: [
-        new TileLayer({ source: new OSM() }),
+        this.osmLayer,
+        this.uyduLayer,
         this.vectorLayer
       ],
       view: new View({
@@ -66,6 +85,22 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
         zoom: 6
       })
     });
+
+    const olcekCubugu = new ScaleLine({
+      units: 'metric',
+      bar: false,
+      minWidth: 85
+    });
+    this.map.addControl(olcekCubugu);
+  }
+
+  altlikDegistir(tip: 'standart' | 'uydu'): void {
+    this.aktifAltlik = tip;
+    if (this.osmLayer && this.uyduLayer) {
+      this.osmLayer.setVisible(tip === 'standart');
+      this.uyduLayer.setVisible(tip === 'uydu');
+    }
+    this.cdr.detectChanges();
   }
 
   cizimBaslat(etiket: 'A' | 'B' | 'C'): void {
@@ -82,7 +117,7 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
       const geom = feature.getGeometry() as Polygon;
       const coordinates = geom.getCoordinates()[0];
 
-      // EPSG:3857'den GPS EPSG:4326 Enlem/Boylam formatına çeviriyoruz:
+      // EPSG:3857'den GPS EPSG:4326 Enlem/Boylam formatı
       const lonLatCoords = coordinates.map(c => toLonLat(c));
 
       feature.set('etiket', etiket);

@@ -5,6 +5,7 @@ import { LogService } from '../../services/log.service';
 import { KullaniciService } from '../../services/kullanici.service';
 import { Log, LogFiltre } from '../../models/log.model';
 import { Kullanici } from '../../models/kullanici.model';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-log-liste',
@@ -26,13 +27,15 @@ export class LogListeComponent implements OnInit {
   filtreForm!: FormGroup;
   islemTipleri: string[] = [];
   kullanicilar: Kullanici[] = [];
+  bugunTarihi: string = new Date().toISOString().split('T')[0];
 
   constructor(
     private logService: LogService,
     private kullaniciService: KullaniciService,
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
-    private ngZone: NgZone 
+    private ngZone: NgZone,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -74,14 +77,30 @@ export class LogListeComponent implements OnInit {
     this.yukleniyor = true;
     const f = this.filtreForm.value;
 
+    let baslangicIso: string | undefined = undefined;
+    let bitisIso: string | undefined = undefined;
+
+    // Başlangıç 00:00:00, Bitiş 23:59:59
+    if (f.baslangicTarihi) {
+      baslangicIso = `${f.baslangicTarihi}T00:00:00.000Z`;
+      // Kullanıcı bitiş seçmediyse veya başlangıçla aynı gün seçildiyse  o günün gecesi 23:59'a kadar
+      if (!f.bitisTarihi || f.baslangicTarihi === f.bitisTarihi) {
+        bitisIso = `${f.baslangicTarihi}T23:59:59.999Z`;
+      }
+    }
+
+    if (f.bitisTarihi && f.bitisTarihi !== f.baslangicTarihi) {
+      bitisIso = `${f.bitisTarihi}T23:59:59.999Z`;
+    }
+
     const filtreParam: LogFiltre = {
       pageNumber: this.currentPage,
       pageSize: this.pageSize,
       kullaniciId: f.kullaniciId || undefined,
       islemTipi: f.islemTipi || undefined,
       durum: f.durum || undefined,
-      baslangicTarihi: f.baslangicTarihi ? new Date(f.baslangicTarihi).toISOString() : undefined,
-      bitisTarihi: f.bitisTarihi ? new Date(f.bitisTarihi).toISOString() : undefined,
+      baslangicTarihi: baslangicIso,
+      bitisTarihi: bitisIso,
       aramaMetni: f.aramaMetni || undefined
     };
 
@@ -147,6 +166,12 @@ export class LogListeComponent implements OnInit {
   }
 
   filtrele(): void {
+    const f = this.filtreForm.value;
+    // Başlangıç tarihi bitiş tarihinden sonra mı kontrolü:
+    if (f.baslangicTarihi && f.bitisTarihi && new Date(f.baslangicTarihi) > new Date(f.bitisTarihi)) {
+      this.toast.warning('Başlangıç tarihi bitiş tarihinden sonra olamaz!', 'Geçersiz Tarih');
+      return; // Arama yapmasını engelliyoruz
+    }
     this.currentPage = 1;
     this.veriGetir();
   }

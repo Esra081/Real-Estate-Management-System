@@ -124,6 +124,21 @@
       <div class="card border-0 shadow-sm p-2 bg-white position-relative h-100" style="min-height: 520px; border-radius: 12px; overflow: hidden;">
         
         <div id="alanAnaliziMap" class="w-100 h-100 rounded"></div>
+
+        <div class="gis-layer-switcher shadow-sm">
+          <button type="button" 
+                  class="btn-layer" 
+                  [class.active]="aktifAltlik === 'standart'"
+                  (click)="altlikDegistir('standart')">
+             Standart
+          </button>
+          <button type="button" 
+                  class="btn-layer" 
+                  [class.active]="aktifAltlik === 'uydu'"
+                  (click)="altlikDegistir('uydu')">
+             Uydu
+          </button>
+        </div>
         
         <div class="position-absolute bottom-0 start-0 m-3 p-2 bg-white bg-opacity-95 rounded shadow-sm border small" style="z-index: 1000; font-size: 11px; border-radius: 10px;">
           <div class="fw-bold mb-1 text-secondary">Renkler :</div>
