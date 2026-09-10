@@ -2,7 +2,7 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-      <h2 class="rems-title mb-0 fw-bold" style="font-size: 32px; color: var(--rems-navy-text, #1a2e35); letter-spacing: -0.4px;">
+      <h2 class="rems-title mb-0 fw-bold" style="font-size: 32px; color: var(--rems-dark-forest); letter-spacing: -0.4px;">
         Kullanıcı Yönetim Paneli
       </h2>
       <p class="text-secondary small mb-0 mt-1" style="font-size: 12.5px;">
@@ -17,95 +17,159 @@
 
   <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
-        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">TOPLAM KULLANICI</span>
-        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ toplamKullanici }} <span class="fs-6 fw-normal text-secondary">Kişi</span></h2>
-        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Kayıtlı Tüm Hesaplar</span>
+      <div class="rems-card h-100 p-3">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-text-muted); font-size: 10.5px; letter-spacing: 0.6px;">TOPLAM KULLANICI</span>
+        <h2 class="fw-bold mb-1" style="color: var(--rems-dark-forest);">{{ toplamKullanici }} <span class="fs-6 fw-normal text-secondary">Kişi</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-text-muted);">Kayıtlı Tüm Hesaplar</span>
       </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
-        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">YÖNETİCİLER</span>
-        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ adminSayisi }} <span class="fs-6 fw-normal text-secondary">Admin</span></h2>
-        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Tam Yetkili Yöneticiler</span>
+      <div class="rems-card h-100 p-3">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-text-muted); font-size: 10.5px; letter-spacing: 0.6px;">YÖNETİCİLER</span>
+        <h2 class="fw-bold mb-1" style="color: var(--rems-dark-forest);">{{ adminSayisi }} <span class="fs-6 fw-normal text-secondary">Admin</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-text-muted);">Tam Yetkili Yöneticiler</span>
       </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
-        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">STANDART ÜYELER</span>
-        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ standartKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Kullanıcı</span></h2>
-        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Mülk Sahibi Hesaplar</span>
+      <div class="rems-card h-100 p-3">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-text-muted); font-size: 10.5px; letter-spacing: 0.6px;">STANDART ÜYELER</span>
+        <h2 class="fw-bold mb-1" style="color: var(--rems-dark-forest);">{{ standartKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Kullanıcı</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-text-muted);">Mülk Sahibi Hesaplar</span>
       </div>
     </div>
 
     <div class="col-12 col-sm-6 col-xl-3">
-      <div class="card h-100 p-3 shadow-sm border-0 bg-white" style="border: 1px solid var(--rems-border) !important; border-radius: 12px;">
-        <span class="small fw-bold text-uppercase" style="color: var(--rems-navy-700); font-size: 10.5px; letter-spacing: 0.6px;">AKTİF HESAPLAR</span>
-        <h2 class="fw-bold mb-1" style="font-family: var(--font-serif); color: var(--rems-navy-800);">{{ aktifKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Aktif</span></h2>
-        <span class="small fw-medium" style="color: var(--rems-gold-dark);">Giriş İzni Olan Hesaplar</span>
+      <div class="rems-card h-100 p-3">
+        <span class="small fw-bold text-uppercase" style="color: var(--rems-text-muted); font-size: 10.5px; letter-spacing: 0.6px;">AKTİF HESAPLAR</span>
+        <h2 class="fw-bold mb-1" style="color: var(--rems-dark-forest);">{{ aktifKullaniciSayisi }} <span class="fs-6 fw-normal text-secondary">Aktif</span></h2>
+        <span class="small fw-medium" style="color: var(--rems-text-muted);">Giriş İzni Olan Hesaplar</span>
       </div>
     </div>
   </div>
 
-  <div class="card border-0 shadow-sm bg-white mb-4">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
-          <thead class="bg-light text-secondary">
-            <tr>
-              <th class="py-3 ps-3">Ad Soyad</th>
-              <th>E-Posta Adresi</th>
-              <th>Sistem Rolü</th>
-              <th>Durum</th>
-              <th>Taşınmaz Sayısı</th>
-              <th>Kayıt Tarihi</th>
-              <th class="text-center" style="width: 140px;">İşlemler</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let k of kullanicilar">
-              <td class="ps-3">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                    {{ k.adSoyad.charAt(0).toUpperCase() }}
-                  </div>
-                  <span class="fw-semibold text-dark">{{ k.adSoyad }}</span>
-                </div>
-              </td>
-              <td class="text-secondary">{{ k.email }}</td>
-              <td>
-                <span class="badge px-2 py-1 fw-medium"
-                      [ngClass]="k.rol === 'Admin' ? 'bg-purple-subtle text-primary border' : 'bg-light text-secondary border'"
-                      [style.background-color]="k.rol === 'Admin' ? '#f3e8ff' : ''"
-                      [style.color]="k.rol === 'Admin' ? '#7e22ce' : ''">
-                  {{ k.rol === 'Admin' ? 'Yönetici (Admin)' : 'Kullanıcı' }}
-                </span>
-              </td>
-              <td>
-                <span class="badge rounded-pill" [ngClass]="k.aktifMi ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
-                  {{ k.aktifMi ? 'Aktif' : 'Pasif' }}
-                </span>
-              </td>
-              <td>
-                <span class="fw-bold text-dark">{{ k.tasinmazSayisi || 0 }}</span> <span class="text-muted small">Adet</span>
-              </td>
-              <td class="text-muted small">{{ k.olusturmaTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
-              <td class="text-center">
-                <div class="btn-group btn-group-sm">
-                  <button type="button" class="btn btn-outline-primary" (click)="duzenleAc(k)">
-                    Düzenle
-                  </button>
-                  <button type="button" class="btn btn-outline-danger" (click)="kullaniciSil(k)">
-                    Sil
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <div class="rems-card overflow-hidden mb-4">
+    <div class="rems-table-filter">
+      <div class="row g-2 align-items-center">
+        <div class="col-12 col-md-5">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Kullanıcı Ara</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="aramaMetni" placeholder="İsim veya e-posta ile ara...">
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Sistem Rolü</label>
+          <select class="form-select form-select-sm" [(ngModel)]="secilenRol">
+            <option value="">Tüm Roller</option>
+            <option value="Admin">Yönetici (Admin)</option>
+            <option value="Kullanici">Kullanıcı</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Hesap Durumu</label>
+          <select class="form-select form-select-sm" [(ngModel)]="secilenDurum">
+            <option value="">Tümü</option>
+            <option value="aktif">Aktif</option>
+            <option value="pasif">Pasif</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-2 d-flex align-self-end">
+          <button type="button" class="btn btn-secondary btn-sm w-100" style="padding: 6px 10px; font-size: 12px;" (click)="filtreyiTemizle()">
+            Temizle
+          </button>
+        </div>
       </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table rems-table table-hover align-middle mb-0" style="font-size: 13px;">
+        <thead>
+          <tr>
+            <th class="ps-4">Ad Soyad</th>
+            <th>E-Posta Adresi</th>
+            <th>Sistem Rolü</th>
+            <th>Durum</th>
+            <th>Taşınmaz Sayısı</th>
+            <th>Kayıt Tarihi</th>
+            <th class="text-center pe-4" style="width: 140px;">İşlemler</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="yukleniyor">
+            <td colspan="7" class="rems-table-empty">
+              <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+              Kullanıcı listesi yükleniyor...
+            </td>
+          </tr>
+          <tr *ngIf="!yukleniyor && filtrelenmisKullanicilar.length === 0">
+            <td colspan="7" class="rems-table-empty">
+              Kriterlere uygun herhangi bir kullanıcı bulunamadı.
+            </td>
+          </tr>
+          <tr *ngFor="let k of sayfalanmisKullanicilar">
+            <td class="ps-4">
+              <div class="d-flex align-items-center gap-2">
+                <div class="rems-avatar">
+                  {{ k.adSoyad.charAt(0).toUpperCase() }}
+                </div>
+                <span class="fw-semibold text-dark">{{ k.adSoyad }}</span>
+              </div>
+            </td>
+            <td class="text-secondary">{{ k.email }}</td>
+            <td>
+              <span [ngClass]="k.rol === 'Admin' ? 'badge badge-admin' : 'badge badge-user'">
+                {{ k.rol === 'Admin' ? 'Yönetici (Admin)' : 'Kullanıcı' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="k.aktifMi ? 'badge-success' : 'badge-danger'">
+                {{ k.aktifMi ? 'Aktif' : 'Pasif' }}
+              </span>
+            </td>
+            <td>
+              <span class="fw-bold text-dark">{{ k.tasinmazSayisi || 0 }}</span> <span class="text-muted small">Adet</span>
+            </td>
+            <td class="text-muted small">{{ k.olusturmaTarihi | date:'dd.MM.yyyy HH:mm' }}</td>
+            <td class="text-center pe-4">
+              <div class="d-flex gap-1 justify-content-center">
+                <button type="button" class="btn btn-action btn-primary" (click)="duzenleAc(k)" title="Düzenle">
+                  Düzenle
+                </button>
+                <button type="button" class="btn btn-action btn-outline-dark" (click)="kullaniciSil(k)" title="Sil">
+                  Sil
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sayfalama ve Bilgi Alanı -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-top bg-white" *ngIf="!yukleniyor && filtrelenmisKullanicilar.length > 0">
+      <div class="text-muted small">
+        Toplam <strong>{{ filtrelenmisKullanicilar.length }}</strong> kullanıcıdan 
+        <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - 
+        <strong>{{ currentPage === totalPages ? filtrelenmisKullanicilar.length : currentPage * pageSize }}</strong> arası gösteriliyor
+        <span *ngIf="aramaMetni || secilenRol || secilenDurum" class="badge bg-light text-dark border ms-1">Filtrelendi</span>
+      </div>
+
+      <ul class="pagination pagination-sm mb-0" *ngIf="totalPages > 1">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="sayfaDegistir(1)" title="İlk Sayfa">«</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="sayfaDegistir(currentPage - 1)" title="Önceki Sayfa">‹</button>
+        </li>
+        <li class="page-item" *ngFor="let page of sayfalamaDizisi" [class.active]="currentPage === page" [class.disabled]="page === '...'">
+          <button class="page-link" (click)="sayfaDegistir(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="sayfaDegistir(currentPage + 1)" title="Sonraki Sayfa">›</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="sayfaDegistir(totalPages)" title="Son Sayfa">»</button>
+        </li>
+      </ul>
     </div>
   </div>
 
@@ -171,10 +235,10 @@
           </div>
 
           <div class="modal-footer px-4 py-3 d-flex justify-content-end gap-2" style="background: #FAFBF7; border-top: 1px solid var(--rems-border);">
-            <button type="button" class="btn btn-secondary btn-sm px-4" (click)="modalKapat()" [disabled]="kaydediliyor" style="border-radius: 50px;">
+            <button type="button" class="btn btn-outline-dark btn-sm px-4" (click)="modalKapat()" [disabled]="kaydediliyor">
               Vazgeç
             </button>
-            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" [disabled]="kaydediliyor || ekleForm.invalid" style="border-radius: 50px; background-color: var(--rems-accent, #C6F051) !important; color: var(--rems-dark-forest, #1E241A) !important;">
+            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" [disabled]="kaydediliyor || ekleForm.invalid">
               <span *ngIf="!kaydediliyor">Kaydet ve Oluştur</span>
               <span *ngIf="kaydediliyor">Kaydediliyor...</span>
             </button>
@@ -248,10 +312,10 @@
           </div>
 
           <div class="modal-footer px-4 py-3 d-flex justify-content-end gap-2" style="background: #FAFBF7; border-top: 1px solid var(--rems-border);">
-            <button type="button" class="btn btn-secondary btn-sm px-4" (click)="modalKapat()" [disabled]="kaydediliyor" style="border-radius: 50px;">
+            <button type="button" class="btn btn-outline-dark btn-sm px-4" (click)="modalKapat()" [disabled]="kaydediliyor">
               Vazgeç
             </button>
-            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" [disabled]="kaydediliyor" style="border-radius: 50px; background-color: var(--rems-accent, #C6F051) !important; color: var(--rems-dark-forest, #1E241A) !important;">
+            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" [disabled]="kaydediliyor">
               <span *ngIf="!kaydediliyor">Güncelle ve Kaydet</span>
               <span *ngIf="kaydediliyor">Güncelleniyor...</span>
             </button>

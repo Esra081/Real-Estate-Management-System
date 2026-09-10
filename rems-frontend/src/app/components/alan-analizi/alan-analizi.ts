@@ -67,8 +67,8 @@ export class AlanAnaliziComponent implements OnInit, AfterViewInit {
 
     this.uyduLayer = new TileLayer({
       source: new XYZ({
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        maxZoom: 19
+        url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=tr',
+        maxZoom: 20
       }),
       visible: false
     });

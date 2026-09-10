@@ -17,6 +17,7 @@ import { Ilce } from '../../models/ilce.model';
 import { Mahalle } from '../../models/mahalle.model';
 import { Auth } from '../../core/auth';
 import { ToastService } from '../../services/toast.service';
+import { CustomValidators } from '../../core/custom-validators';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -84,29 +85,29 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
 
   formOlustur(): void {
     this.tasinmazForm = this.formBuilder.group({
-      adaNo: ['', Validators.required],
-      parselNo: ['', Validators.required],
-      adres: ['', Validators.required],
+      adaNo: ['', [Validators.required, CustomValidators.noWhitespace]],
+      parselNo: ['', [Validators.required, CustomValidators.noWhitespace]],
+      adres: ['', [Validators.required, CustomValidators.noWhitespace]],
       tasinmazTipi: ['', Validators.required],
-      alanM2: [null, [Validators.required, Validators.min(0)]],
+      alanM2: [null, [Validators.required, Validators.min(0.01)]],
       ilId: ['', Validators.required],
       ilceId: ['', Validators.required],
       mahalleId: ['', Validators.required],
       resimUrl: [''],
       kullaniciId: [this.auth.currentUser?.id || ''],
-      koordinatlar: [[], Validators.required]
+      koordinatlar: [[], [Validators.required, CustomValidators.minCoordinates(4)]]
     });
   }
 
-  illerGetir(): void {
+    illerGetir(): void {
     this.lokasyonService.getIller().subscribe({
       next: (data: any) => {
-        console.log('API DEN GELEN İL VERİSİ:', data); 
-        
-        this.iller = data;
+        this.iller = data || [];
+        this.cdr.detectChanges();
       },
       error: (hata) => {
-        console.error('Hata:', hata.message);      }
+        console.error('Hata:', hata.message);
+      }
     });
   }
 
@@ -121,13 +122,15 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     if (secilenIlId) {
       this.lokasyonService.getIlceler(secilenIlId).subscribe({
         next: (data: Ilce[]) => {
-          this.ilceler = data;
+          this.ilceler = data || [];
+          this.cdr.detectChanges();
         },
         error: (hata) => {
           console.error('İlçeler yüklenirken hata oluştu:', hata);
         }
       });
     }
+    this.cdr.detectChanges();
   }
 
   onIlceChange(event: any): void {
@@ -139,13 +142,15 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     if (secilenIlceId) {
       this.lokasyonService.getMahalleler(secilenIlceId).subscribe({
         next: (data: Mahalle[]) => {
-          this.mahalleler = data;
+          this.mahalleler = data || [];
+          this.cdr.detectChanges();
         },
         error: (hata) => {
           console.error('Mahalleler yüklenirken hata oluştu:', hata);
         }
       });
     }
+    this.cdr.detectChanges();
   }
 
   tasinmazGetir(id: number): void {
@@ -231,6 +236,20 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     });
   }
 
+  engelleEksi(event: KeyboardEvent): void {
+    if (event.key === '-' || event.key === '+' || event.key === 'e' || event.key === 'E') {
+      event.preventDefault();
+    }
+  }
+
+  alanKontrol(event: any): void {
+    const val = event.target.value;
+    if (val && (Number(val) < 0 || String(val).includes('-'))) {
+      event.target.value = '';
+      this.tasinmazForm.get('alanM2')?.setValue(null);
+    }
+  }
+
   onDosyaSec(event: any): void {
     this.dosyaHataMesaji = '';
     const file = event.target.files?.[0];
@@ -276,13 +295,13 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     if (formUrl) {
       return this.tasinmazService.getResimUrl(formUrl);
     }
-    return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
+    return '';
   }
 
   kaydet(): void {
     if (this.tasinmazForm.invalid) {
       this.tasinmazForm.markAllAsTouched();
-      this.toast.warning("Lütfen formdaki zorunlu alanları eksiksiz doldurun ve haritadan 4 nokta seçtiğinizden emin olun!");
+      this.odaklanIlkHataya();
       return;
     }
 
@@ -364,7 +383,30 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private odaklanIlkHataya(): void {
+    const formAlanlari = ['adaNo', 'parselNo', 'tasinmazTipi', 'alanM2', 'ilId', 'ilceId', 'mahalleId', 'adres'];
+    const ilkHataliAlan = formAlanlari.find(alan => this.tasinmazForm.get(alan)?.invalid);
+
+    if (ilkHataliAlan) {
+      const element = document.querySelector(`[formControlName="${ilkHataliAlan}"]`) as HTMLElement;
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+      }
+      this.toast.warning('Lütfen işaretlenen zorunlu form alanlarını doldurunuz.');
+    } else if (this.tasinmazForm.get('koordinatlar')?.invalid) {
+      const haritaElementi = document.getElementById('draw-map');
+      if (haritaElementi) {
+        haritaElementi.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      this.toast.warning('Lütfen harita üzerinden taşınmaz sınırları için 4 köşe noktasını belirleyiniz.');
+    }
+  }
+
   iptal(): void {
+    this.tasinmazForm.reset();
+    this.tasinmazForm.markAsPristine();
+    this.tasinmazForm.markAsUntouched();
     this.router.navigate(['/tasinmaz-liste']);
   }
 

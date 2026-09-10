@@ -2,7 +2,7 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-      <h2 class="rems-title mb-0 fw-bold" style="font-size: 32px; color: var(--rems-navy-text, #1a2e35); letter-spacing: -0.4px;">
+      <h2 class="rems-title mb-0 fw-bold" style="font-size: 32px; color: var(--rems-dark-forest); letter-spacing: -0.4px;">
         Mekansal Alan Analizi (GIS)
       </h2>
       <p class="text-secondary small mb-0 mt-1" style="font-size: 12.5px;">
@@ -19,7 +19,7 @@
     <div class="col-12 col-lg-4 d-flex flex-column gap-3">
       
       <div class="card border-0 shadow-sm bg-white" style="border-radius: 12px;">
-        <div class="card-header bg-transparent py-2 px-3 border-bottom fw-bold text-uppercase d-flex justify-content-between align-items-center" style="font-size: 11.5px; color: var(--rems-navy-700); letter-spacing: 0.5px;">
+        <div class="card-header bg-transparent py-2 px-3 border-bottom fw-bold text-uppercase d-flex justify-content-between align-items-center" style="font-size: 11.5px; color: var(--rems-dark-forest); letter-spacing: 0.5px;">
           <span>1. Çizim ve Seçim</span>
           <span class="badge bg-light text-secondary border">Adım 1</span>
         </div>
@@ -59,7 +59,7 @@
       </div>
 
       <div class="card border-0 shadow-sm bg-white" style="border-radius: 12px;">
-        <div class="card-header bg-transparent py-2 px-3 border-bottom fw-bold text-uppercase d-flex justify-content-between align-items-center" style="font-size: 11.5px; color: var(--rems-navy-700); letter-spacing: 0.5px;">
+        <div class="card-header bg-transparent py-2 px-3 border-bottom fw-bold text-uppercase d-flex justify-content-between align-items-center" style="font-size: 11.5px; color: var(--rems-dark-forest); letter-spacing: 0.5px;">
           <span>2. Mekansal Analiz</span>
           <span class="badge bg-light text-secondary border">Adım 2</span>
         </div>
@@ -130,13 +130,13 @@
                   class="btn-layer" 
                   [class.active]="aktifAltlik === 'standart'"
                   (click)="altlikDegistir('standart')">
-             Standart
+             OSM
           </button>
           <button type="button" 
                   class="btn-layer" 
                   [class.active]="aktifAltlik === 'uydu'"
                   (click)="altlikDegistir('uydu')">
-             Uydu
+             Google Maps
           </button>
         </div>
         

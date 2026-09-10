@@ -37,7 +37,7 @@ export class TasinmazService {
 
   getResimUrl(url?: string): string {
     if (!url) {
-      return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
+      return '';
     }
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;

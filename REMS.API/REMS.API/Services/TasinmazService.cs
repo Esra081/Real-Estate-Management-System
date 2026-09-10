@@ -38,6 +38,7 @@ namespace REMS.API.Services
             try
             {
                 var polygon = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
+                await MekansalCakisimKontroluYapAsync(polygon);
 
                 var yeniTasinmaz = new Tasinmaz
                 {
@@ -48,7 +49,7 @@ namespace REMS.API.Services
                     Adres = model.Adres,
                     TasinmazTipi = model.TasinmazTipi,
                     AlanM2 = model.AlanM2 ?? 0,
-                    ResimUrl = string.IsNullOrWhiteSpace(model.ResimUrl) ? GetDefaultImageUrl(model.TasinmazTipi) : model.ResimUrl,
+                    ResimUrl = string.IsNullOrWhiteSpace(model.ResimUrl) ? null : model.ResimUrl.Trim(),
                     Sinir = polygon
                 };
 
@@ -148,13 +149,10 @@ namespace REMS.API.Services
 
             var dbResim = (tasinmaz.ResimUrl ?? "").Trim();
             var yeniResim = (model.ResimUrl ?? "").Trim();
-            var defaultResim = GetDefaultImageUrl(tasinmaz.TasinmazTipi).Trim();
 
-            bool resimAyni = string.Equals(dbResim, yeniResim, StringComparison.OrdinalIgnoreCase) ||
-                             (string.IsNullOrEmpty(dbResim) && string.Equals(yeniResim, defaultResim, StringComparison.OrdinalIgnoreCase)) ||
-                             (string.IsNullOrEmpty(yeniResim) && string.Equals(dbResim, defaultResim, StringComparison.OrdinalIgnoreCase));
+            bool resimAyni = string.Equals(dbResim, yeniResim, StringComparison.OrdinalIgnoreCase);
 
-            if (!resimAyni && !string.IsNullOrEmpty(yeniResim))
+            if (!resimAyni)
             {
                 degisiklikler.Add("Fotoğraf güncellendi");
             }
@@ -179,14 +177,14 @@ namespace REMS.API.Services
             tasinmaz.TasinmazTipi = model.TasinmazTipi?.Trim();
             tasinmaz.AlanM2 = model.AlanM2;
 
-            if (!string.IsNullOrWhiteSpace(model.ResimUrl))
-            {
-                tasinmaz.ResimUrl = model.ResimUrl.Trim();
-            }
+            // resim boş ise arayüze null gönder, yoksa trimle
+            tasinmaz.ResimUrl = string.IsNullOrWhiteSpace(model.ResimUrl) ? null : model.ResimUrl.Trim();
 
             if (model.Koordinatlar != null && model.Koordinatlar.Count >= 3)
             {
-                tasinmaz.Sinir = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
+                var yeniSinir = GeometryHelper.KoordinatlardanPoligonUret(model.Koordinatlar);
+                await MekansalCakisimKontroluYapAsync(yeniSinir, model.Id);
+                tasinmaz.Sinir = yeniSinir;
             }
 
             await _context.SaveChangesAsync();
@@ -250,28 +248,28 @@ namespace REMS.API.Services
                         var parts = cleanAda.Split(new[] { '/', '-' }, StringSplitOptions.RemoveEmptyEntries);
                         if (parts.Length >= 2)
                         {
-                            var adaPart = parts[0].Trim();
-                            var parselPart = parts[1].Trim();
-                            query = query.Where(t => t.AdaNo.Contains(adaPart) && t.ParselNo.Contains(parselPart));
+                            var adaPart = parts[0].Trim().ToLower();
+                            var parselPart = parts[1].Trim().ToLower();
+                            query = query.Where(t => t.AdaNo.ToLower() == adaPart && t.ParselNo.ToLower() == parselPart);
                         }
                         else if (parts.Length == 1)
                         {
-                            var tekParca = parts[0].Trim();
-                            query = query.Where(t => t.AdaNo.Contains(tekParca) || t.ParselNo.Contains(tekParca));
+                            var tekParca = parts[0].Trim().ToLower();
+                            query = query.Where(t => t.AdaNo.ToLower() == tekParca);
                         }
-                    }
-                    else if (string.IsNullOrWhiteSpace(filter.ParselNo))
-                    {
-                        query = query.Where(t => t.AdaNo.Contains(cleanAda) || t.ParselNo.Contains(cleanAda));
                     }
                     else
                     {
-                        query = query.Where(t => t.AdaNo.Contains(cleanAda));
+                        var exactAda = cleanAda.ToLower();
+                        query = query.Where(t => t.AdaNo.ToLower() == exactAda);
                     }
                 }
 
                 if (!string.IsNullOrWhiteSpace(filter.ParselNo))
-                    query = query.Where(t => t.ParselNo.Contains(filter.ParselNo.Trim()));
+                {
+                    var cleanParsel = filter.ParselNo.Trim().ToLower();
+                    query = query.Where(t => t.ParselNo.ToLower() == cleanParsel);
+                }
 
                 if (!string.IsNullOrWhiteSpace(filter.Adres))
                     query = query.Where(t => t.Adres.Contains(filter.Adres));
@@ -351,7 +349,7 @@ namespace REMS.API.Services
                 Adres = item.Adres,
                 TasinmazTipi = item.TasinmazTipi,
                 AlanM2 = item.AlanM2,
-                ResimUrl = string.IsNullOrWhiteSpace(item.ResimUrl) ? GetDefaultImageUrl(item.TasinmazTipi) : item.ResimUrl,
+                ResimUrl = item.ResimUrl,
                 Koordinatlar = GeometryHelper.PoligondanDiziKoordinatAl(item.Sinir)
             };
         }
@@ -406,14 +404,46 @@ namespace REMS.API.Services
             return dosyaErisimYolu;
         }
 
-        private static string GetDefaultImageUrl(string? tip)
+        // MEKÂNSAL (HARİTA) ÇAKIŞMA KONTROLÜ
+        // Veritabanındaki diğer parsellerle kesişim (Intersection) ve tolerans hesabı yapar.
+        private async Task MekansalCakisimKontroluYapAsync(Polygon yeniPoligon, int? haricTutulacakId = null)
         {
-            return (tip?.Trim().ToLower()) switch
+            if (yeniPoligon == null || yeniPoligon.IsEmpty) return;
+
+            // 1. PostGIS ST_Intersects ile haritada kesişme ihtimali olan taşınmazları filtrele
+            var potansiyelCakisanlar = await _context.Tasinmazlar
+                .Where(t => (haricTutulacakId == null || t.Id != haricTutulacakId)
+                         && t.Sinir != null
+                         && t.Sinir.Intersects(yeniPoligon))
+                .Select(t => new
+                {
+                    t.Id,
+                    t.AdaNo,
+                    t.ParselNo,
+                    t.Sinir
+                })
+                .ToListAsync();
+
+            // 2. Her bir aday ile gerçek kesişim alanını m² olarak hesapla
+            foreach (var aday in potansiyelCakisanlar)
             {
-                "arsa" => "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
-                "bina" => "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80",
-                _ => "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
-            };
+                if (aday.Sinir == null) continue;
+
+                var kesisim = aday.Sinir.Intersection(yeniPoligon);
+                if (kesisim == null || kesisim.IsEmpty) continue;
+
+                // Gerçek yüzey alanını m2 cinsinden hesapla
+                var kesisimM2 = GeometryHelper.HesaplaM2(kesisim);
+
+                // Tolerans: Sınır komşulukları (çizgi teması) 0 m2 döner. 1 m2 üstü uyarır
+                if (kesisimM2 >= 1.0m)
+                {
+                    throw new InvalidOperationException(
+                        $"Çizdiğiniz sınırlar, sistemde kayıtlı 'Ada {aday.AdaNo} / Parsel {aday.ParselNo}' taşınmazı ile " +
+                        $"{kesisimM2:N1} m² çakışmaktadır. Aynı konuma mükerrer taşınmaz kaydedilemez.");
+                }
+            }
         }
     }
+
 }

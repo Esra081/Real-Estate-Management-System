@@ -1,18 +1,28 @@
 <div class="container-fluid px-4 py-3">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <div>
-      <h3 class="rems-title mb-0 fw-bold" style="font-size: 24px; color: var(--rems-navy-800);">
-        {{ duzenlemeModu ? 'Taşınmaz Kaydını Güncelle' : 'Yeni Taşınmaz Ekle' }}
-      </h3>
-      <p class="text-secondary small mb-0" style="font-size: 12px;">
-        Taşınmazın idari, mekansal ve görsel detaylarını girin. Harita üzerinden 4 köşe noktasını seçin.
-      </p>
+      <div class="d-flex align-items-center gap-3 mb-3">
+      <!-- Geri Oku -->
+      <button type="button" 
+              class="btn btn-outline-dark btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
+              style="width: 38px; height: 38px; min-width: 38px;" 
+              (click)="iptal()" 
+              title="Listeye Dön">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+
+      <!-- Başlık -->
+      <div>
+        <h3 class="rems-title mb-0 fw-bold" style="font-size: 24px; color: var(--rems-dark-forest);">
+          {{ duzenlemeModu ? 'Taşınmaz Kaydını Güncelle' : 'Yeni Taşınmaz Ekle' }}
+        </h3>
+        <p class="text-secondary small mb-0" style="font-size: 12px;">
+          Taşınmazın idari, mekansal ve görsel detaylarını girin. Harita üzerinden 4 köşe noktasını seçin.
+        </p>
+      </div>
     </div>
-    <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="iptal()">
-      Listeye Dön
-    </button>
-  </div>
 
   <form [formGroup]="tasinmazForm" (ngSubmit)="kaydet()">
     <div class="row g-3">
@@ -20,22 +30,65 @@
       <div class="col-12 col-lg-6">
         <div class="card p-3 shadow-sm border-0 h-100 bg-white" style="border-radius: 12px;">
           <div class="card-header bg-transparent border-bottom px-0 pt-0 pb-2 mb-3">
-            <span class="fw-bold text-uppercase" style="font-size: 11px; color: var(--rems-navy-700); letter-spacing: 0.6px;">
+            <span class="fw-bold text-uppercase" style="font-size: 11px; color: var(--rems-dark-forest); letter-spacing: 0.6px;">
               1. İdari ve Mülk Bilgileri
             </span>
           </div>
 
           <div class="row g-2 mb-2">
+            <div class="col-4">
+              <label class="form-label small fw-bold mb-1">İl <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" 
+                      [class.is-invalid]="tasinmazForm.get('ilId')?.invalid && tasinmazForm.get('ilId')?.touched"
+                      formControlName="ilId" (change)="onIlChange($event)">
+                <option value="">İl Seçin</option>
+                <option *ngFor="let il of iller" [value]="il.id">{{ il.ad }}</option>
+              </select>
+              <div *ngIf="tasinmazForm.get('ilId')?.invalid && tasinmazForm.get('ilId')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                İl seçimi zorunludur.
+              </div>
+            </div>
+            <div class="col-4">
+              <label class="form-label small fw-bold mb-1">İlçe <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" 
+                      [class.is-invalid]="tasinmazForm.get('ilceId')?.invalid && tasinmazForm.get('ilceId')?.touched"
+                      formControlName="ilceId" (change)="onIlceChange($event)">
+                <option value="">İlçe Seçin</option>
+                <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ad }}</option>
+              </select>
+              <div *ngIf="tasinmazForm.get('ilceId')?.invalid && tasinmazForm.get('ilceId')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                İlçe seçimi zorunludur.
+              </div>
+            </div>
+            <div class="col-4">
+              <label class="form-label small fw-bold mb-1">Mahalle <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm" 
+                      [class.is-invalid]="tasinmazForm.get('mahalleId')?.invalid && tasinmazForm.get('mahalleId')?.touched"
+                      formControlName="mahalleId">
+                <option value="">Mahalle Seçin</option>
+                <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.ad }}</option>
+              </select>
+              <div *ngIf="tasinmazForm.get('mahalleId')?.invalid && tasinmazForm.get('mahalleId')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
+                Mahalle seçimi zorunludur.
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-2">
             <div class="col-6">
               <label class="form-label small fw-bold mb-1">Ada No <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-sm" formControlName="adaNo" placeholder="Örn: 101">
+              <input type="text" class="form-control form-control-sm" 
+                     [class.is-invalid]="tasinmazForm.get('adaNo')?.invalid && tasinmazForm.get('adaNo')?.touched"
+                     formControlName="adaNo" placeholder="Örn: 101">
               <div *ngIf="tasinmazForm.get('adaNo')?.invalid && tasinmazForm.get('adaNo')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
                 Ada No zorunludur.
               </div>
             </div>
             <div class="col-6">
               <label class="form-label small fw-bold mb-1">Parsel No <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-sm" formControlName="parselNo" placeholder="Örn: 5">
+              <input type="text" class="form-control form-control-sm" 
+                     [class.is-invalid]="tasinmazForm.get('parselNo')?.invalid && tasinmazForm.get('parselNo')?.touched"
+                     formControlName="parselNo" placeholder="Örn: 5">
               <div *ngIf="tasinmazForm.get('parselNo')?.invalid && tasinmazForm.get('parselNo')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
                 Parsel No zorunludur.
               </div>
@@ -45,7 +98,9 @@
           <div class="row g-2 mb-2">
             <div class="col-6">
               <label class="form-label small fw-bold mb-1">Taşınmaz Tipi <span class="text-danger">*</span></label>
-              <select class="form-select form-select-sm" formControlName="tasinmazTipi">
+              <select class="form-select form-select-sm" 
+                      [class.is-invalid]="tasinmazForm.get('tasinmazTipi')?.invalid && tasinmazForm.get('tasinmazTipi')?.touched"
+                      formControlName="tasinmazTipi">
                 <option value="">Seçiniz...</option>
                 <option value="Konut">Konut (Daire/Villa)</option>
                 <option value="Arsa">Arsa / Tarla</option>
@@ -57,40 +112,26 @@
             </div>
             <div class="col-6">
               <label class="form-label small fw-bold mb-1">Yüzölçümü (m²) <span class="text-danger">*</span></label>
-              <input type="number" class="form-control form-control-sm" formControlName="alanM2" placeholder="Örn: 450.5">
+              <input type="number" class="form-control form-control-sm" 
+                     min="0.01" step="any"
+                     (keydown)="engelleEksi($event)"
+                     (input)="alanKontrol($event)"
+                     [class.is-invalid]="tasinmazForm.get('alanM2')?.invalid && tasinmazForm.get('alanM2')?.touched"
+                     formControlName="alanM2" placeholder="Örn: 450.5">
               <div *ngIf="tasinmazForm.get('alanM2')?.invalid && tasinmazForm.get('alanM2')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
-                Geçerli bir alan girin.
+                <span *ngIf="tasinmazForm.get('alanM2')?.errors?.['required']">Yüzölçümü alanı zorunludur.</span>
+                <span *ngIf="tasinmazForm.get('alanM2')?.errors?.['min']">Yüzölçümü 0'dan büyük bir değer olmalıdır.</span>
               </div>
             </div>
           </div>
 
-          <div class="row g-2 mb-2">
-            <div class="col-4">
-              <label class="form-label small fw-bold mb-1">İl <span class="text-danger">*</span></label>
-              <select class="form-select form-select-sm" formControlName="ilId" (change)="onIlChange($event)">
-                <option value="" disabled selected>İl Seçin</option>
-                <option *ngFor="let il of iller" [value]="il.id">{{ il.ad }}</option>
-              </select>
-            </div>
-            <div class="col-4">
-              <label class="form-label small fw-bold mb-1">İlçe <span class="text-danger">*</span></label>
-              <select class="form-select form-select-sm" formControlName="ilceId" (change)="onIlceChange($event)">
-                <option value="" disabled selected>İlçe Seçin</option>
-                <option *ngFor="let ilce of ilceler" [value]="ilce.id">{{ ilce.ad }}</option>
-              </select>
-            </div>
-            <div class="col-4">
-              <label class="form-label small fw-bold mb-1">Mahalle <span class="text-danger">*</span></label>
-              <select class="form-select form-select-sm" formControlName="mahalleId">
-                <option value="" disabled selected>Mahalle Seçin</option>
-                <option *ngFor="let mahalle of mahalleler" [value]="mahalle.id">{{ mahalle.ad }}</option>
-              </select>
-            </div>
-          </div>
+          
 
           <div class="mb-3">
             <label class="form-label small fw-bold mb-1">Açık Adres <span class="text-danger">*</span></label>
-            <input type="text" class="form-control form-control-sm" formControlName="adres" placeholder="Cadde, Sokak, No...">
+            <input type="text" class="form-control form-control-sm" 
+                   [class.is-invalid]="tasinmazForm.get('adres')?.invalid && tasinmazForm.get('adres')?.touched"
+                   formControlName="adres" placeholder="Cadde, Sokak, No...">
             <div *ngIf="tasinmazForm.get('adres')?.invalid && tasinmazForm.get('adres')?.touched" class="text-danger small mt-1" style="font-size: 10px;">
               Adres bilgisi zorunludur.
             </div>
@@ -99,24 +140,23 @@
           <div class="p-2 rounded mb-3 border bg-light">
             <label class="form-label small fw-bold mb-1 d-flex justify-content-between align-items-center">
               <span>Taşınmaz Fotoğrafı</span>
-              <span class="text-secondary fw-normal" style="font-size: 10px;">Opsiyonel (Boşsa türe göre atanır)</span>
+              <span class="text-secondary fw-normal" style="font-size: 10px;">Opsiyonel</span>
             </label>
 
             <div class="btn-group btn-group-sm w-100 mb-2" role="group">
               <button type="button" class="btn btn-sm py-1" 
                       [class.btn-primary]="resimYuklemeTipi === 'dosya'"
-                      [class.btn-outline-primary]="resimYuklemeTipi !== 'dosya'"
+                      [class.btn-outline-dark]="resimYuklemeTipi !== 'dosya'"
                       (click)="resimYuklemeTipi = 'dosya'">
                 Dosya Seç (JPEG/PNG)
               </button>
               <button type="button" class="btn btn-sm py-1" 
                       [class.btn-primary]="resimYuklemeTipi === 'link'"
-                      [class.btn-outline-primary]="resimYuklemeTipi !== 'link'"
+                      [class.btn-outline-dark]="resimYuklemeTipi !== 'link'"
                       (click)="resimYuklemeTipi = 'link'">
                 Görsel Linki (URL)
               </button>
             </div>
-
             <div *ngIf="resimYuklemeTipi === 'dosya'" class="mb-2">
               <input type="file" class="form-control form-control-sm" accept=".jpg,.jpeg,.png" (change)="onDosyaSec($event)">
               <div class="form-text text-muted small mt-1" style="font-size: 10px;">
@@ -132,23 +172,37 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 p-1 bg-white rounded border">
-              <img [src]="getGosterilecekResim()" 
-                   alt="Önizleme" 
-                   class="rounded" 
-                   style="width: 70px; height: 50px; object-fit: cover; border: 1px solid #e6dfd1;">
+              <img *ngIf="getGosterilecekResim()" 
+                  [src]="getGosterilecekResim()" 
+                  alt="Önizleme" 
+                  class="rounded" 
+                  style="width: 70px; height: 50px; object-fit: cover; border: 1px solid #e6dfd1;">
+
+              <div *ngIf="!getGosterilecekResim()" 
+                  class="d-flex align-items-center justify-content-center bg-light rounded text-muted"
+                  style="width: 70px; height: 50px; border: 1px dashed #cbd5e1;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </div>
+
               <div class="small text-secondary" style="font-size: 11px;">
-                <div class="fw-semibold text-dark">Canlı Fotoğraf Önizlemesi</div>
-                <div class="text-muted" style="font-size: 10px;">Harita popup'ında ve listede bu görsel yer alacaktır.</div>
+                <div class="fw-semibold text-dark">Fotoğraf Önizlemesi</div>
+                <div class="text-muted" style="font-size: 10px;">
+                  {{ getGosterilecekResim() ? 'Harita popup\'ında ve listede bu görsel yer alacaktır.' : 'Görsel seçilmedi (boş bırakıldı).' }}
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="d-flex gap-2 mt-auto pt-2 border-top">
-            <button type="submit" class="btn btn-gold btn-sm px-4 fw-bold shadow-sm">
-              {{ duzenlemeModu ? 'Değişiklikleri Güncelle' : 'Taşınmazı Kaydet' }}
-            </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm px-3" (click)="iptal()">
+          <div class="d-flex justify-content-end gap-2 mt-auto pt-2 border-top">
+            <button type="button" class="btn btn-outline-dark btn-sm px-4" (mousedown)="$event.preventDefault()" (click)="iptal()">
               Vazgeç
+            </button>
+            <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm">
+              {{ duzenlemeModu ? 'Değişiklikleri Güncelle' : 'Taşınmazı Kaydet' }}
             </button>
           </div>
 
@@ -158,13 +212,16 @@
       <div class="col-12 col-lg-6">
         <div class="card p-3 shadow-sm border-0 h-100 bg-white d-flex flex-column" style="border-radius: 12px; min-height: 480px;">
           <div class="card-header bg-transparent border-bottom px-0 pt-0 pb-2 mb-2 d-flex justify-content-between align-items-center">
-            <span class="fw-bold text-uppercase" style="font-size: 11px; color: var(--rems-navy-700); letter-spacing: 0.6px;">
+            <span class="fw-bold text-uppercase" style="font-size: 11px; color: var(--rems-dark-forest); letter-spacing: 0.6px;">
               2. Taşınmaz Sınırları (Haritadan 4 Nokta)
             </span>
             <span class="badge badge-sand fw-normal" style="font-size: 10px;">SRS: Tam 4 Nokta Çizin</span>
           </div>
 
-          <div class="flex-grow-1 position-relative rounded overflow-hidden border" style="min-height: 380px;">
+          <div class="flex-grow-1 position-relative rounded overflow-hidden border" 
+               [class.border-danger]="tasinmazForm.get('koordinatlar')?.invalid && tasinmazForm.get('koordinatlar')?.touched"
+               [class.border-2]="tasinmazForm.get('koordinatlar')?.invalid && tasinmazForm.get('koordinatlar')?.touched"
+               style="min-height: 380px;">
             <div id="draw-map" style="height: 100%; width: 100%; cursor: crosshair;"></div>
           </div>
 

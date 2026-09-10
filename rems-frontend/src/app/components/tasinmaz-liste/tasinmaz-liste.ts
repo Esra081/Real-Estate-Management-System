@@ -2,10 +2,9 @@ import {
   Component,
   OnInit,
   AfterViewInit,
-  ChangeDetectorRef,
-  NgZone
+  OnDestroy,
+  ChangeDetectorRef
 } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -17,6 +16,7 @@ import {
 } from '@angular/forms';
 
 import { TasinmazListeService } from './tasinmaz-liste.service';
+import { TasinmazMapService } from './tasinmaz-map.service';
 import { Tasinmaz } from '../../models/tasinmaz.model';
 import { Il } from '../../models/il.model';
 import { Ilce } from '../../models/ilce.model';
@@ -27,21 +27,8 @@ import { KullaniciService } from '../../services/kullanici.service';
 import { Auth } from '../../core/auth';
 import { OnayService } from '../../services/onay.service';
 import { ToastService } from '../../services/toast.service';
-
-import Map from 'ol/Map';
-import View from 'ol/View';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import Feature from 'ol/Feature';
-import Polygon from 'ol/geom/Polygon';
-import { fromLonLat } from 'ol/proj';
-import { Style, Fill, Stroke, Icon, Text } from 'ol/style';
-import Overlay from 'ol/Overlay';
-import ScaleLine from 'ol/control/ScaleLine';
-import XYZ from 'ol/source/XYZ';
-import * as turf from '@turf/turf';
+import { MAP_ICONS } from '../../shared/constants/map-icons';
+import { KesisimBilgi } from '../../shared/helpers/gis-spatial.helper';
 
 @Component({
   selector: 'app-tasinmaz-liste',
@@ -51,10 +38,11 @@ import * as turf from '@turf/turf';
     ReactiveFormsModule,
     FormsModule
   ],
+  providers: [TasinmazMapService],
   templateUrl: './tasinmaz-liste.html',
   styleUrls: ['./tasinmaz-liste.scss']
 })
-export class TasinmazListeComponent implements OnInit, AfterViewInit {
+export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy {
   tasinmazlar: Tasinmaz[] = [];
   yukleniyor = true;
   currentPage: number = 1;
@@ -69,92 +57,39 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   seciliIdler = new Set<number>();
   tumSecili = false;
   sayfalamaDizisi: (number | string)[] = [];
-  private popupOverlay!: Overlay;
+
+  // Harita & Kesişim Durumları
   secilenTasinmaz: Tasinmaz | null = null;
-  secilenKesisim: any = null;
+  secilenKesisim: KesisimBilgi | null = null;
   kesisimSayisi: number = 0;
+  kumedekiTasinmazlar: Tasinmaz[] = [];
+  aktifAltlik: 'standart' | 'uydu' = 'standart';
+  altlikOpaklik: number = 100;
+  tasinmazOpaklik: number = 80;
+
+  // Harita İkonları (HTML Lejantı için)
+  readonly pinSvgKonut = MAP_ICONS.konut;
+  readonly pinSvgArsa = MAP_ICONS.arsa;
+  readonly pinSvgBina = MAP_ICONS.bina;
+
+  // Excel / Raporlama Durumları
   secilenExcelDosyasi: File | null = null;
   importYukleniyor = false;
+  excelModalAcik = false;
+  importHataMesaji: string | null = null;
+  private importSubscription?: Subscription;
+  private mapSubscriptions = new Subscription();
+
+  // Genel İstatistikler (Tüm Veritabanı)
   genelToplamAlan: number = 0;
   genelKonutSayisi: number = 0;
   genelArsaSayisi: number = 0;
   genelBinaSayisi: number = 0;
   genelEnCokIller: string = 'Kayıt Yok';
 
-  tasinmazTakip(index: number, tasinmaz: Tasinmaz): number {
-    return tasinmaz.id;
-  }
-
-  sayfaTakip(index: number, sayfa: number): number {
-    return sayfa;
-  }
-
-  readonly pinSvgKonut = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
-      <defs>
-        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
-        </filter>
-      </defs>
-      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#2563eb" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
-      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
-      <path d="M18 10.5 L12 16 L13.8 16 L13.8 22.5 L16.5 22.5 L16.5 18.5 L19.5 18.5 L19.5 22.5 L22.2 22.5 L22.2 16 L24 16 Z" fill="#2563eb"/>
-    </svg>`
-  );
-  readonly pinSvgArsa = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
-      <defs>
-        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
-        </filter>
-      </defs>
-      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#16a34a" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
-      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
-      <path d="M14 13 L22 13 L24 21 L12 21 Z" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linejoin="round"/>
-      <path d="M18 13 L18 21 M13 17 L23 17" stroke="#16a34a" stroke-width="1.2"/>
-    </svg>`
-  );
-  readonly pinSvgBina = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
-      <defs>
-        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
-        </filter>
-      </defs>
-      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#ea580c" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
-      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
-      <path d="M13 11 L23 11 L23 23 L13 23 Z" fill="#ea580c"/>
-      <rect x="15" y="13" width="2" height="2" fill="#ffffff"/>
-      <rect x="19" y="13" width="2" height="2" fill="#ffffff"/>
-      <rect x="15" y="16" width="2" height="2" fill="#ffffff"/>
-      <rect x="19" y="16" width="2" height="2" fill="#ffffff"/>
-      <rect x="17" y="19.5" width="2" height="3.5" fill="#ffffff"/>
-    </svg>`
-  );
-  private readonly pinSvgDiger = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
-      <defs>
-        <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
-        </filter>
-      </defs>
-      <path d="M18 2 C9.16 2 2 9.16 2 18 C2 28 16 41.5 18 43 C20 41.5 34 28 34 18 C34 9.16 26.84 2 18 2 Z" fill="#64748b" stroke="#ffffff" stroke-width="2" filter="url(#s)"/>
-      <circle cx="18" cy="17" r="10" fill="#ffffff"/>
-      <circle cx="18" cy="17" r="4" fill="#64748b"/>
-    </svg>`
-  );
-
-  private map!: Map;
-  private vectorSource!: VectorSource;
-  private vectorLayer!: VectorLayer<VectorSource>;
-  private kesisimSource!: VectorSource;
-  private kesisimLayer!: VectorLayer<VectorSource>;
-  private osmLayer!: TileLayer<OSM>;
-  private uyduLayer!: TileLayer<XYZ>;
-  aktifAltlik: 'standart' | 'uydu' = 'standart';
-
   constructor(
     private tasinmazListeService: TasinmazListeService,
+    private mapService: TasinmazMapService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -162,7 +97,6 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     private lokasyonService: LokasyonService,
     private kullaniciService: KullaniciService,
     public auth: Auth,
-    private ngZone: NgZone,
     private onay: OnayService,
     private toast: ToastService
   ) {}
@@ -223,10 +157,49 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.haritayiBaslat();
+    const popupElement = document.getElementById('popup');
+    this.mapService.haritayiBaslat('map', popupElement);
+
+    // Harita servisinden gelen kullanıcı etkileşimlerini dinle
+    this.mapSubscriptions.add(
+      this.mapService.secilenTasinmaz$.subscribe((tasinmaz) => {
+        this.secilenTasinmaz = tasinmaz;
+        this.cdr.detectChanges();
+      })
+    );
+
+    this.mapSubscriptions.add(
+      this.mapService.secilenKesisim$.subscribe((kesisim) => {
+        this.secilenKesisim = kesisim;
+        this.cdr.detectChanges();
+      })
+    );
+
+    this.mapSubscriptions.add(
+      this.mapService.kumedekiTasinmazlar$.subscribe((list) => {
+        this.kumedekiTasinmazlar = list;
+        this.cdr.detectChanges();
+      })
+    );
+
+    this.mapSubscriptions.add(
+      this.mapService.kesisimSayisi$.subscribe((sayi) => {
+        this.kesisimSayisi = sayi;
+        this.cdr.detectChanges();
+      })
+    );
+
     if (this.tasinmazlar.length > 0) {
-      this.poligonlariCiz();
+      this.mapService.tasinmazlariCiz(this.tasinmazlar);
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.importSubscription) {
+      this.importSubscription.unsubscribe();
+    }
+    this.mapSubscriptions.unsubscribe();
+    this.mapService.destroy();
   }
 
   illeriGetir(): void {
@@ -319,242 +292,42 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     this.cdr.detectChanges();
   }
 
-  private getTasinmazStili(feature: any): Style[] {
-    const tasinmaz: Tasinmaz = feature.get('tasinmazBilgi');
-    const geom = feature.getGeometry();
-    const isSelected = !!this.secilenTasinmaz && this.secilenTasinmaz.id === tasinmaz?.id;
-    const zoom = this.map?.getView() ? (this.map.getView().getZoom() ?? 10) : 10;
-    const tip = (tasinmaz?.tasinmazTipi || '').trim().toLowerCase();
-    // 1. Taşınmaz türüne göre renk ve ikon seçimi
-    let strokeColor = '#2563eb';
-    let fillColor = 'rgba(37, 99, 235, 0.22)';
-    let iconSrc = this.pinSvgKonut;
-    if (tip === 'arsa') {
-      strokeColor = '#16a34a';
-      fillColor = 'rgba(22, 163, 74, 0.22)';
-      iconSrc = this.pinSvgArsa;
-    } else if (tip === 'bina') {
-      strokeColor = '#ea580c';
-      fillColor = 'rgba(234, 88, 12, 0.22)';
-      iconSrc = this.pinSvgBina;
-    } else if (tip !== 'konut') {
-      strokeColor = '#64748b';
-      fillColor = 'rgba(100, 116, 139, 0.22)';
-      iconSrc = this.pinSvgDiger;
-    }
-    // Seçilen taşınmaz vurgusu (Altın-amber rengi)
-    if (isSelected) {
-      strokeColor = '#d97706';
-      fillColor = 'rgba(217, 119, 6, 0.35)';
-    }
-    const styles: Style[] = [];
-    // 2. Poligon Sınır ve Dolgu Stili
-    const poligonStili = new Style({
-      fill: new Fill({ color: fillColor }),
-      stroke: new Stroke({
-        color: strokeColor,
-        width: isSelected ? 3.5 : (zoom >= 14 ? 2.5 : 1.8)
-      }),
-      zIndex: isSelected ? 100 : 10
-    });
-    styles.push(poligonStili);
-    // 3. Poligon Merkezine Tür İkonu ve Ölçeğe Göre Etiket
-    if (geom instanceof Polygon) {
-      const centerPoint = geom.getInteriorPoint();
-      // Zoom seviyesine göre pin boyutu (uzaktayken küçük, yakındayken normal)
-      let pinScale = 0.85;
-      if (zoom >= 15) {
-        pinScale = 1.0;
-      } else if (zoom >= 12) {
-        pinScale = 0.92;
-      }
-      if (isSelected) {
-        pinScale *= 1.15;
-      }
-      let textStyle: Text | undefined = undefined;
-      if (zoom >= 14.5 && tasinmaz) {
-        textStyle = new Text({
-          text: `Ada: ${tasinmaz.adaNo} / Parsel: ${tasinmaz.parselNo}`,
-          font: 'bold 11px "Segoe UI", Roboto, sans-serif',
-          fill: new Fill({ color: isSelected ? '#b45309' : '#0f172a' }),
-          stroke: new Stroke({ color: '#ffffff', width: 3.5 }),
-          offsetY: 24,
-          overflow: true
-        });
-      }
-      const iconStyle = new Style({
-        geometry: centerPoint,
-        image: new Icon({
-          src: iconSrc,
-          anchor: [0.5, 43 / 46],
-          anchorXUnits: 'fraction',
-          anchorYUnits: 'fraction',
-          scale: pinScale
-        }),
-        text: textStyle,
-        zIndex: isSelected ? 110 : 20
-      });
-      styles.push(iconStyle);
-    }
-    return styles;
-  }
-
-    private haritayiBaslat(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.vectorSource = new VectorSource();
-      this.vectorLayer = new VectorLayer({
-        source: this.vectorSource,
-        style: (feature) => this.getTasinmazStili(feature)
-      });
-
-      this.kesisimSource = new VectorSource();
-      this.kesisimLayer = new VectorLayer({
-        source: this.kesisimSource,
-        style: (feature) => this.getKesisimStili(feature),
-        zIndex: 50
-      });
-
-      this.osmLayer = new TileLayer({
-        source: new OSM(),
-        visible: true
-      });
-
-      this.uyduLayer = new TileLayer({
-        source: new XYZ({
-          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          maxZoom: 19
-        }),
-        visible: false
-      });
-
-      this.map = new Map({
-        target: 'map',
-        layers: [this.osmLayer, this.uyduLayer, this.vectorLayer, this.kesisimLayer],
-        view: new View({
-          center: fromLonLat([32.85411, 39.92077]),
-          zoom: 6
-        })
-      });
-
-      const olcekCubugu = new ScaleLine({
-        units: 'metric',
-        bar: false,
-        minWidth: 85
-      });
-      this.map.addControl(olcekCubugu);
-
-      const popupElement = document.getElementById('popup');
-      if (popupElement) {
-        this.popupOverlay = new Overlay({
-          element: popupElement,
-          autoPan: {
-            animation: {
-              duration: 250
-            }
-          }
-        });
-        this.map.addOverlay(this.popupOverlay);
-      }
-
-      this.map.on('singleclick', (evt) => {
-        const feature = this.map.forEachFeatureAtPixel(evt.pixel, (f) => f);
-        if (feature) {
-          const kesisimBilgi = feature.get('kesisimBilgi');
-          if (kesisimBilgi) {
-            this.secilenKesisim = kesisimBilgi;
-            this.secilenTasinmaz = null;
-            this.popupOverlay.setPosition(evt.coordinate);
-            this.cdr.detectChanges();
-            return;
-          }
-
-          const bilgi = feature.get('tasinmazBilgi');
-          if (bilgi) {
-            this.secilenKesisim = null;
-            this.secilenTasinmaz = bilgi;
-            if (this.vectorLayer) {
-              this.vectorLayer.changed();
-            }
-            const geom = feature.getGeometry();
-            if (geom instanceof Polygon) {
-              this.popupOverlay.setPosition(geom.getInteriorPoint().getCoordinates());
-            } else {
-              this.popupOverlay.setPosition(evt.coordinate);
-            }
-            this.cdr.detectChanges();
-          }
-        } else {
-          this.popupKapat();
-        }
-      });
-
-      this.map.on('pointermove', (evt) => {
-        const hit = this.map.hasFeatureAtPixel(evt.pixel);
-        this.map.getViewport().style.cursor = hit ? 'pointer' : '';
-      });
-    });
-  }
-
+  // Harita Etkileşim Metotları
   popupKapat(): void {
-    if (this.popupOverlay) {
-      this.popupOverlay.setPosition(undefined);
-    }
-    this.secilenTasinmaz = null;
-    this.secilenKesisim = null;
-    if (this.vectorLayer) {
-      this.vectorLayer.changed();
-    }
-    this.cdr.detectChanges();
+    this.mapService.popupKapat();
+  }
+
+  kumedekiTasinmaziSec(t: Tasinmaz): void {
+    this.mapService.kumedekiTasinmaziSec(t);
   }
 
   altlikDegistir(tip: 'standart' | 'uydu'): void {
     this.aktifAltlik = tip;
-    if (this.osmLayer && this.uyduLayer) {
-      this.osmLayer.setVisible(tip === 'standart');
-      this.uyduLayer.setVisible(tip === 'uydu');
-    }
+    this.mapService.altlikDegistir(tip);
     this.cdr.detectChanges();
+  }
+
+  altlikOpaklikDegistir(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.altlikOpaklik = Number(target.value);
+    this.mapService.setAltlikOpaklik(this.altlikOpaklik);
+  }
+
+  tasinmazOpaklikDegistir(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.tasinmazOpaklik = Number(target.value);
+    this.mapService.setTasinmazOpaklik(this.tasinmazOpaklik);
   }
 
   haritadaTasinmazaGit(tasinmaz: Tasinmaz): void {
-    if (!this.map || !this.vectorSource) return;
-    if (!tasinmaz.koordinatlar || tasinmaz.koordinatlar.length === 0) return;
-
-    this.secilenTasinmaz = tasinmaz;
-
-    const features = this.vectorSource.getFeatures();
-    let hedefFeature = features.find(f => f.get('tasinmazBilgi')?.id === tasinmaz.id);
-
-    if (!hedefFeature) {
-      const koordinatlar = tasinmaz.koordinatlar.map(k => fromLonLat([k[0], k[1]]));
-      const poligon = new Polygon([koordinatlar]);
-      hedefFeature = new Feature({
-        geometry: poligon,
-        tasinmazBilgi: tasinmaz
-      });
-      this.vectorSource.addFeature(hedefFeature);
-    }
-
-    const geom = hedefFeature.getGeometry();
-    if (geom) {
-      this.map.getView().fit(geom.getExtent(), {
-        padding: [90, 90, 90, 90],
-        duration: 600,
-        maxZoom: 17
-      });
-
-      if (geom instanceof Polygon && this.popupOverlay) {
-        const center = geom.getInteriorPoint().getCoordinates();
-        this.popupOverlay.setPosition(center);
-      }
-    }
-
-    if (this.vectorLayer) {
-      this.vectorLayer.changed();
-    }
-    this.cdr.detectChanges();
+    this.mapService.tasinmazaOdaklan(tasinmaz);
   }
 
+  haritadaGoster(item: Tasinmaz): void {
+    this.mapService.tasinmazaOdaklan(item);
+  }
+
+  // Veri Çekme & Filtreleme
   veriGetir(): void {
     this.yukleniyor = true;
     const formFiltreleri = this.filtreForm.value;
@@ -567,7 +340,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
       adaDegeri = parcalar[0]?.trim() || '';
       parselDegeri = parcalar[1]?.trim() || '';
     }
-    
+
     const gidenFiltreler: any = {
       ...formFiltreleri,
       adaNo: adaDegeri,
@@ -595,12 +368,12 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
           this.totalCount = response.totalCount || response.data.length;
           this.currentPage = response.currentPage || 1;
 
-                    this.genelToplamAlan = response.totalAreaM2 || 0;
+          this.genelToplamAlan = response.totalAreaM2 || 0;
           this.genelKonutSayisi = response.konutCount || 0;
           this.genelArsaSayisi = response.arsaCount || 0;
           this.genelBinaSayisi = response.binaCount || 0;
           this.genelEnCokIller = response.topCitiesSummary || 'Kayıt Yok';
-          
+
         } else if (Array.isArray(response)) {
           this.tasinmazlar = response;
           this.totalPages = 1;
@@ -615,7 +388,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         });
         this.tumSecili = this.tasinmazlar.length > 0 && this.tasinmazlar.every(t => t.secili);
         this.yukleniyor = false;
-        this.poligonlariCiz();
+        this.mapService.tasinmazlariCiz(this.tasinmazlar);
         this.cdr.detectChanges();
       },
       error: (hata) => {
@@ -624,7 +397,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
         this.sayfalamaDizisi = [];
         this.tumSecili = false;
         this.yukleniyor = false;
-        this.poligonlariCiz();
+        this.mapService.tasinmazlariCiz(this.tasinmazlar);
         this.cdr.detectChanges();
       }
     });
@@ -719,128 +492,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private poligonlariCiz(): void {
-    if (!this.map || !this.vectorSource) return;
-    this.vectorSource.clear();
-
-    this.tasinmazlar.forEach(tasinmaz => {
-      if (tasinmaz.koordinatlar && tasinmaz.koordinatlar.length > 0) {
-        const donusturulmusKoordinatlar = tasinmaz.koordinatlar.map(k => fromLonLat([k[0], k[1]]));
-        const poligon = new Polygon([donusturulmusKoordinatlar]);
-        const feature = new Feature({
-          geometry: poligon,
-          tasinmazBilgi: tasinmaz
-        });
-        this.vectorSource.addFeature(feature);
-      }
-    });
-
-    this.kesisimleriHesaplaVeCiz();
-  }
-
-  private kesisimleriHesaplaVeCiz(): void {
-    if (!this.kesisimSource) return;
-    this.kesisimSource.clear();
-    this.kesisimSayisi = 0;
-
-    const gecerliTasinmazlar = this.tasinmazlar.filter(
-      t => t.koordinatlar && t.koordinatlar.length >= 3
-    );
-
-    if (gecerliTasinmazlar.length < 2) return;
-
-    for (let i = 0; i < gecerliTasinmazlar.length; i++) {
-      for (let j = i + 1; j < gecerliTasinmazlar.length; j++) {
-        const t1 = gecerliTasinmazlar[i];
-        const t2 = gecerliTasinmazlar[j];
-
-        try {
-          const coords1 = t1.koordinatlar.map(c => [c[0], c[1]]);
-          if (
-            coords1[0][0] !== coords1[coords1.length - 1][0] ||
-            coords1[0][1] !== coords1[coords1.length - 1][1]
-          ) {
-            coords1.push([coords1[0][0], coords1[0][1]]);
-          }
-
-          const coords2 = t2.koordinatlar.map(c => [c[0], c[1]]);
-          if (
-            coords2[0][0] !== coords2[coords2.length - 1][0] ||
-            coords2[0][1] !== coords2[coords2.length - 1][1]
-          ) {
-            coords2.push([coords2[0][0], coords2[0][1]]);
-          }
-
-          const p1 = turf.polygon([coords1]);
-          const p2 = turf.polygon([coords2]);
-
-          const kesisim = turf.intersect(turf.featureCollection([p1, p2]));
-
-          if (kesisim && kesisim.geometry) {
-            const alanM2 = Math.round(turf.area(kesisim));
-            if (alanM2 > 1) {
-              this.kesisimSayisi++;
-
-              if (kesisim.geometry.type === 'Polygon') {
-                const ring = kesisim.geometry.coordinates[0];
-                const transformedCoords = ring.map((c: any) => fromLonLat([c[0], c[1]]));
-                const poly = new Polygon([transformedCoords]);
-                const feature = new Feature({
-                  geometry: poly,
-                  kesisimBilgi: {
-                    tasinmaz1: t1,
-                    tasinmaz2: t2,
-                    alanM2
-                  }
-                });
-                this.kesisimSource.addFeature(feature);
-              } else if (kesisim.geometry.type === 'MultiPolygon') {
-                kesisim.geometry.coordinates.forEach((polyCoords: any) => {
-                  const ring = polyCoords[0];
-                  const transformedCoords = ring.map((c: any) => fromLonLat([c[0], c[1]]));
-                  const poly = new Polygon([transformedCoords]);
-                  const feature = new Feature({
-                    geometry: poly,
-                    kesisimBilgi: {
-                      tasinmaz1: t1,
-                      tasinmaz2: t2,
-                      alanM2
-                    }
-                  });
-                  this.kesisimSource.addFeature(feature);
-                });
-              }
-            }
-          }
-        } catch (hata) {
-          console.warn('Kesişim hesaplanırken hata:', hata);
-        }
-      }
-    }
-  }
-
-  private getKesisimStili(feature: any): Style {
-    const bilgi = feature.get('kesisimBilgi');
-    return new Style({
-      fill: new Fill({
-        color: 'rgba(239, 68, 68, 0.42)'
-      }),
-      stroke: new Stroke({
-        color: '#dc2626',
-        width: 2.5,
-        lineDash: [6, 4]
-      }),
-      text: new Text({
-        text: `⚠️ Çakışma (${bilgi?.alanM2 || 0} m²)`,
-        font: 'bold 11px "Segoe UI", Roboto, sans-serif',
-        fill: new Fill({ color: '#7f1d1d' }),
-        stroke: new Stroke({ color: '#ffffff', width: 3 }),
-        overflow: true
-      }),
-      zIndex: 60
-    });
-  }
-
+  // CRUD İşlemleri
   async secilenleriSil(): Promise<void> {
     const secilenIdler = Array.from(this.seciliIdler);
     if (secilenIdler.length === 0) return;
@@ -906,6 +558,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // Raporlama & Dışa/İçe Aktarma
   private aktifFiltreleriAl(): any {
     const formFiltreleri = this.filtreForm.value;
     const filtreler: any = {};
@@ -974,24 +627,20 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  excelModalAcik = false;
-  importHataMesaji: string | null = null;
-  private importSubscription?: Subscription;
-
-  excelModalAc(): void { 
-    this.excelModalAcik = true; 
+  excelModalAc(): void {
+    this.excelModalAcik = true;
     this.secilenExcelDosyasi = null;
     this.importYukleniyor = false;
     this.importHataMesaji = null;
     this.cdr.detectChanges();
   }
 
-  excelModalKapat(): void { 
+  excelModalKapat(): void {
     if (this.importSubscription) {
       this.importSubscription.unsubscribe();
       this.importSubscription = undefined;
     }
-    this.excelModalAcik = false; 
+    this.excelModalAcik = false;
     this.secilenExcelDosyasi = null;
     this.importYukleniyor = false;
     this.importHataMesaji = null;
@@ -1061,23 +710,15 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
     return { konut, arsa, bina, diger };
   }
 
-  haritadaGoster(item: Tasinmaz): void {
-    this.secilenTasinmaz = item;
-    this.haritadaTasinmazaGit(item);
-    if (this.popupOverlay && item.koordinatlar && item.koordinatlar.length > 0) {
-      const ilkNokta = fromLonLat([item.koordinatlar[0][0], item.koordinatlar[0][1]]);
-      this.popupOverlay.setPosition(ilkNokta);
-    }
-    this.cdr.detectChanges();
-  }
-
   get toplamAlan(): number {
     return (this.tasinmazlar || []).reduce((toplam, t) => toplam + (Number(t.alanM2) || 0), 0);
   }
+
   get benzersizIlSayisi(): number {
     const iller = new Set((this.tasinmazlar || []).map(t => t.ilAdi).filter(Boolean));
     return iller.size;
   }
+
   get enCokBulunanIller(): string {
     if (!this.tasinmazlar || this.tasinmazlar.length === 0) return 'Kayıt Yok';
     const ilSayilari: { [key: string]: number } = {};
@@ -1091,12 +732,15 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit {
       .map(([il, sayi]) => `${il} (${sayi})`)
       .join(', ');
   }
+
   get konutSayisi(): number {
     return (this.tasinmazlar || []).filter(t => t.tasinmazTipi?.toLowerCase() === 'konut').length;
   }
+
   get arsaSayisi(): number {
     return (this.tasinmazlar || []).filter(t => t.tasinmazTipi?.toLowerCase() === 'arsa').length;
   }
+
   get binaSayisi(): number {
     return (this.tasinmazlar || []).filter(t => t.tasinmazTipi?.toLowerCase() === 'bina').length;
   }

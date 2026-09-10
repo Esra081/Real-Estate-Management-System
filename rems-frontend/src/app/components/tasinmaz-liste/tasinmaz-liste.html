@@ -82,9 +82,14 @@
           </select>
         </div>
 
-        <div [ngClass]="auth.isAdmin ? 'col-6 col-lg-1' : 'col-12 col-lg-2'">
-          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Ada / Parsel</label>
-          <input type="text" class="form-control form-control-sm" formControlName="adaNo" placeholder="Örn: 101/5">
+        <div class="col-6 col-lg-1">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Ada No</label>
+          <input type="text" class="form-control form-control-sm" formControlName="adaNo" placeholder="Örn: 101">
+        </div>
+
+        <div class="col-6 col-lg-1">
+          <label class="small text-muted fw-bold mb-1" style="font-size: 11px;">Parsel No</label>
+          <input type="text" class="form-control form-control-sm" formControlName="parselNo" placeholder="Örn: 5">
         </div>
 
         <div [ngClass]="auth.isAdmin ? 'col-12 col-lg-1' : 'col-12 col-lg-2'" class="d-flex gap-1 align-self-end">
@@ -95,7 +100,6 @@
             Temizle
           </button>
         </div>
-
       </div>
     </form>
   </div>
@@ -124,20 +128,33 @@
           
           <div class="row g-0 align-items-stretch">
             
-            <div class="col-sm-4 position-relative property-img-col">
-                <img [src]="getResimUrl(t.resimUrl)" 
-                    alt="Mülk Fotoğrafı" 
-                    class="property-card-img">
-                
-                <span class="badge position-absolute bottom-0 start-0 m-1 shadow-sm" style="font-size: 8.5px;"
-                      [ngClass]="t.tasinmazTipi === 'Konut' ? 'bg-primary' : (t.tasinmazTipi === 'Arsa' ? 'bg-success' : 'bg-secondary')">
-                  {{ t.tasinmazTipi }}
-                </span>
+          <div class="col-sm-4 position-relative property-img-col">
+            <!-- Resim Varsa Resmi Göster -->
+            <img *ngIf="t.resimUrl" 
+                [src]="getResimUrl(t.resimUrl)" 
+                alt="Mülk Fotoğrafı" 
+                class="property-card-img">
 
-              <div *ngIf="!auth.isAdmin" class="position-absolute top-0 end-0 m-2" (click)="$event.stopPropagation()">
-                <input type="checkbox" class="form-check-input shadow-sm" [checked]="t.secili" (change)="secimDegistir(t, $event)">
-              </div>
+            <!-- Resim Yoksa 'Görsel Yok' Kutusunu Göster -->
+            <div *ngIf="!t.resimUrl" 
+                class="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted w-100">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <span style="font-size: 10px; color: #94a3b8; font-weight: 500; margin-top: 4px;">Görsel Yok</span>
             </div>
+              
+            <span class="badge position-absolute bottom-0 start-0 m-1 shadow-sm" style="font-size: 8.5px;"
+                  [ngClass]="t.tasinmazTipi === 'Konut' ? 'bg-primary' : (t.tasinmazTipi === 'Arsa' ? 'bg-success' : 'bg-secondary')">
+              {{ t.tasinmazTipi }}
+            </span>
+
+            <div *ngIf="!auth.isAdmin" class="position-absolute top-0 end-0 m-2" (click)="$event.stopPropagation()">
+              <input type="checkbox" class="form-check-input shadow-sm" [checked]="t.secili" (change)="secimDegistir(t, $event)">
+            </div>
+          </div>
 
             <div class="col-sm-8 p-3 d-flex flex-column justify-content-between">
               
@@ -168,10 +185,10 @@
                 </div>
 
                 <div class="d-flex gap-1" (click)="$event.stopPropagation()">
-                  <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-outline-primary py-1 px-2" (click)="duzenle(t.id)" title="Düzenle">
+                  <button *ngIf="!auth.isAdmin" type="button" class="btn btn-action btn-primary" (click)="duzenle(t.id)" title="Düzenle">
                     Düzenle
                   </button>
-                  <button *ngIf="!auth.isAdmin" type="button" class="btn btn-sm btn-outline-danger py-1 px-2" (click)="sil(t.id)" title="Sil">
+                  <button *ngIf="!auth.isAdmin" type="button" class="btn btn-action btn-outline-dark" (click)="sil(t.id)" title="Sil">
                     Sil
                   </button>
                 </div>
@@ -216,19 +233,56 @@
         
         <div id="map" class="w-100 h-100" style="min-height: 580px;"></div>
 
-        <div class="gis-layer-switcher shadow-sm">
-          <button type="button" 
-                  class="btn-layer" 
-                  [class.active]="aktifAltlik === 'standart'"
-                  (click)="altlikDegistir('standart')">
-             Standart
-          </button>
-          <button type="button" 
-                  class="btn-layer" 
-                  [class.active]="aktifAltlik === 'uydu'"
-                  (click)="altlikDegistir('uydu')">
-             Uydu
-          </button>
+        <!-- Birleşik Katman & Opaklık Kontrol Paneli -->
+        <div class="gis-map-panel shadow-sm">
+          <!-- 1. Altlık Seçimi (Standart / Uydu) -->
+          <div class="gis-layer-selector">
+            <button type="button" 
+                    class="btn-layer" 
+                    [class.active]="aktifAltlik === 'standart'"
+                    (click)="altlikDegistir('standart')">
+              OSM
+            </button>
+            <button type="button" 
+                    class="btn-layer" 
+                    [class.active]="aktifAltlik === 'uydu'"
+                    (click)="altlikDegistir('uydu')">
+              Google Maps
+            </button>
+          </div>
+
+          <!-- 2. Opaklık Ayarları (SRS REQ-9: Base & Overlay Opacity) -->
+          <div class="gis-opacity-section">
+            <!-- Altlık Harita Opaklığı (OSM / Uydu) -->
+            <div class="gis-slider-group">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="opacity-label">Altlık Opaklığı</span>
+                <span class="opacity-val">%{{ altlikOpaklik }}</span>
+              </div>
+              <input type="range" 
+                     class="form-range" 
+                     min="0" 
+                     max="100" 
+                     step="1" 
+                     [(ngModel)]="altlikOpaklik" 
+                     (input)="altlikOpaklikDegistir($event)">
+            </div>
+
+            <!-- Taşınmaz Katmanı Opaklığı -->
+            <div class="gis-slider-group mt-2">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="opacity-label">Taşınmaz Opaklığı</span>
+                <span class="opacity-val">%{{ tasinmazOpaklik }}</span>
+              </div>
+              <input type="range" 
+                     class="form-range" 
+                     min="0" 
+                     max="100" 
+                     step="1" 
+                     [(ngModel)]="tasinmazOpaklik" 
+                     (input)="tasinmazOpaklikDegistir($event)">
+            </div>
+          </div>
         </div>
 
         <div class="gis-map-legend shadow-sm">
@@ -255,12 +309,36 @@
           </div>
         </div>
 
-        <div id="popup" class="gis-property-popup shadow-lg" [style.visibility]="(secilenTasinmaz || secilenKesisim) ? 'visible' : 'hidden'">
+        <div id="popup" class="gis-property-popup shadow-lg" [style.visibility]="(secilenTasinmaz || secilenKesisim || kumedekiTasinmazlar.length > 0) ? 'visible' : 'hidden'">
           
+          <!-- Aynı Konumdaki / Binadaki Taşınmazlar Listesi -->
+          <ng-container *ngIf="kumedekiTasinmazlar.length > 0">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge badge-forest px-2 py-1" style="font-size: 10px;">
+                Aynı Konumda {{ kumedekiTasinmazlar.length }} Taşınmaz
+              </span>
+              <button type="button" class="btn-close" style="font-size: 9px;" (click)="popupKapat()"></button>
+            </div>
+            <p class="small text-muted mb-2" style="font-size: 11px;">
+              Bu noktada birden fazla taşınmaz bulunuyor. Detayını görmek istediğinizi seçin:
+            </p>
+            <div class="list-group list-group-flush" style="max-height: 180px; overflow-y: auto;">
+              <button type="button" *ngFor="let t of kumedekiTasinmazlar" 
+                      class="list-group-item list-group-item-action py-2 px-2 border rounded mb-1 bg-light text-start"
+                      (click)="kumedekiTasinmaziSec(t)">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="text-dark small" style="font-size: 12px;">Ada {{ t.adaNo }} / Parsel {{ t.parselNo }}</strong>
+                  <span class="badge badge-user" style="font-size: 9.5px;">{{ t.tasinmazTipi }}</span>
+                </div>
+                <div class="text-muted small text-truncate" style="font-size: 10.5px;">{{ t.adres || (t.ilceAdi + ', ' + t.ilAdi) }}</div>
+              </button>
+            </div>
+          </ng-container>
+
           <ng-container *ngIf="secilenKesisim">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="badge bg-danger text-white px-2 py-1" style="font-size: 10px;">
-                ⚠️ Çakışma Uyarısı
+                Çakışma Uyarısı
               </span>
               <button type="button" class="btn-close" style="font-size: 9px;" (click)="popupKapat()"></button>
             </div>
@@ -284,11 +362,27 @@
               <button type="button" class="btn-close" style="font-size: 9px;" (click)="popupKapat()"></button>
             </div>
 
-            <div class="popup-img-wrapper mb-2 rounded overflow-hidden position-relative">
+            <!-- Resim Varsa Resmi Göster -->
+            <div *ngIf="secilenTasinmaz.resimUrl" class="popup-img-wrapper mb-2 rounded overflow-hidden position-relative">
               <img [src]="getResimUrl(secilenTasinmaz.resimUrl)" 
-                   alt="Mülk Görseli" 
-                   class="w-100" 
-                   style="height: 120px; object-fit: cover;">
+                  alt="Mülk Görseli" 
+                  class="w-100" 
+                  style="height: 120px; object-fit: cover;">
+              <span class="position-absolute bottom-0 start-0 m-1 badge bg-dark bg-opacity-75" style="font-size: 9.5px;">
+                {{ secilenTasinmaz.tasinmazTipi }}
+              </span>
+            </div>
+
+            <!-- Resim Yoksa 'Görsel Yok' Alanı Göster -->
+            <div *ngIf="!secilenTasinmaz.resimUrl" 
+                class="popup-img-wrapper mb-2 rounded overflow-hidden position-relative bg-light d-flex flex-column align-items-center justify-content-center text-muted border" 
+                style="height: 110px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <span style="font-size: 10.5px; color: #94a3b8; font-weight: 500; margin-top: 3px;">Görsel Yok</span>
               <span class="position-absolute bottom-0 start-0 m-1 badge bg-dark bg-opacity-75" style="font-size: 9.5px;">
                 {{ secilenTasinmaz.tasinmazTipi }}
               </span>
@@ -325,11 +419,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
         
-        <div class="modal-header bg-success text-white py-3 px-4">
+        <div class="modal-header py-3 px-4 text-white" style="background-color: var(--rems-dark-forest, #1E241A); border-bottom: 1px solid var(--rems-olive-dark, #2A3324);">
           <div class="d-flex align-items-center gap-2">
             <div>
-              <h6 class="modal-title fw-bold mb-0">Excel'den Toplu Taşınmaz Yükle</h6>
-              <small class="text-white-50" style="font-size: 11px;">.xlsx formatında toplu parsel aktarımı</small>
+              <h6 class="modal-title fw-bold mb-0 text-white">Excel'den Toplu Taşınmaz Yükle</h6>
+              <small style="color: rgba(255,255,255,0.65); font-size: 11.5px;">.xlsx formatında toplu parsel aktarımı</small>
             </div>
           </div>
           <button type="button" class="btn-close btn-close-white" (click)="excelModalKapat()" aria-label="Kapat"></button>
@@ -362,11 +456,11 @@
         </div>
 
         <div class="modal-footer bg-light py-2 px-4 border-top">
-          <button type="button" class="btn btn-outline-secondary btn-sm px-3 fw-semibold" (click)="excelModalKapat()">
+          <button type="button" class="btn btn-outline-dark btn-sm px-4" (click)="excelModalKapat()">
             <span *ngIf="!importYukleniyor">Vazgeç</span>
             <span *ngIf="importYukleniyor" class="text-danger fw-bold">✕ İptal Et / Durdur</span>
           </button>
-          <button type="button" class="btn btn-success btn-sm px-4 fw-bold shadow-sm" (click)="excelIceAktar()" [disabled]="!secilenExcelDosyasi || importYukleniyor">
+          <button type="button" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm" (click)="excelIceAktar()" [disabled]="!secilenExcelDosyasi || importYukleniyor">
             İçe Aktar ve Kaydet
           </button>
         </div>

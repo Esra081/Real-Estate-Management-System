@@ -68,7 +68,7 @@ namespace REMS.API.Services
             }
         }
 
-        public async Task<PagedResponseDto<LogListDto>> GetLogsAsync(LogFilterDto filter)
+        public async Task<LogPagedResponseDto> GetLogsAsync(LogFilterDto filter)
         {
             var query = _context.Loglar.AsNoTracking().AsQueryable();
 
@@ -114,6 +114,8 @@ namespace REMS.API.Services
             }
 
             int totalCount = await query.CountAsync();
+            int basariliCount = await query.CountAsync(l => l.Durum == "Basarili");
+            int basarisizCount = await query.CountAsync(l => l.Durum == "Basarisiz");
 
             var loglar = await query
                 .OrderByDescending(l => l.Tarih)
@@ -154,12 +156,14 @@ namespace REMS.API.Services
                 };
             }).ToList();
 
-            return new PagedResponseDto<LogListDto>
+            return new LogPagedResponseDto
             {
                 Data = dtoList,
                 TotalCount = totalCount,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize),
-                CurrentPage = filter.PageNumber
+                CurrentPage = filter.PageNumber,
+                BasariliCount = basariliCount,
+                BasarisizCount = basarisizCount
             };
         }
     }

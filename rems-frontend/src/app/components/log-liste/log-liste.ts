@@ -22,6 +22,8 @@ export class LogListeComponent implements OnInit {
   pageSize = 15;
   totalPages = 0;
   totalCount = 0;
+  toplamBasariliSayisi = 0;
+  toplamBasarisizSayisi = 0;
   sayfalamaDizisi: (number | string)[] = [];
 
   filtreForm!: FormGroup;
@@ -111,6 +113,8 @@ export class LogListeComponent implements OnInit {
           this.totalCount = res.totalCount || 0;
           this.totalPages = res.totalPages || 1;
           this.currentPage = res.currentPage || 1;
+          this.toplamBasariliSayisi = res.basariliCount || 0;
+          this.toplamBasarisizSayisi = res.basarisizCount || 0;
           this.sayfalamaGuncelle();
           this.yukleniyor = false;
           this.cdr.detectChanges();

@@ -10,7 +10,14 @@ export class LogService {
 
   constructor(private http: HttpClient) {}
 
-  getLogs(filtre: LogFiltre): Observable<{ data: Log[]; totalCount: number; totalPages: number; currentPage: number }> {
+  getLogs(filtre: LogFiltre): Observable<{ 
+    data: Log[]; 
+    totalCount: number; 
+    totalPages: number; 
+    currentPage: number;
+    basariliCount: number;
+    basarisizCount: number;
+  }> {
     const params = this.filtreParametreleriniOlustur(filtre);
     return this.http.get<any>(this.apiUrl, { params });
   }

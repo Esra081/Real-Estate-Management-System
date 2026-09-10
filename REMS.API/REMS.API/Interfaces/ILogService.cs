@@ -8,6 +8,7 @@ namespace REMS.API.Interfaces
     {
         Task LogAsync(string islemTipi, string aciklama, string durum = "Basarili", string? kullaniciId = null, string? kullaniciEmail = null, string? ipAdresi = null);
 
-        Task<PagedResponseDto<LogListDto>> GetLogsAsync(LogFilterDto filter);
+        Task<LogPagedResponseDto> GetLogsAsync(LogFilterDto filter);
+
     }
 }
