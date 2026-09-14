@@ -9,14 +9,14 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { TasinmazService } from './tasinmaz.service';
+import { TasinmazFormService } from './tasinmaz-form.service';
 import { Tasinmaz } from '../../models/tasinmaz.model';
 import { LokasyonService } from '../../services/lokasyon.service';
 import { Il } from '../../models/il.model';
 import { Ilce } from '../../models/ilce.model';
 import { Mahalle } from '../../models/mahalle.model';
-import { Auth } from '../../core/auth';
-import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../core/auth.service';
+import { ToastService } from '../../shared/services/toast.service';
 import { CustomValidators } from '../../core/custom-validators';
 
 import Map from 'ol/Map';
@@ -31,11 +31,11 @@ import { fromLonLat, toLonLat } from 'ol/proj';
 import Feature from 'ol/Feature';
 
 @Component({
-  selector: 'app-tasinmaz',
+  selector: 'app-tasinmaz-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  templateUrl: './tasinmaz.html',
-  styleUrls: ['./tasinmaz.scss']
+  templateUrl: './tasinmaz-form.html',
+  styleUrls: ['./tasinmaz-form.scss']
 })
 export class TasinmazFormComponent implements OnInit, AfterViewInit {
 
@@ -55,11 +55,11 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private tasinmazService: TasinmazService,
+    private tasinmazService: TasinmazFormService,
     private lokasyonService: LokasyonService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private auth: Auth,
+    private auth: AuthService,
     private toast: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -456,7 +456,7 @@ export class TasinmazFormComponent implements OnInit, AfterViewInit {
       const geometry = event.feature.getGeometry() as Polygon;
       const hamKoordinatlar = geometry.getCoordinates()[0];
       
-      // Projeksiyon dönüşümü: EPSG:3857 -> EPSG:4326 [Boylam(X), Enlem(Y)]
+      // Projeksiyon dönüşümü EPSG:3857 > EPSG:4326 
       const veritabaniKoordinatlari = hamKoordinatlar.map(nokta => {
         const lonLat = toLonLat(nokta); 
         return [lonLat[0], lonLat[1]]; 

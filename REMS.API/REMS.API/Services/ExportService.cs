@@ -90,7 +90,7 @@ namespace REMS.API.Services
                 gfx.DrawString(item.Durum ?? "", font, XBrushes.Black, new XPoint(cols[4] + 2, currentY));
                 gfx.DrawString(item.IpAdresi ?? "-", font, XBrushes.Black, new XPoint(cols[5] + 2, currentY));
 
-                string aciklamaKisa = (item.Aciklama?.Length > 50) ? item.Aciklama.Substring(0, 47) + "..." : (item.Aciklama ?? "");
+                string aciklamaKisa = (item.Aciklama?.Length > 50) ? string.Concat(item.Aciklama.AsSpan(0, 47), "...") : (item.Aciklama ?? "");
                 gfx.DrawString(aciklamaKisa, font, XBrushes.Black, new XPoint(cols[6] + 2, currentY));
             }, filtreOzeti);
         }

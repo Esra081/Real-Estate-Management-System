@@ -5,7 +5,7 @@ namespace REMS.API.Helpers
 {
     public static class PasswordValidator
     {
-        // SonarQube ReDoS (Zaman Aşımı Koruması) için 250ms sınır:
+        // ReDoS saldırılarına karşı 250ms zaman aşımı sınırı
         private static readonly TimeSpan RegexTimeout = TimeSpan.FromMilliseconds(250);
 
         public static (bool Gecerli, string Hata) SifreGecerliMi(string sifre)
@@ -15,7 +15,6 @@ namespace REMS.API.Helpers
                 return (false, "Şifre 8 ile 12 karakter arasında olmalıdır.");
             }
 
-            // Regex ifadelerine timeout parametresi eklendi (SonarQube Security Hotspot çözümü)
             bool harfVarMi = Regex.IsMatch(sifre, @"[a-zA-Z]", RegexOptions.None, RegexTimeout);
             bool rakamVarMi = Regex.IsMatch(sifre, @"\d", RegexOptions.None, RegexTimeout);
             bool ozelKarakterVarMi = Regex.IsMatch(sifre, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]", RegexOptions.None, RegexTimeout);

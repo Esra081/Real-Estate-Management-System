@@ -92,11 +92,11 @@
           <input type="text" class="form-control form-control-sm" formControlName="parselNo" placeholder="Örn: 5">
         </div>
 
-        <div [ngClass]="auth.isAdmin ? 'col-12 col-lg-1' : 'col-12 col-lg-2'" class="d-flex gap-1 align-self-end">
-          <button type="submit" class="btn btn-primary btn-sm flex-fill fw-bold" style="padding: 6px 4px; font-size: 11.5px;" title="Filtrele">
+        <div [ngClass]="auth.isAdmin ? 'col-12 d-flex justify-content-end gap-2 mt-2' : 'col-12 col-lg-auto ms-auto d-flex justify-content-end align-self-end gap-2 mt-2 mt-lg-0'">
+          <button type="submit" class="btn btn-primary btn-sm px-3 fw-bold" title="Filtrele">
             Filtrele
           </button>
-          <button type="button" class="btn btn-secondary btn-sm flex-fill" style="padding: 6px 4px; font-size: 11.5px;" (click)="filtreyiTemizle()" title="Temizle">
+          <button type="button" class="btn btn-secondary btn-sm px-3" (click)="filtreyiTemizle()" title="Temizle">
             Temizle
           </button>
         </div>
@@ -202,28 +202,13 @@
 
       </div>
 
-      <div class="d-flex justify-content-between align-items-center mt-3 p-2 bg-white rounded-3 border shadow-sm" *ngIf="totalPages > 1">
-        <span class="small text-muted" style="font-size: 12px;">
-          Sayfa <strong>{{ currentPage }}</strong> / {{ totalPages }} (Toplam {{ totalCount }} kayıt)
-        </span>
-
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <button class="page-link" (click)="sayfaDegistir(1)" title="İlk Sayfa">«</button>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <button class="page-link" (click)="sayfaDegistir(currentPage - 1)" title="Önceki Sayfa">‹</button>
-          </li>
-          <li class="page-item" *ngFor="let p of sayfalamaDizisi" [class.active]="currentPage === p" [class.disabled]="p === '...'">
-            <button class="page-link" (click)="sayfaDegistir(p)">{{ p }}</button>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <button class="page-link" (click)="sayfaDegistir(currentPage + 1)" title="Sonraki Sayfa">›</button>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <button class="page-link" (click)="sayfaDegistir(totalPages)" title="Son Sayfa">»</button>
-          </li>
-        </ul>
+      <div class="mt-3 p-2 bg-white rounded-3 border shadow-sm" *ngIf="totalPages > 1">
+        <app-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [totalCount]="totalCount"
+          (pageChange)="sayfaDegistir($event)">
+        </app-pagination>
       </div>
 
     </div>
@@ -264,7 +249,7 @@
                      min="0" 
                      max="100" 
                      step="1" 
-                     [(ngModel)]="altlikOpaklik" 
+                     [value]="altlikOpaklik" 
                      (input)="altlikOpaklikDegistir($event)">
             </div>
 
@@ -279,7 +264,7 @@
                      min="0" 
                      max="100" 
                      step="1" 
-                     [(ngModel)]="tasinmazOpaklik" 
+                     [value]="tasinmazOpaklik" 
                      (input)="tasinmazOpaklikDegistir($event)">
             </div>
           </div>

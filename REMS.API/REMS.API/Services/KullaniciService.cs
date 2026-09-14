@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using REMS.API.Data;
 using REMS.API.DTOs.Kullanici;
@@ -16,11 +17,13 @@ namespace REMS.API.Services
     {
         private readonly RemsDbContext _context;
         private readonly HashService _hashService;
+        private readonly IMapper _mapper;
 
-        public KullaniciService(RemsDbContext context, HashService hashService)
+        public KullaniciService(RemsDbContext context, HashService hashService, IMapper mapper)
         {
             _context = context;
             _hashService = hashService;
+            _mapper = mapper;
         }
 
         public async Task<List<KullaniciListDto>> GetAllKullanicilarAsync()
@@ -30,25 +33,43 @@ namespace REMS.API.Services
                 .OrderByDescending(k => k.OlusturmaTarihi)
                 .ToListAsync();
 
-            var list = new List<KullaniciListDto>();
-            foreach (var k in kullanicilar)
+            // N+1 sorgu problemi engellendi: Tek seferde tüm kullanıcıların taşınmaz sayıları çekilir
+            var tasinmazSayilari = await _context.Tasinmazlar
+                .AsNoTracking()
+                .Where(t => t.KullaniciId != null)
+                .GroupBy(t => t.KullaniciId!)
+                .Select(g => new { KullaniciId = g.Key, Adet = g.Count() })
+                .ToDictionaryAsync(x => x.KullaniciId.ToLower(), x => x.Adet);
+
+
+            //return kullanicilar.Select(k =>
+            //{
+            //    string kIdStr = k.Id.ToString().ToLower();
+            //    tasinmazSayilari.TryGetValue(kIdStr, out int tasinmazSayisi);
+            //
+            //    return new KullaniciListDto
+            //    {
+            //        Id = k.Id,
+            //        AdSoyad = k.AdSoyad,
+            //        Email = k.Email,
+            //        Rol = k.Rol,
+            //        OlusturmaTarihi = k.OlusturmaTarihi,
+            //        AktifMi = k.AktifMi,
+            //        TasinmazSayisi = tasinmazSayisi
+            //    };
+            //}).ToList();
+
+            // YENİ AUTOMAPPER KULLANIMI
+            var dtoList = _mapper.Map<List<KullaniciListDto>>(kullanicilar);
+            foreach (var dto in dtoList)
             {
-                string kIdStr = k.Id.ToString();
-                int tasinmazSayisi = await _context.Tasinmazlar.CountAsync(t => t.KullaniciId == kIdStr);
-
-                list.Add(new KullaniciListDto
+                string kIdStr = dto.Id.ToString().ToLower();
+                if (tasinmazSayilari.TryGetValue(kIdStr, out int count))
                 {
-                    Id = k.Id,
-                    AdSoyad = k.AdSoyad,
-                    Email = k.Email,
-                    Rol = k.Rol,
-                    OlusturmaTarihi = k.OlusturmaTarihi,
-                    AktifMi = k.AktifMi,
-                    TasinmazSayisi = tasinmazSayisi
-                });
+                    dto.TasinmazSayisi = count;
+                }
             }
-
-            return list;
+            return dtoList;
         }
 
         public async Task<KullaniciListDto?> GetKullaniciByIdAsync(Guid id)
@@ -59,16 +80,21 @@ namespace REMS.API.Services
             string kIdStr = k.Id.ToString();
             int tasinmazSayisi = await _context.Tasinmazlar.CountAsync(t => t.KullaniciId == kIdStr);
 
-            return new KullaniciListDto
-            {
-                Id = k.Id,
-                AdSoyad = k.AdSoyad,
-                Email = k.Email,
-                Rol = k.Rol,
-                OlusturmaTarihi = k.OlusturmaTarihi,
-                AktifMi = k.AktifMi,
-                TasinmazSayisi = tasinmazSayisi
-            };
+            //return new KullaniciListDto
+            //{
+            //    Id = k.Id,
+            //    AdSoyad = k.AdSoyad,
+            //    Email = k.Email,
+            //    Rol = k.Rol,
+            //    OlusturmaTarihi = k.OlusturmaTarihi,
+            //    AktifMi = k.AktifMi,
+            //    TasinmazSayisi = tasinmazSayisi
+            //};
+
+            // AUTOMAPPER KULLANIMI
+            var dto = _mapper.Map<KullaniciListDto>(k);
+            dto.TasinmazSayisi = tasinmazSayisi;
+            return dto;
         }
 
         public async Task<(bool Success, string Message)> AddKullaniciAsync(KullaniciCreateDto model)
@@ -76,7 +102,8 @@ namespace REMS.API.Services
             if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.AdSoyad))
                 return (false, "Ad Soyad ve E-posta alanları zorunludur.");
 
-            bool emailVarMi = await _context.Kullanicilar.AnyAsync(k => k.Email.ToLower() == model.Email.ToLower().Trim());
+            var cleanEmail = model.Email.ToLower().Trim();
+            bool emailVarMi = await _context.Kullanicilar.AnyAsync(k => k.Email.ToLower() == cleanEmail);
             if (emailVarMi)
                 return (false, "Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut.");
 
@@ -87,17 +114,22 @@ namespace REMS.API.Services
             string salt = _hashService.CreateSalt();
             string hash = _hashService.HashPassword(model.Sifre, salt);
 
-            var yeniKullanici = new Kullanici
-            {
-                Id = Guid.NewGuid(),
-                AdSoyad = model.AdSoyad.Trim(),
-                Email = model.Email.ToLower().Trim(),
-                SifreHash = hash,
-                SifreSalt = salt,
-                Rol = string.IsNullOrWhiteSpace(model.Rol) ? "Kullanici" : model.Rol,
-                AktifMi = true,
-                OlusturmaTarihi = DateTime.UtcNow
-            };
+            // --- ESKİ MANUEL DÖNÜŞÜM (YORUMA ALINDI) ---
+            // var yeniKullanici = new Kullanici
+            // {
+            //     Id = Guid.NewGuid(),
+            //     AdSoyad = model.AdSoyad.Trim(),
+            //     Email = model.Email.ToLower().Trim(),
+            //     SifreHash = hash,
+            //     SifreSalt = salt,
+            //     Rol = string.IsNullOrWhiteSpace(model.Rol) ? "Kullanici" : model.Rol,
+            //     AktifMi = true,
+            //     OlusturmaTarihi = DateTime.UtcNow
+            // };
+
+            var yeniKullanici = _mapper.Map<Kullanici>(model);
+            yeniKullanici.SifreSalt = salt;
+            yeniKullanici.SifreHash = hash;
 
             await _context.Kullanicilar.AddAsync(yeniKullanici);
             await _context.SaveChangesAsync();
@@ -113,15 +145,18 @@ namespace REMS.API.Services
 
             if (!string.Equals(kullanici.Email, model.Email.Trim(), StringComparison.OrdinalIgnoreCase))
             {
-                bool emailVarMi = await _context.Kullanicilar.AnyAsync(k => k.Email.ToLower() == model.Email.ToLower().Trim() && k.Id != model.Id);
+                var cleanEmail = model.Email.ToLower().Trim();
+                bool emailVarMi = await _context.Kullanicilar.AnyAsync(k => k.Email.ToLower() == cleanEmail && k.Id != model.Id);
                 if (emailVarMi)
                     return (false, "Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.");
             }
 
-            kullanici.AdSoyad = model.AdSoyad.Trim();
-            kullanici.Email = model.Email.ToLower().Trim();
-            kullanici.Rol = model.Rol;
-            kullanici.AktifMi = model.AktifMi;
+            //kullanici.AdSoyad = model.AdSoyad.Trim();
+            //kullanici.Email = model.Email.ToLower().Trim();
+            //kullanici.Rol = model.Rol;
+            //kullanici.AktifMi = model.AktifMi;
+
+            _mapper.Map(model, kullanici);
 
             if (!string.IsNullOrWhiteSpace(model.YeniSifre))
             {

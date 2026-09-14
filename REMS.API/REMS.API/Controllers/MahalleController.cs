@@ -14,6 +14,7 @@ namespace REMS.API.Controllers
             _mahalleService = mahalleService;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

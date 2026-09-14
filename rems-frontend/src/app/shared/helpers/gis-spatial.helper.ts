@@ -18,10 +18,7 @@ export interface KesisimSonucu {
 
 export class TasinmazSpatialHelper {
 
-  /**
-   * Verilen taşınmaz listesindeki tüm poligonların ikili kesişimlerini (çakışmalarını)
-   * Turf.js kullanarak hesaplar ve OpenLayers EPSG:3857 Feature listesi döner.
-   */
+  // Poligonların ikili çakışmalarını Turf.js ile hesaplar
   static kesisimleriHesapla(tasinmazlar: Tasinmaz[]): KesisimSonucu {
     const features: Feature<Polygon>[] = [];
     let count = 0;
@@ -106,9 +103,7 @@ export class TasinmazSpatialHelper {
     return { features, count };
   }
 
-  /**
-   * Çakışma bölgeleri için kırmızı kesikli çizgi ve sarı/kırmızı etiket stili
-   */
+  // Çakışma bölgelerinin harita stili (kırmızı kesikli çizgi ve alan etiketi)
   static getKesisimStili(feature: any): Style {
     const bilgi = feature.get('kesisimBilgi') as KesisimBilgi | undefined;
     return new Style({

@@ -15,3 +15,16 @@ export interface Tasinmaz {
   koordinatlar: number[][];
   secili?: boolean;
 }
+
+export interface TasinmazFiltre {
+  ilId?: number | string;
+  ilceId?: number | string;
+  mahalleId?: number | string;
+  adaNo?: string;
+  parselNo?: string;
+  adres?: string;
+  tasinmazTipi?: string;
+  kullaniciId?: string;
+  pageNumber?: number;
+  pageSize?: number;
+}

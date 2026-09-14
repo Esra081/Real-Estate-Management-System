@@ -10,6 +10,7 @@ using REMS.API.DTOs.Common;
 using REMS.API.DTOs.Log;
 using REMS.API.Entities;
 using REMS.API.Interfaces;
+using AutoMapper;
 
 namespace REMS.API.Services
 {
@@ -17,11 +18,13 @@ namespace REMS.API.Services
     {
         private readonly RemsDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public LogService(RemsDbContext context, IHttpContextAccessor httpContextAccessor)
+        public LogService(RemsDbContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
         public async Task LogAsync(
@@ -127,10 +130,41 @@ namespace REMS.API.Services
             var kullaniciMapById = kullanicilar.ToDictionary(k => k.Id.ToString().ToLower(), k => k.AdSoyad);
             var kullaniciMapByEmail = kullanicilar.ToDictionary(k => k.Email.ToLower(), k => k.AdSoyad);
 
-            var dtoList = loglar.Select(l =>
+            //var dtoList = loglar.Select(l =>
+            //{
+            //    string kId = (l.KullaniciId ?? "").ToLower().Trim();
+            //    string kEmail = (l.KullaniciEmail ?? "").ToLower().Trim();
+            //    string ad = "Sistem / Anonim";
+            //
+            //    if (!string.IsNullOrEmpty(kId) && kullaniciMapById.TryGetValue(kId, out var bulunanAd1))
+            //    {
+            //        ad = bulunanAd1;
+            //    }
+            //    else if (!string.IsNullOrEmpty(kEmail) && kullaniciMapByEmail.TryGetValue(kEmail, out var bulunanAd2))
+            //    {
+            //        ad = bulunanAd2;
+            //    }
+            //
+            //    return new LogListDto
+            //    {
+            //        Id = l.Id,
+            //        KullaniciId = l.KullaniciId,
+            //        KullaniciEmail = l.KullaniciEmail,
+            //        KullaniciAdi = ad,
+            //        IslemTipi = l.IslemTipi,
+            //        Aciklama = l.Aciklama,
+            //        Durum = l.Durum,
+            //        IpAdresi = l.IpAdresi,
+            //        Tarih = l.Tarih
+            //    };
+            //}).ToList();
+
+            // AUTOMAPPER KULLANIMI
+            var dtoList = _mapper.Map<List<LogListDto>>(loglar);
+            foreach (var dto in dtoList)
             {
-                string kId = (l.KullaniciId ?? "").ToLower().Trim();
-                string kEmail = (l.KullaniciEmail ?? "").ToLower().Trim();
+                string kId = (dto.KullaniciId ?? "").ToLower().Trim();
+                string kEmail = (dto.KullaniciEmail ?? "").ToLower().Trim();
                 string ad = "Sistem / Anonim";
 
                 if (!string.IsNullOrEmpty(kId) && kullaniciMapById.TryGetValue(kId, out var bulunanAd1))
@@ -142,19 +176,8 @@ namespace REMS.API.Services
                     ad = bulunanAd2;
                 }
 
-                return new LogListDto
-                {
-                    Id = l.Id,
-                    KullaniciId = l.KullaniciId,
-                    KullaniciEmail = l.KullaniciEmail,
-                    KullaniciAdi = ad,
-                    IslemTipi = l.IslemTipi,
-                    Aciklama = l.Aciklama,
-                    Durum = l.Durum,
-                    IpAdresi = l.IpAdresi,
-                    Tarih = l.Tarih
-                };
-            }).ToList();
+                dto.KullaniciAdi = ad;
+            }
 
             return new LogPagedResponseDto
             {

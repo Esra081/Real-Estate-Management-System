@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace REMS.API.Controllers
 {
+    // bütün endpoint'leri jwt token korumasına alıyoruz, geçerli token taşımayan istekler 401 ile döner
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -34,7 +35,7 @@ namespace REMS.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTasinmazlar([FromQuery] TasinmazFilterDto filter)
+        public async Task<IActionResult> GetFiltered([FromQuery] TasinmazFilterDto filter)
         {
             var tasinmazlar = await _tasinmazService.GetFilteredTasinmazlarAsync(filter);
             return Ok(tasinmazlar);
@@ -49,17 +50,19 @@ namespace REMS.API.Controllers
         }
 
         [HttpPost("ekle")]
-        public async Task<IActionResult> AddProperty([FromBody] TasinmazCreateDto model)
+        public async Task<IActionResult> Create([FromBody] TasinmazCreateDto model)
         {
+            // adminlerin sadece listeleme ve log yetkisi var, veri ekleme silme hakkı standart kullanıcıya ait
             if (User.IsInRole("Admin"))
                 return StatusCode(403, new { message = "Yöneticiler doğrudan taşınmaz ekleyemez." });
 
             if (model == null || model.Koordinatlar.Count < 3)
                 return BadRequest(new { message = "Bir poligon için en az 3 nokta gereklidir." });
 
+            // güvenlik açığı olmaması için istemciden gelen kullanıcı idsine güvenmiyoruz, token claiminden kendi idsini alıyoruz
             if (string.IsNullOrEmpty(model.KullaniciId))
             {
-                model.KullaniciId = User.GetUserId();
+                model.KullaniciId = User.GetUserId() ?? "";
             }
 
             try
@@ -80,7 +83,7 @@ namespace REMS.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProperty(int id, [FromBody] TasinmazUpdateDto model)
+        public async Task<IActionResult> Update(int id, [FromBody] TasinmazUpdateDto model)
         {
             if (User.IsInRole("Admin"))
                 return StatusCode(403, new { message = "Yöneticiler taşınmaz güncelleyemez." });
@@ -90,7 +93,7 @@ namespace REMS.API.Controllers
 
             if (string.IsNullOrEmpty(model.KullaniciId))
             {
-                model.KullaniciId = User.GetUserId();
+                model.KullaniciId = User.GetUserId() ?? "";
             }
 
             try
@@ -117,7 +120,7 @@ namespace REMS.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProperty(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (User.IsInRole("Admin"))
                 return StatusCode(403, new { message = "Yöneticiler doğrudan taşınmaz silemez." });
@@ -131,12 +134,12 @@ namespace REMS.API.Controllers
         }
 
         [HttpPost("toplu-sil")]
-        public async Task<IActionResult> DeleteProperties([FromBody] List<int> ids)
+        public async Task<IActionResult> DeleteBatch([FromBody] List<int> ids)
         {
             if (User.IsInRole("Admin"))
                 return StatusCode(403, new { message = "Yöneticiler taşınmaz silemez." });
 
-            if (ids == null || !ids.Any())
+            if (ids == null || ids.Count == 0)
                 return BadRequest(new { message = "Silinecek taşınmaz ID listesi boş olamaz." });
 
             var sonuc = await _tasinmazService.DeletePropertiesAsync(ids);

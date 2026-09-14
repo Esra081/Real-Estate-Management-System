@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AlanAnaliziService } from '../../services/alan-analizi.service';
 import { PoligonDto, AlanAnalizSonucDto } from '../../models/alan-analizi.model';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 import Map from 'ol/Map';
 import View from 'ol/View';

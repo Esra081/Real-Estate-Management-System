@@ -5,12 +5,14 @@ import { LogService } from '../../services/log.service';
 import { KullaniciService } from '../../services/kullanici.service';
 import { Log, LogFiltre } from '../../models/log.model';
 import { Kullanici } from '../../models/kullanici.model';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '../../shared/services/toast.service';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
+import { downloadBlob } from '../../shared/helpers/file-download.helper';
 
 @Component({
   selector: 'app-log-liste',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './log-liste.html',
   styleUrls: ['./log-liste.scss']
 })
@@ -24,7 +26,6 @@ export class LogListeComponent implements OnInit {
   totalCount = 0;
   toplamBasariliSayisi = 0;
   toplamBasarisizSayisi = 0;
-  sayfalamaDizisi: (number | string)[] = [];
 
   filtreForm!: FormGroup;
   islemTipleri: string[] = [];
@@ -115,7 +116,6 @@ export class LogListeComponent implements OnInit {
           this.currentPage = res.currentPage || 1;
           this.toplamBasariliSayisi = res.basariliCount || 0;
           this.toplamBasarisizSayisi = res.basarisizCount || 0;
-          this.sayfalamaGuncelle();
           this.yukleniyor = false;
           this.cdr.detectChanges();
         });
@@ -126,47 +126,11 @@ export class LogListeComponent implements OnInit {
           this.loglar = [];
           this.totalCount = 0;
           this.totalPages = 0;
-          this.sayfalamaDizisi = [];
           this.yukleniyor = false;
           this.cdr.detectChanges();
         });
       }
     });
-  }
-
-  sayfalamaGuncelle(): void {
-    const total = this.totalPages;
-    const current = this.currentPage;
-
-    if (total <= 7) {
-      this.sayfalamaDizisi = Array.from({ length: total }, (_, i) => i + 1);
-      return;
-    }
-
-    const pages: (number | string)[] = [];
-    pages.push(1);
-
-    if (current <= 4) {
-      for (let i = 2; i <= 5; i++) {
-        pages.push(i);
-      }
-      pages.push('...');
-      pages.push(total);
-    } else if (current >= total - 3) {
-      pages.push('...');
-      for (let i = total - 4; i <= total; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push('...');
-      pages.push(current - 1);
-      pages.push(current);
-      pages.push(current + 1);
-      pages.push('...');
-      pages.push(total);
-    }
-
-    this.sayfalamaDizisi = pages;
   }
 
   filtrele(): void {
@@ -193,9 +157,8 @@ export class LogListeComponent implements OnInit {
     this.veriGetir();
   }
 
-  sayfaDegistir(yeniSayfa: number | string): void {
-    if (typeof yeniSayfa === 'string' || yeniSayfa === this.currentPage) return;
-    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages) {
+  sayfaDegistir(yeniSayfa: number): void {
+    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages && yeniSayfa !== this.currentPage) {
       this.currentPage = yeniSayfa;
       this.veriGetir();
     }
@@ -225,14 +188,7 @@ export class LogListeComponent implements OnInit {
           this.excelIndiriliyor = false;
           this.cdr.detectChanges();
         });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Sistem_Loglari_${new Date().getTime()}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        downloadBlob(blob, `Sistem_Loglari_${new Date().getTime()}.xlsx`);
       },
       error: (err: any) => {
         this.ngZone.run(() => {
@@ -240,7 +196,7 @@ export class LogListeComponent implements OnInit {
           this.cdr.detectChanges();
         });
         console.error('Excel indirme hatası:', err);
-        alert('Dışa aktarma başarısız oldu.');
+        this.toast.error('Dışa aktarma başarısız oldu.');
       }
     });
   }
@@ -266,14 +222,7 @@ export class LogListeComponent implements OnInit {
           this.pdfIndiriliyor = false;
           this.cdr.detectChanges();
         });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Sistem_Loglari_${new Date().getTime()}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        downloadBlob(blob, `Sistem_Loglari_${new Date().getTime()}.pdf`);
       },
       error: (err: any) => {
         this.ngZone.run(() => {
@@ -281,7 +230,7 @@ export class LogListeComponent implements OnInit {
           this.cdr.detectChanges();
         });
         console.error('PDF indirme hatası:', err);
-        alert('Dışa aktarma başarısız oldu.');
+        this.toast.error('Dışa aktarma başarısız oldu.');
       }
     });
   }

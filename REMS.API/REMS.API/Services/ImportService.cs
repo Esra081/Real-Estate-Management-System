@@ -155,10 +155,12 @@ namespace REMS.API.Services
                         return (false, $"Satır {satirNo}: '{ilceAdi}' ilçesine bağlı '{mahalleAdi}' mahallesi sistemde bulunamadı.", 0);
                     }
 
+                    var cleanAdaNo = adaNo.Trim().ToLower();
+                    var cleanParselNo = parselNo.Trim().ToLower();
                     bool veritabanindaVarMi = await _context.Tasinmazlar.AnyAsync(t =>
                         t.MahalleId == eslesenMahalle.Id &&
-                        t.AdaNo != null && t.AdaNo.ToLower() == adaNo.ToLower() &&
-                        t.ParselNo != null && t.ParselNo.ToLower() == parselNo.ToLower());
+                        t.AdaNo != null && t.AdaNo.ToLower() == cleanAdaNo &&
+                        t.ParselNo != null && t.ParselNo.ToLower() == cleanParselNo);
 
                     bool listedeVarMi = eklenecekTasinmazlar.Any(t =>
                         t.MahalleId == eslesenMahalle.Id &&

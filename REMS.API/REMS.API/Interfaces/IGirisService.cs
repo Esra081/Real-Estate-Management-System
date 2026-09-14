@@ -1,4 +1,4 @@
-﻿using REMS.API.DTOs;
+using REMS.API.DTOs;
 using REMS.API.DTOs.Auth;
 
 namespace REMS.API.Interfaces
@@ -7,5 +7,6 @@ namespace REMS.API.Interfaces
     {
         Task<string?> LoginAsync(LoginDto model);
         Task<(bool Success, string Message)> RegisterAsync(RegisterDto request);
+        Task<string?> YenileTokenAsync(string userId);
     }
 }

@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Auth } from './core/auth';
-import { ToastService } from './services/toast.service';
-import { OnayService } from './services/onay.service';
+import { AuthService } from './core/auth.service';
+import { ToastService } from './shared/services/toast.service';
+import { OnayService } from './shared/services/onay.service';
+import { SessionTimeoutService } from './core/session-timeout.service';
 
 @Component({
   selector: 'app-root',
@@ -12,15 +13,30 @@ import { OnayService } from './services/onay.service';
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })
-export class App {
+export class AppComponent implements OnInit {
   title = 'rems-frontend';
 
   constructor(
-    public auth: Auth,
+    public auth: AuthService,
     public router: Router,
     public toastService: ToastService,
-    public onayService: OnayService
+    public onayService: OnayService,
+    public sessionTimeout: SessionTimeoutService
   ) {}
+
+  ngOnInit(): void {
+    this.auth.currentUser$.subscribe(user => {
+      if (user) {
+        this.sessionTimeout.baslat();
+      } else {
+        this.sessionTimeout.durdur();
+      }
+    });
+
+    if (this.auth.isLoggedIn) {
+      this.sessionTimeout.baslat();
+    }
+  }
 
   get girisYapildi(): boolean {
     return this.auth.isLoggedIn;

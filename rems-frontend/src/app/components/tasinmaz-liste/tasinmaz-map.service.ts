@@ -394,6 +394,10 @@ export class TasinmazMapService {
       this.kesisimLayer.setOpacity(opaklik);
       this.kesisimLayer.setVisible(opaklik > 0);
     }
+    if (this.clusterLayer) {
+      this.clusterLayer.setOpacity(opaklik);
+      this.clusterLayer.setVisible(opaklik > 0);
+    }
   }
 
   /**

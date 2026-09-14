@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using REMS.API.Data;
 using REMS.API.DTOs.AlanAnalizi;
@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace REMS.API.Services
 {
@@ -16,11 +17,13 @@ namespace REMS.API.Services
     {
         private readonly RemsDbContext _context;
         private readonly ILogService _logService;
+        private readonly IMapper _mapper;
 
-        public AlanAnaliziService(RemsDbContext context, ILogService logService)
+        public AlanAnaliziService(RemsDbContext context, ILogService logService, IMapper mapper)
         {
             _context = context;
             _logService = logService;
+            _mapper = mapper;
         }
 
         public async Task<(bool Success, string Message)> KaydetGeometrilerAsync(List<PoligonDto> geometriler, string? kullaniciId)
@@ -41,22 +44,40 @@ namespace REMS.API.Services
                     var mevcut = await _context.AlanAnalizGeometrileri
                         .FirstOrDefaultAsync(x => x.KullaniciId == kullaniciId && x.Etiket == dto.Etiket);
 
+
+                    // if (mevcut != null)
+                    // {
+                    //     mevcut.Geometri = polygon;
+                    //     mevcut.AlanM2 = alanM2;
+                    //     mevcut.OlusturmaTarihi = DateTime.UtcNow;
+                    // }
+                    // else
+                    // {
+                    //     var yeni = new AlanAnalizGeometri
+                    //     {
+                    //         KullaniciId = kullaniciId,
+                    //         Etiket = dto.Etiket,
+                    //         Geometri = polygon,
+                    //         AlanM2 = alanM2,
+                    //         OlusturmaTarihi = DateTime.UtcNow
+                    //     };
+                    //     await _context.AlanAnalizGeometrileri.AddAsync(yeni);
+                    // }
+
                     if (mevcut != null)
                     {
+                        _mapper.Map(dto, mevcut);
                         mevcut.Geometri = polygon;
                         mevcut.AlanM2 = alanM2;
                         mevcut.OlusturmaTarihi = DateTime.UtcNow;
                     }
                     else
                     {
-                        var yeni = new AlanAnalizGeometri
-                        {
-                            KullaniciId = kullaniciId,
-                            Etiket = dto.Etiket,
-                            Geometri = polygon,
-                            AlanM2 = alanM2,
-                            OlusturmaTarihi = DateTime.UtcNow
-                        };
+                        var yeni = _mapper.Map<AlanAnalizGeometri>(dto);
+                        yeni.KullaniciId = kullaniciId;
+                        yeni.Geometri = polygon;
+                        yeni.AlanM2 = alanM2;
+                        yeni.OlusturmaTarihi = DateTime.UtcNow;
                         await _context.AlanAnalizGeometrileri.AddAsync(yeni);
                     }
                 }
@@ -81,12 +102,7 @@ namespace REMS.API.Services
                             (x.Etiket == "A" || x.Etiket == "B" || x.Etiket == "C"))
                 .ToListAsync();
 
-            return liste.Select(g => new PoligonDto
-            {
-                Etiket = g.Etiket,
-                AlanM2 = g.AlanM2 ?? GeometryHelper.HesaplaM2(g.Geometri),
-                Koordinatlar = GeometryHelper.PoligondanKoordinatlariAl(g.Geometri)
-            }).ToList();
+            return _mapper.Map<List<PoligonDto>>(liste);
         }
 
         public async Task<AlanAnalizSonucDto> KesisimHesaplaAsync(string p1, string p2, List<PoligonDto>? geometriler, string? kullaniciId)

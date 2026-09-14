@@ -1,8 +1,4 @@
-/**
- * REMS Harita Pin ve İşaretçi Sabitleri
- * Vektör SVG formatında saklanır, OpenLayers ve UI şablonları için Data URI sunar.
- */
-
+// Harita pin ve işaretçi SVG Data URI tanımları
 export const PIN_SVG_KONUT = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 46" width="36" height="46">
     <defs>
@@ -68,9 +64,7 @@ export const MAP_ICONS = {
   diger: PIN_SVG_DIGER
 };
 
-/**
- * Taşınmaz tipine göre pin SVG Data URI döner
- */
+// Taşınmaz tipine göre pin ikonunu döner
 export function getPinIconByTipi(tip?: string): string {
   const temizTip = (tip || '').trim().toLowerCase();
   if (temizTip === 'arsa') return MAP_ICONS.arsa;

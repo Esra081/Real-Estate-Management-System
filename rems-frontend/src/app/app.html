@@ -114,3 +114,53 @@
 
   </div>
 </div>
+
+<!-- Oturum Süresi Uyarı Modalı (5 Dakikalık Canlı Geri Sayım) -->
+<div class="rems-modal-backdrop d-flex align-items-center justify-content-center" 
+     *ngIf="sessionTimeout.modalGorunur$ | async" 
+     style="z-index: 9999999; background-color: rgba(20, 24, 17, 0.75); backdrop-filter: blur(5px);">
+  <div class="rems-confirm-modal p-4 shadow-lg text-center" style="max-width: 440px; border-top: 4px solid #E65100;">
+    
+    <!-- Animasyonlu Uyarı / Kum Saati İkonu -->
+    <div class="mb-3 mx-auto session-icon-pulse" 
+         style="width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: rgba(230, 81, 0, 0.12); color: #E65100;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    </div>
+
+    <h4 class="fw-bold mb-2" style="color: var(--rems-dark-forest, #1E241A); font-size: 20px;">
+      Oturum Süreniz Dolmak Üzere!
+    </h4>
+
+    <p class="text-secondary small mb-3" style="font-size: 13.5px; line-height: 1.5;">
+      Yaklaşık 1 saattir işlem yapmaktasınız. Güvenliğiniz için işleminize devam etmek istiyor musunuz? Aksi halde oturumunuz otomatik olarak sonlandırılacaktır.
+    </p>
+
+    <!-- Canlı Geri Sayım Rozeti -->
+    <div class="session-timer-box py-2 px-3 mb-4 rounded d-inline-flex align-items-center gap-2">
+      <span class="small text-muted fw-semibold">Kalan Süre:</span>
+      <span class="fw-bold font-monospace fs-4 text-danger">{{ sessionTimeout.formatliKalanSure$ | async }}</span>
+    </div>
+
+    <!-- Butonlar -->
+    <div class="d-flex gap-2 justify-content-center">
+      <button type="button" 
+              class="btn btn-outline-secondary btn-sm px-4" 
+              [disabled]="sessionTimeout.islemYapiliyor$ | async"
+              (click)="sessionTimeout.oturumuSonlandir('Oturumu kendi isteğinizle sonlandırdınız.')">
+        Çıkış Yap
+      </button>
+
+      <button type="button" 
+              class="btn btn-success btn-sm px-4 fw-bold shadow-sm d-flex align-items-center gap-2" 
+              [disabled]="sessionTimeout.islemYapiliyor$ | async"
+              (click)="sessionTimeout.oturumuUzat()">
+        <span *ngIf="sessionTimeout.islemYapiliyor$ | async" class="spinner-border spinner-border-sm" role="status"></span>
+        <span>Evet, Devam Et</span>
+      </button>
+    </div>
+
+  </div>
+</div>

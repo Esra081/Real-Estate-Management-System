@@ -2,17 +2,17 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Auth } from '../../core/auth';
-import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../core/auth.service';
+import { ToastService } from '../../shared/services/toast.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  styleUrls: ['./login.scss']
 })
-export class Login {
+export class LoginComponent {
   email = '';
   sifre = '';
   aktifSekme: 'login' | 'register' = 'login';
@@ -27,17 +27,17 @@ export class Login {
   }
 
   constructor(
-    private authService: Auth,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private toast: ToastService
   ) {}
 
-  onLogin() {
+  onLogin(): void {
     this.yukleniyor = true;
 
     this.authService.login(this.email, this.sifre).subscribe({
-      next: (response) => {
+      next: () => {
         this.yukleniyor = false;
         this.toast.success('Giriş başarılı! Yönlendiriliyorsunuz...');
         this.router.navigate(['/tasinmaz-liste']);
@@ -51,12 +51,12 @@ export class Login {
     });
   }
 
-  sekmeDegistir(sekme: 'login' | 'register') {
+  sekmeDegistir(sekme: 'login' | 'register'): void {
     this.aktifSekme = sekme;
     this.cdr.detectChanges();
   }
-  
-  onRegister() {
+
+  onRegister(): void {
     this.yukleniyor = true;
     this.cdr.detectChanges();
 
@@ -92,3 +92,5 @@ export class Login {
     });
   }
 }
+
+export { LoginComponent as Login };

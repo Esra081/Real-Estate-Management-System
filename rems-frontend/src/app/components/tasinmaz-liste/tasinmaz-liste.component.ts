@@ -24,11 +24,13 @@ import { Mahalle } from '../../models/mahalle.model';
 import { Kullanici } from '../../models/kullanici.model';
 import { LokasyonService } from '../../services/lokasyon.service';
 import { KullaniciService } from '../../services/kullanici.service';
-import { Auth } from '../../core/auth';
-import { OnayService } from '../../services/onay.service';
-import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../core/auth.service';
+import { OnayService } from '../../shared/services/onay.service';
+import { ToastService } from '../../shared/services/toast.service';
 import { MAP_ICONS } from '../../shared/constants/map-icons';
 import { KesisimBilgi } from '../../shared/helpers/gis-spatial.helper';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
+import { downloadBlob } from '../../shared/helpers/file-download.helper';
 
 @Component({
   selector: 'app-tasinmaz-liste',
@@ -36,7 +38,8 @@ import { KesisimBilgi } from '../../shared/helpers/gis-spatial.helper';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    PaginationComponent
   ],
   providers: [TasinmazMapService],
   templateUrl: './tasinmaz-liste.html',
@@ -56,7 +59,6 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   tumKullanicilar: Kullanici[] = [];
   seciliIdler = new Set<number>();
   tumSecili = false;
-  sayfalamaDizisi: (number | string)[] = [];
 
   // Harita & Kesişim Durumları
   secilenTasinmaz: Tasinmaz | null = null;
@@ -67,12 +69,12 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   altlikOpaklik: number = 100;
   tasinmazOpaklik: number = 80;
 
-  // Harita İkonları (HTML Lejantı için)
+  // Harita İkonları
   readonly pinSvgKonut = MAP_ICONS.konut;
   readonly pinSvgArsa = MAP_ICONS.arsa;
   readonly pinSvgBina = MAP_ICONS.bina;
 
-  // Excel / Raporlama Durumları
+  // Excel
   secilenExcelDosyasi: File | null = null;
   importYukleniyor = false;
   excelModalAcik = false;
@@ -80,7 +82,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   private importSubscription?: Subscription;
   private mapSubscriptions = new Subscription();
 
-  // Genel İstatistikler (Tüm Veritabanı)
+  // Genel İstatistikler
   genelToplamAlan: number = 0;
   genelKonutSayisi: number = 0;
   genelArsaSayisi: number = 0;
@@ -88,7 +90,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   genelEnCokIller: string = 'Kayıt Yok';
 
   constructor(
-    private tasinmazListeService: TasinmazListeService,
+    private tasinmazService: TasinmazListeService,
     private mapService: TasinmazMapService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -96,7 +98,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
     private fb: FormBuilder,
     private lokasyonService: LokasyonService,
     private kullaniciService: KullaniciService,
-    public auth: Auth,
+    public auth: AuthService,
     private onay: OnayService,
     private toast: ToastService
   ) {}
@@ -195,6 +197,8 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy(): void {
+    if (this.altlikRaf) cancelAnimationFrame(this.altlikRaf);
+    if (this.tasinmazRaf) cancelAnimationFrame(this.tasinmazRaf);
     if (this.importSubscription) {
       this.importSubscription.unsubscribe();
     }
@@ -307,16 +311,25 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
     this.cdr.detectChanges();
   }
 
+  private altlikRaf?: number;
+  private tasinmazRaf?: number;
+
   altlikOpaklikDegistir(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.altlikOpaklik = Number(target.value);
-    this.mapService.setAltlikOpaklik(this.altlikOpaklik);
+    if (this.altlikRaf) cancelAnimationFrame(this.altlikRaf);
+    this.altlikRaf = requestAnimationFrame(() => {
+      this.mapService.setAltlikOpaklik(this.altlikOpaklik);
+    });
   }
 
   tasinmazOpaklikDegistir(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.tasinmazOpaklik = Number(target.value);
-    this.mapService.setTasinmazOpaklik(this.tasinmazOpaklik);
+    if (this.tasinmazRaf) cancelAnimationFrame(this.tasinmazRaf);
+    this.tasinmazRaf = requestAnimationFrame(() => {
+      this.mapService.setTasinmazOpaklik(this.tasinmazOpaklik);
+    });
   }
 
   haritadaTasinmazaGit(tasinmaz: Tasinmaz): void {
@@ -330,30 +343,13 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   // Veri Çekme & Filtreleme
   veriGetir(): void {
     this.yukleniyor = true;
-    const formFiltreleri = this.filtreForm.value;
-
-    let adaDegeri = (formFiltreleri.adaNo || '').trim();
-    let parselDegeri = (formFiltreleri.parselNo || '').trim();
-
-    if (adaDegeri.includes('/') || adaDegeri.includes('-')) {
-      const parcalar = adaDegeri.split(/[\/\-]/);
-      adaDegeri = parcalar[0]?.trim() || '';
-      parselDegeri = parcalar[1]?.trim() || '';
-    }
-
-    const gidenFiltreler: any = {
-      ...formFiltreleri,
-      adaNo: adaDegeri,
-      parselNo: parselDegeri,
+    const gidenFiltreler = {
+      ...this.aktifFiltreleriAl(),
       pageNumber: this.currentPage,
       pageSize: this.pageSize
     };
 
-    if (!this.auth.isAdmin && this.auth.currentUser) {
-      gidenFiltreler.kullaniciId = this.auth.currentUser.id;
-    }
-
-    this.tasinmazListeService.getTasinmazlar(gidenFiltreler).subscribe({
+    this.tasinmazService.getTasinmazlar(gidenFiltreler).subscribe({
       next: (response: any) => {
         if (response && response.data && Array.isArray(response.data)) {
           const totalP = response.totalPages || 1;
@@ -382,7 +378,6 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
           this.tasinmazlar = [];
         }
 
-        this.sayfalamaGuncelle();
         this.tasinmazlar.forEach(t => {
           t.secili = this.seciliIdler.has(t.id);
         });
@@ -394,7 +389,6 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
       error: (hata) => {
         console.error('Veriler getirilirken hata oluştu:', hata);
         this.tasinmazlar = [];
-        this.sayfalamaDizisi = [];
         this.tumSecili = false;
         this.yukleniyor = false;
         this.mapService.tasinmazlariCiz(this.tasinmazlar);
@@ -403,44 +397,8 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
     });
   }
 
-  sayfalamaGuncelle(): void {
-    const total = this.totalPages;
-    const current = this.currentPage;
-
-    if (total <= 7) {
-      this.sayfalamaDizisi = Array.from({ length: total }, (_, i) => i + 1);
-      return;
-    }
-
-    const pages: (number | string)[] = [];
-    pages.push(1);
-
-    if (current <= 4) {
-      for (let i = 2; i <= 5; i++) {
-        pages.push(i);
-      }
-      pages.push('...');
-      pages.push(total);
-    } else if (current >= total - 3) {
-      pages.push('...');
-      for (let i = total - 4; i <= total; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push('...');
-      pages.push(current - 1);
-      pages.push(current);
-      pages.push(current + 1);
-      pages.push('...');
-      pages.push(total);
-    }
-
-    this.sayfalamaDizisi = pages;
-  }
-
-  sayfaDegistir(yeniSayfa: number | string): void {
-    if (typeof yeniSayfa === 'string' || yeniSayfa === this.currentPage) return;
-    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages) {
+  sayfaDegistir(yeniSayfa: number): void {
+    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages && yeniSayfa !== this.currentPage) {
       this.currentPage = yeniSayfa;
       this.urlGuncelle();
     }
@@ -507,7 +465,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.yukleniyor = true;
     this.cdr.detectChanges();
-    this.tasinmazListeService.tasinmazlariSil(secilenIdler).subscribe({
+    this.tasinmazService.tasinmazlariSil(secilenIdler).subscribe({
       next: () => {
         this.toast.success(`${secilenIdler.length} adet taşınmaz başarıyla silindi.`);
         this.seciliIdler.clear();
@@ -542,7 +500,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.yukleniyor = true;
     this.cdr.detectChanges();
-    this.tasinmazListeService.tasinmazSil(id).subscribe({
+    this.tasinmazService.tasinmazSil(id).subscribe({
       next: () => {
         this.toast.success('Taşınmaz kaydı başarıyla silindi.');
         this.seciliIdler.delete(id);
@@ -591,14 +549,9 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
 
   excelIndir(): void {
     const filtreler = this.aktifFiltreleriAl();
-    this.tasinmazListeService.exportToExcel(filtreler).subscribe({
+    this.tasinmazService.exportToExcel(filtreler).subscribe({
       next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Tasinmazlar_${new Date().getTime()}.xlsx`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+        downloadBlob(blob, `Tasinmazlar_${new Date().getTime()}.xlsx`);
         this.toast.success('Excel raporu başarıyla indirildi.');
       },
       error: (err) => {
@@ -610,14 +563,9 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
 
   pdfIndir(): void {
     const filtreler = this.aktifFiltreleriAl();
-    this.tasinmazListeService.exportToPdf(filtreler).subscribe({
+    this.tasinmazService.exportToPdf(filtreler).subscribe({
       next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Tasinmazlar_${new Date().getTime()}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
+        downloadBlob(blob, `Tasinmazlar_${new Date().getTime()}.pdf`);
         this.toast.success('PDF raporu başarıyla indirildi.');
       },
       error: (err) => {
@@ -675,7 +623,7 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
     this.importHataMesaji = null;
     this.cdr.detectChanges();
 
-    this.importSubscription = this.tasinmazListeService.importFromExcel(this.secilenExcelDosyasi).subscribe({
+    this.importSubscription = this.tasinmazService.importFromExcel(this.secilenExcelDosyasi).subscribe({
       next: (res: any) => {
         this.toast.success(res.message || 'Taşınmazlar başarıyla içe aktarıldı!');
         this.secilenExcelDosyasi = null;
@@ -746,6 +694,6 @@ export class TasinmazListeComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   getResimUrl(url?: string): string {
-    return this.tasinmazListeService.getResimUrl(url);
+    return this.tasinmazService.getResimUrl(url);
   }
 }

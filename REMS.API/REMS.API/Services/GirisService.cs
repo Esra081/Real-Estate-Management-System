@@ -12,6 +12,7 @@ using REMS.API.DTOs.Auth;
 using REMS.API.Entities;
 using REMS.API.Helpers;
 using REMS.API.Interfaces;
+using AutoMapper;
 
 namespace REMS.API.Services
 {
@@ -20,12 +21,14 @@ namespace REMS.API.Services
         private readonly RemsDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly HashService _hashService;
+        private readonly IMapper _mapper;
 
-        public GirisService(RemsDbContext context, IConfiguration configuration, HashService hashService)
+        public GirisService(RemsDbContext context, IConfiguration configuration, HashService hashService, IMapper mapper)
         {
             _context = context;
             _configuration = configuration;
             _hashService = hashService;
+            _mapper = mapper;
         }
 
         public async Task<string?> LoginAsync(LoginDto model)
@@ -52,6 +55,27 @@ namespace REMS.API.Services
                 return null;
             }
 
+            return GenerateJwtToken(kullanici);
+        }
+
+        public async Task<string?> YenileTokenAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out var guidId))
+            {
+                return null;
+            }
+
+            var kullanici = await _context.Kullanicilar.FindAsync(guidId);
+            if (kullanici == null || !kullanici.AktifMi)
+            {
+                return null;
+            }
+
+            return GenerateJwtToken(kullanici);
+        }
+
+        private string GenerateJwtToken(Kullanici kullanici)
+        {
             var jwtKey = _configuration["Jwt:Key"] ?? "REMS_GIS_Secret_Key_Super_Secret_2026_Secure_Token_Authentication!";
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(jwtKey);
@@ -67,7 +91,8 @@ namespace REMS.API.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(8),
+                // 1 saat (60 dk) aktif oturum + 5 dk uyarı/uzatma penceresi
+                Expires = DateTime.UtcNow.AddMinutes(65),
                 Issuer = _configuration["Jwt:Issuer"] ?? "http://localhost:5000",
                 Audience = _configuration["Jwt:Audience"] ?? "http://localhost:5000",
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -101,17 +126,22 @@ namespace REMS.API.Services
             string salt = _hashService.CreateSalt();
             string hash = _hashService.HashPassword(request.Sifre, salt);
 
-            var yeniKullanici = new Kullanici
-            {
-                Id = Guid.NewGuid(),
-                AdSoyad = request.AdSoyad.Trim(),
-                Email = emailClean,
-                SifreHash = hash,
-                SifreSalt = salt,
-                Rol = "Kullanici",
-                AktifMi = true,
-                OlusturmaTarihi = DateTime.UtcNow
-            };
+            // --- ESKİ MANUEL DÖNÜŞÜM (YORUMA ALINDI) ---
+            // var yeniKullanici = new Kullanici
+            // {
+            //     Id = Guid.NewGuid(),
+            //     AdSoyad = request.AdSoyad.Trim(),
+            //     Email = emailClean,
+            //     SifreHash = hash,
+            //     SifreSalt = salt,
+            //     Rol = "Kullanici",
+            //     AktifMi = true,
+            //     OlusturmaTarihi = DateTime.UtcNow
+            // };
+
+            var yeniKullanici = _mapper.Map<Kullanici>(request);
+            yeniKullanici.SifreSalt = salt;
+            yeniKullanici.SifreHash = hash;
 
             await _context.Kullanicilar.AddAsync(yeniKullanici);
             await _context.SaveChangesAsync();

@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { KullaniciService } from '../../services/kullanici.service';
 import { Kullanici } from '../../models/kullanici.model';
-import { OnayService } from '../../services/onay.service';
-import { ToastService } from '../../services/toast.service';
+import { OnayService } from '../../shared/services/onay.service';
+import { ToastService } from '../../shared/services/toast.service';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-kullanici-liste',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, PaginationComponent],
   templateUrl: './kullanici-liste.html',
   styleUrls: ['./kullanici-liste.scss']
 })
@@ -198,7 +199,6 @@ export class KullaniciListeComponent implements OnInit {
   // 1. Değişkenler
   currentPage: number = 1;
   pageSize: number = 10;
-  sayfalamaDizisi: (number | string)[] = [];
 
   // 2. Toplam Sayfa ve Sayfalanmış Liste Getter'ları
   get totalPages(): number {
@@ -213,44 +213,11 @@ export class KullaniciListeComponent implements OnInit {
   // 3. Filtre değişince sayfayı 1'e al
   filtreDegisti(): void {
     this.currentPage = 1;
-    this.sayfalamaGuncelle();
   }
 
-  // 4. Sayfa butonlarını hesapla (1, 2, ... vb.)
-  sayfalamaGuncelle(): void {
-    const total = this.totalPages;
-    const current = this.currentPage;
-
-    if (total <= 7) {
-      this.sayfalamaDizisi = Array.from({ length: total }, (_, i) => i + 1);
-      return;
-    }
-
-    const pages: (number | string)[] = [];
-    pages.push(1);
-    if (current <= 4) {
-      for (let i = 2; i <= 5; i++) pages.push(i);
-      pages.push('...');
-      pages.push(total);
-    } else if (current >= total - 3) {
-      pages.push('...');
-      for (let i = total - 4; i <= total; i++) pages.push(i);
-    } else {
-      pages.push('...');
-      pages.push(current - 1);
-      pages.push(current);
-      pages.push(current + 1);
-      pages.push('...');
-      pages.push(total);
-    }
-    this.sayfalamaDizisi = pages;
-  }
-
-  sayfaDegistir(yeniSayfa: number | string): void {
-    if (typeof yeniSayfa === 'string' || yeniSayfa === this.currentPage) return;
-    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages) {
+  sayfaDegistir(yeniSayfa: number): void {
+    if (yeniSayfa >= 1 && yeniSayfa <= this.totalPages && yeniSayfa !== this.currentPage) {
       this.currentPage = yeniSayfa;
-      this.sayfalamaGuncelle();
       this.cdr.detectChanges();
     }
   }
